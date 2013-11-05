@@ -16,7 +16,7 @@ uses
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
-  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions;//ppWWRichEd;
+  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -54,7 +54,6 @@ type
     N1: TMenuItem;
     Visualizar1: TMenuItem;
     Imprimir1: TMenuItem;
-    ImprimirFiltro: TMenuItem;
     N2: TMenuItem;
     ShowQueryAction: TAction;
     MostrarQuery: TMenuItem;
@@ -188,9 +187,6 @@ type
     procedure EfetuarBackupemarquivolocal1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure TreeView1Change(Sender: TObject; Node: TTreeNode);
-    procedure TreeView1AdvancedCustomDrawItem(Sender: TCustomTreeView;
-      Node: TTreeNode; State: TCustomDrawState; Stage: TCustomDrawStage;
-      var PaintImages, DefaultDraw: Boolean);
     procedure GridCalcCellColors(Sender: TObject; Field: TField;
       State: TGridDrawState; Highlight: Boolean; AFont: TFont;
       ABrush: TBrush);
@@ -233,7 +229,6 @@ type
     procedure checkOperations;
 
     procedure adjustReportZoom;
-    procedure SetNodeState(node: TTreeNode; Flags: Integer);
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -341,12 +336,6 @@ begin
     qry.SQL.Text := 'SELECT NAME FROM XFILTERDEF';
     qry.Open;
     qry.First;
-    //while not qry.Eof do
-    //begin
-      //vViews := FilterDataset.DataRequest('_CMD=GET_VIEWS UID=  CLASSNAME=' + qry.FieldByName('NAME').AsString);
-      //FFilterDepot.addFilter(qry.FieldByName('NAME').AsString, vViews);
-      //qry.Next;
-    //end;
   finally
     FreeAndNil(qry);
     acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnection;
@@ -619,31 +608,6 @@ begin
 		EnableControls;		{ Re-enable controls }
   end;
 
-
-
-  {
-
-  FSelectedList.Clear;
-  if Grid.SelectedRows.Count > 0 then
-  begin
-    with FilterDataset do
-    begin
-      bm := FilterDataset.GetBookmark;
-      try
-        DisableControls;
-        for i:=0 to Grid.SelectedRows.Count-1 do
-        begin
-          GotoBookmark(pointer(Grid.SelectedRows.Items[i]));
-          FSelectedList.Add(FIDField.AsString);
-        end;
-      finally
-        GotoBookmark(bm);
-        FreeBookmark(bm);
-        EnableControls;
-      end;
-    end;
-  end;
-  }
   Result := FSelectedList;
 end;
 
@@ -1275,7 +1239,6 @@ begin
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;
       no.SelectedIndex := Manager.Resources[i].ID;
-      SetNodeState(no, TVIS_BOLD)
     end;
   end;
 end;
@@ -1687,31 +1650,6 @@ begin
   end;
 
   PrintAction.Enabled := (FCurrentResource.ReportClassName <> '');
-end;
-
-procedure TosCustomMainForm.SetNodeState(node: TTreeNode; Flags: Integer);
-var tvi: TTVItemEx;
-begin
-{  FillChar(tvi, SizeOf(tvi), 0);
-  tvi.hItem := node.ItemID;
-  tvi.Mask := TVIF_STATE;
-  tvi.StateMask := TVIS_BOLD or TVIS_CUT;
-  tvi.State := Flags;
-  TreeView_SetItemA(node.Handle, tvi);
-{  if node.Text = 'Orçamento' then
-    TreeView_SetItemHeight(node.Handle, 30)
-  else
-    TreeView_SetItemHeight(node.Handle, 15);}
-end;
-
-
-procedure TosCustomMainForm.TreeView1AdvancedCustomDrawItem(
-  Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
-  Stage: TCustomDrawStage; var PaintImages, DefaultDraw: Boolean);
-begin
-  inherited;
-  // TODO: ver depois
-  //  Node.DisplayRect(true).Height := 10;
 end;
 
 procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
