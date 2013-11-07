@@ -91,7 +91,7 @@ ImageBase=4194304
 ExeDescription=
 [Directories]
 OutputDir=
-UnitOutputDir=../Temp
+UnitOutputDir=../dcu_7
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
@@ -112,9 +112,9 @@ RootDir=
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=0
-MajorVer=2
-MinorVer=6
-Release=137
+MajorVer=1
+MinorVer=0
+Release=0
 Build=0
 Debug=0
 PreRelease=0
@@ -126,7 +126,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=2.6.137.0
+FileVersion=1.0.0.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -134,3 +134,12 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlUnitOutputDirectory]
+Count=4
+Item0=../dcu_7
+Item1=../../Temp
+Item2=../Temp
+Item3=C:\lib\dunit\dunit-9.3.0\dcu_7
