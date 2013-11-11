@@ -1,7 +1,7 @@
 object acCustomSQLMainData: TacCustomSQLMainData
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 552
+  Left = 589
   Top = 132
   Height = 365
   Width = 631

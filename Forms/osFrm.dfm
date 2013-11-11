@@ -1,5 +1,5 @@
 object osForm: TosForm
-  Left = 259
+  Left = 276
   Top = 277
   Width = 401
   Height = 278
