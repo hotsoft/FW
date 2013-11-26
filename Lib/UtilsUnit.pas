@@ -60,6 +60,7 @@ function GetNewID(conn: TosSQLConnection): Integer;
 function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
 function ConverteStrToDate(data: string): TDateTime;
 function ConverteStrToDate2(data: string): TDateTime;
+function ConverteStrToDate3(data: string): TDateTime;
 function GetIPAddress: string;
 
 implementation
@@ -874,6 +875,13 @@ function ConverteStrToDate2(data: string): TDateTime;
 begin
   Result := StrToDateTime(Copy(data,4,2)+'/'+Copy(data,1,2)+'/'+
     Copy(FormatDateTime('yyyy',Today),1,2)+Copy(data,7,2));
+end;
+
+//010120131015 => 01/01/2013 10:15
+function ConverteStrToDate3(data: string): TDateTime;
+begin
+  Result := StrToDateTime(Copy(data,1,2)+'/'+Copy(data,3,2)+'/20'+Copy(data,5,2)+' '+
+    Copy(data,7,2)+':'+Copy(data,9,2));
 end;
 
 function GetIPAddress: string;
