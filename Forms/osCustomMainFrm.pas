@@ -1543,6 +1543,7 @@ begin
   begin
     NewAction.Enabled := NewAction.Enabled AND (oInserir in osForm.Operacoes);
     EditAction.Enabled := EditAction.Enabled AND (oEditar in osForm.Operacoes);
+    EditarTodosButton.Enabled := EditAction.Enabled;
     DeleteAction.Enabled := DeleteAction.Enabled AND (oExcluir in osForm.Operacoes);
     ViewAction.Enabled := ViewAction.Enabled AND (oVisualizar in osForm.Operacoes);
     PrintAction.Enabled := PrintAction.Enabled AND ((oImprimir in osForm.Operacoes) or ((FCurrentResource.ReportClassName <> '')));
@@ -1553,6 +1554,7 @@ procedure TosCustomMainForm.ControlActions(enabled: boolean);
 begin
   NewAction.Enabled := enabled;
   EditAction.Enabled := enabled;
+  EditarTodosButton.Enabled := enabled;
   DeleteAction.Enabled := enabled;
   ViewAction.Enabled := enabled;
   PrintAction.Enabled := enabled;
