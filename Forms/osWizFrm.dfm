@@ -37,6 +37,7 @@ object osWizForm: TosWizForm
     Style = tsFlatButtons
     TabHeight = 1
     TabOrder = 1
+    OnChanging = pgcWizardChanging
     object TabSheet1: TTabSheet
       Caption = 'TabSheet1'
       DesignSize = (
