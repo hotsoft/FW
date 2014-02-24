@@ -32,10 +32,12 @@ type
     procedure btnAvancarClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
   private
     FShowLogPage: boolean;
     FMovingForward: boolean;
     FCompleteAction: boolean;
+    FMudarTela: Boolean;
     function GetIndexLastPage: integer;
   protected
     procedure UpdatePage; virtual;
@@ -89,6 +91,7 @@ end;
 procedure TosWizForm.btnVoltarClick(Sender: TObject);
 begin
   inherited;
+  FMudarTela := True;
   CompleteAction := True;
   FMovingForward := False;
   OnLeavePage.Execute;
@@ -99,6 +102,7 @@ end;
 procedure TosWizForm.btnAvancarClick(Sender: TObject);
 begin
   inherited;
+  FMudarTela := True;
   CompleteAction := True;
   FMovingForward := True;
   OnLeavePage.Execute;
@@ -211,6 +215,7 @@ end;
 
 procedure TosWizForm.FormShow(Sender: TObject);
 begin
+  FMudarTela := False;
   ShowLogPage := True;
   btnAvancar.Enabled := True;
   btnCancelar.Caption := constCancelarCaption;
@@ -233,6 +238,13 @@ begin
     sAux := '';
   lbLog.Items.Add(sAux + Format(PMessage, Args));
   Application.ProcessMessages;
+end;
+
+procedure TosWizForm.pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
+begin
+  if not FMudarTela then
+    AllowChange := False;
+  FMudarTela := False;
 end;
 
 end.
