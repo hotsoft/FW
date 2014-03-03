@@ -141,7 +141,7 @@ begin
     ModalResult := mrOK;
     Close;
   end
-  else if Application.MessageBox(PChar('Cancelar o ' + Caption + '?') , 'Cancelar', MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2) = IDYES then
+  else if MessageDlg(PChar('Cancelar o ' + Caption + '?'), mtConfirmation, mbYesNo, 0) = mrYes then
   begin
     ModalResult := mrCancel;
     Close;
