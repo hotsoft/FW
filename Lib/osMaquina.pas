@@ -58,7 +58,7 @@ type
     FVariaveis: TListLookUp;  // Listas de variaveis e funcoes definidas
     FFuncoes: TListLookUp;
     FResultado: Double;       // Resultado do processamento
-    FResultadoStr: string;       // Resultado do processamento    
+    FResultadoStr: String;       // Resultado do processamento
     FnLinhaProc: Integer;     // Linha atual sendo processada
     FnNumArg: Integer;  // Linha de inicio de leitura de argumento
     FListaErros: TListErro;   // Lista de Erros ocorridos
@@ -89,7 +89,7 @@ type
 
     // propriedades
     property Resultado: Double read FResultado;
-    property ResultadoStr: string read FResultadoStr;    
+    property ResultadoStr: String read FResultadoStr;
     property Parser: TosParser read FParser write FParser;
     property Variavel[NomeVar: String]: Double read LeVariavel write pSetaVariavel;
     property ListaVariavel: TListLookup read FVariaveis;
@@ -339,7 +339,7 @@ end;
 procedure TosMaquina.ProcessaInstrucao(bytecode: Integer; Parametro: String);
 var
   ValorVar: ^Double;
-  ValorString: PChar;
+  ValorString: PAnsiChar;
   stringVar: string;
   doubleAux: Double;
   Variavel: TVariavelMaquina;
@@ -387,7 +387,7 @@ begin
         begin
           if FStrings = nil then
             FStrings := TStringList.Create;
-          ValorString := PChar(FStrings.Strings[
+          ValorString := PAnsiChar(FStrings.Strings[
             FStrings.Add(StringReplace(Parametro,'"','',[rfReplaceAll]))]);
           FpilhaExec.push(ValorString);
         end;
@@ -419,7 +419,7 @@ begin
               end
               else
               begin
-                ValorString := PChar(string(Variavel.Valor));
+                ValorString := PAnsiChar(AnsiString(Variavel.Valor));
                 FpilhaExec.push(ValorString);
               end;
             end
@@ -427,7 +427,7 @@ begin
             begin
               if FStrings = nil then
                 FStrings := TStringList.Create;
-              ValorString := PChar(FStrings.Strings[FStrings.Add(' ')]);
+              ValorString := PAnsiChar(FStrings.Strings[FStrings.Add(' ')]);
               FpilhaExec.push(ValorString);
             end;
           end;
