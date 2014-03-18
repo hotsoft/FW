@@ -387,8 +387,8 @@ begin
         begin
           if FStrings = nil then
             FStrings := TStringList.Create;
-          ValorString := PAnsiChar(FStrings.Strings[
-            FStrings.Add(StringReplace(Parametro,'"','',[rfReplaceAll]))]);
+          ValorString := PAnsiChar(AnsiString(FStrings.Strings[
+            FStrings.Add(StringReplace(Parametro,'"','',[rfReplaceAll]))]));
           FpilhaExec.push(ValorString);
         end;
 
