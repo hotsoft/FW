@@ -138,7 +138,7 @@ var
 begin
   s1 := PChar(Parametros.Items[1]);
   s2 := PChar(Parametros.Items[0]);
-  if (s1 = s2) then
+  if (UpperCase(s1) = UpperCase(s2)) then
     Result := 1
   else
     Result := 2;
