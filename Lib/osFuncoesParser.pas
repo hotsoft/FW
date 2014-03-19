@@ -133,8 +133,12 @@ begin
 end;
 
 function equal(Parametros: TList): Double;
+var
+  s1, s2: string;
 begin
-  if (PChar(Parametros.Items[1]) = (PChar(Parametros.Items[0]))) then
+  s1 := PChar(Parametros.Items[1]);
+  s2 := PChar(Parametros.Items[0]);
+  if (s1 = s2) then
     Result := 1
   else
     Result := 2;
