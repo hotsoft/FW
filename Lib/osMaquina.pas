@@ -387,9 +387,8 @@ begin
         begin
           if FStrings = nil then
             FStrings := TStringList.Create;
-          ValorString := PAnsiChar(AnsiString(FStrings.Strings[
+          FpilhaExec.push(PChar(FStrings.Strings[
             FStrings.Add(StringReplace(Parametro,'"','',[rfReplaceAll]))]));
-          FpilhaExec.push(ValorString);
         end;
 
      ord(tiRValue): // variaveis
@@ -419,16 +418,17 @@ begin
               end
               else
               begin
-                ValorString := PAnsiChar(AnsiString(Variavel.Valor));
-                FpilhaExec.push(ValorString);
+                if FStrings = nil then
+                  FStrings := TStringList.Create;
+                FpilhaExec.push(PChar(FStrings.Strings[
+                  FStrings.Add(Variavel.Valor)]));
               end;
             end
             else
             begin
               if FStrings = nil then
                 FStrings := TStringList.Create;
-              ValorString := PAnsiChar(FStrings.Strings[FStrings.Add(' ')]);
-              FpilhaExec.push(ValorString);
+              FpilhaExec.push(PChar(FStrings.Strings[FStrings.Add(' ')]));
             end;
           end;
         end;

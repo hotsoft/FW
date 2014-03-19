@@ -66,14 +66,14 @@ var
   valor, antigo, novo: String;
   dvalor: Double;
 begin
-  valor := PAnsiChar(Parametros.Items[2]);
+  valor := PChar(Parametros.Items[2]);
   if valor = '' then
   begin
     dvalor := Double(Parametros.Items[2]^);
     valor := FloatToStr(dvalor);
   end;
-  antigo := PAnsiChar(Parametros.Items[1]);
-  novo := PAnsiChar(Parametros.Items[0]);
+  antigo := PChar(Parametros.Items[1]);
+  novo := PChar(Parametros.Items[0]);
   Result := StringReplace(valor,antigo,novo,[rfReplaceAll, rfIgnoreCase]);
 end;
 
@@ -83,9 +83,9 @@ var
 begin
   ExpLogica := Double(Parametros.Items[2]^);
   if ExpLogica <> 1 then
-    Result := PAnsiChar(Parametros.Items[0])
+    Result := PChar(Parametros.Items[0])
   else
-    Result := PAnsiChar(Parametros.Items[1]);
+    Result := PChar(Parametros.Items[1]);
 end;
 
 function sel(Parametros: TList): string;
@@ -93,7 +93,7 @@ var
   valor: String;
   inicio, qtde: Integer;
 begin
-  valor := PAnsiChar(Parametros.Items[2]);
+  valor := PChar(Parametros.Items[2]);
   inicio := trunc(Double(Parametros.Items[1]^));
   qtde := trunc(Double(Parametros.Items[0]^));
   Result := Copy(valor, inicio, qtde);
@@ -102,7 +102,7 @@ end;
 function num(Parametros: TList): Double;
 begin
   try
-    Result := StrToFloat(PAnsiChar(Parametros.Items[0]));
+    Result := StrToFloat(PChar(Parametros.Items[0]));
   except
     Result := 0;
   end;
@@ -112,8 +112,8 @@ function concat(Parametros: TList): string;
 var
   v1,v2: string;
 begin
-  v1 := PAnsiChar(Parametros.Items[1]);
-  v2 := PAnsiChar(Parametros.Items[0]);
+  v1 := PChar(Parametros.Items[1]);
+  v2 := PChar(Parametros.Items[0]);
   Result := v1 + v2;
 end;
 
@@ -129,12 +129,12 @@ end;
 
 function masc(Parametros: TList): string;
 begin
-  Result := FormatFloat(PAnsiChar(Parametros.Items[1]), Double(Parametros.Items[0]^));
+  Result := FormatFloat(PChar(Parametros.Items[1]), Double(Parametros.Items[0]^));
 end;
 
 function equal(Parametros: TList): Double;
 begin
-  if (PAnsiChar(Parametros.Items[1]) = (PAnsiChar(Parametros.Items[0]))) then
+  if (PChar(Parametros.Items[1]) = (PChar(Parametros.Items[0]))) then
     Result := 1
   else
     Result := 2;
@@ -142,7 +142,7 @@ end;
 
 function trimstr(Parametros: TList): string;
 begin
-  Result := Trim(PAnsiChar(Parametros.Items[0]));
+  Result := Trim(PChar(Parametros.Items[0]));
 end;
 
 end.
