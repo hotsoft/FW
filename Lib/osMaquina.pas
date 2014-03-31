@@ -428,7 +428,9 @@ begin
             begin
               if FStrings = nil then
                 FStrings := TStringList.Create;
-              FpilhaExec.push(PChar(FStrings.Strings[FStrings.Add(' ')]));
+              Variavel.Valor := '';
+              FpilhaExec.push(PChar(FStrings.Strings[
+                  FStrings.Add(Variavel.Valor)]));
             end;
           end;
         end;
