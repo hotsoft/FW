@@ -62,6 +62,7 @@ function ConverteStrToDate(data: string): TDateTime;
 function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function GetIPAddress: string;
+function CalculaHash(conteudo: string): string;
 
 implementation
 
@@ -904,5 +905,23 @@ begin
   end;
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
+
+function CalculaHash(conteudo: string): string;
+var
+  sum, i : Integer;
+  HFrame : string;
+begin
+  for i := 1 to Length(conteudo) do
+  begin
+    sum := sum + Ord(conteudo[i]);
+  end;
+  HFrame := IntToHex(sum mod 256,2);
+
+  if (Length(HFrame) < 2) then
+  HFrame := '0' + HFrame;
+
+  result := UpperCase(HFrame);
+end;
+
 
 end.
