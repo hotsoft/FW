@@ -61,6 +61,7 @@ function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
 function ConverteStrToDate(data: string): TDateTime;
 function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
+function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
 
 implementation
@@ -883,6 +884,12 @@ function ConverteStrToDate3(data: string): TDateTime;
 begin
   Result := StrToDateTime(Copy(data,1,2)+'/'+Copy(data,3,2)+'/20'+Copy(data,5,2)+' '+
     Copy(data,7,2)+':'+Copy(data,9,2));
+end;
+
+//19800515
+function ConverteStrToDate4(data: string): TDateTime;
+begin
+  Result := StrToDate(Copy(data,7,2)+'/'+Copy(data,5,2)+'/'+Copy(data,1,4));
 end;
 
 function GetIPAddress: string;
