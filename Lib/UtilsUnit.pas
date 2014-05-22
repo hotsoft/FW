@@ -11,6 +11,10 @@ uses
 type
   varArrayOfcomps = array of TComponent;
 
+  THSHash = class
+    class function CalculaHash(conteudo: string): string;
+  end;
+  
 function isDigitOrControl(Key: char): boolean;
 function RemoveAcento(Str:String): String;
 procedure criarArquivoBackupIB(nomeArq: string);
@@ -63,7 +67,6 @@ function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
-function CalculaHash(conteudo: string): string;
 
 implementation
 
@@ -914,7 +917,7 @@ begin
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
-function CalculaHash(conteudo: string): string;
+class function THSHash.CalculaHash(conteudo: string): string;
 var
   sum, i : Integer;
   HFrame : string;
