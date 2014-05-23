@@ -13,6 +13,7 @@ type
 
   THSHash = class
     class function CalculaHash(conteudo: string): string;
+    class function GeraHashPCMed(linha: string): string;
   end;
   
 function isDigitOrControl(Key: char): boolean;
@@ -934,5 +935,21 @@ begin
   result := UpperCase(HFrame);
 end;
 
+
+class function THSHash.GeraHashPCMed(linha: string): string;
+var
+  i: Integer;
+  valor: integer;
+  hexa: string;
+begin
+  valor := 0;
+  for i := 1 to Length(linha) do
+  begin
+    valor := valor + ord(copy(linha,i,1)[1]);
+  end;
+  valor := valor mod 256;
+  hexa := IntToHex(valor,0);
+  Result :=  hexa;
+end;
 
 end.
