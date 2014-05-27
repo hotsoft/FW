@@ -4,7 +4,7 @@ interface
 
 uses
   IBServices, INIFiles, Forms, AbZipper, Windows, SysUtils, StrUtils, Controls,
-  osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb,
+  osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils,
   osSQLConnection, osSQLQuery, WinSock;
 
@@ -68,6 +68,7 @@ function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
+function ConverteRTF(rtf: string): string;
 
 implementation
 
@@ -950,6 +951,27 @@ begin
   valor := valor mod 256;
   hexa := IntToHex(valor,0);
   Result :=  hexa;
+end;
+
+function ConverteRTF(rtf: string): string;
+var
+  form: TForm;
+  richEdit: TRichEdit;
+  ss: TStringStream;
+begin
+  try
+    ss := TStringStream.Create(rtf);
+    form := TForm.Create(nil);
+    richEdit := TRichEdit.Create(form);
+    richEdit.Parent := form;
+    richEdit.Lines.LoadFromStream(ss);
+    richEdit.PlainText := True;
+    Result := richEdit.Text;
+  finally
+    FreeAndNil(ss);
+    FreeAndNil(richEdit);
+    FreeAndNil(form);
+  end;
 end;
 
 end.
