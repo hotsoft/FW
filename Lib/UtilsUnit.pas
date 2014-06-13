@@ -923,6 +923,7 @@ var
   sum, i : Integer;
   HFrame : string;
 begin
+  sum:= 0;
   for i := 1 to Length(conteudo) do
   begin
     sum := sum + Ord(conteudo[i]);
@@ -933,6 +934,7 @@ begin
   HFrame := '0' + HFrame;
 
   result := UpperCase(HFrame);
+  
 end;
 
 function ConverteRTF(rtf: string): string;
