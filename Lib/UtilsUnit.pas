@@ -923,7 +923,7 @@ var
   sum, i : Integer;
   HFrame : string;
 begin
-  sum:= 0;
+  sum:= 0 ;
   for i := 1 to Length(conteudo) do
   begin
     sum := sum + Ord(conteudo[i]);
