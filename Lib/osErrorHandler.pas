@@ -325,7 +325,7 @@ end;
 
 function TosErrorHandlerForm.IsEmail(PField : TField) : boolean;
 begin
-  Result := ExecRegExpr('^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]{2,10}(\.[A-Za-z0-9-]{2,10})*$',
+  Result := ExecRegExpr('^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z0-9-]{2,}(\.[A-Za-z0-9-]{2,})*$',
     PField.AsString);
 end;
 
