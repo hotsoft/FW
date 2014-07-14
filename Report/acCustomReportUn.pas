@@ -186,9 +186,9 @@ begin
       if config.tipoSaida = TSPDF then extensao := 'pdf';
       if config.tipoSaida = TSTexto then extensao := 'txt';
       if FTextFileName = '' then
-        if not PromptForFileName(FTextFileName, '*.' + extensao, extensao,
-          '', '', true) then
-          exit;
+
+      if not PromptForFileName(FTextFileName, '*.' + extensao, extensao, '', '', true) then
+        Exit;
 
       if config.tipoSaida = TSPDF then
         SetOutputFile(FTextFileName, rfAcrobat);
@@ -200,40 +200,43 @@ begin
     report.BeforePrint := beforePrint;
     linkEvents;
 
-    if FPrintToFile then
+    if (config.tipoSaida <> TSTexto) then
     begin
-      if FPDFDevice = nil then
+      if FPrintToFile then
       begin
-        FPDFDevice := TppPDFDevice.Create(Self);
-      end;
-      FPDFDevice.FileName := FTextFileName;
-      FPDFDevice.Publisher := Report.Publisher;
-      FPDFDevice.PDFSettings := Report.PDFSettings;
-    end
-    else if FPrintToStream then
-    begin
-      if FPDFDevice = nil then
+        if FPDFDevice = nil then
+        begin
+          FPDFDevice := TppPDFDevice.Create(Self);
+        end;
+        FPDFDevice.FileName := FTextFileName;
+        FPDFDevice.Publisher := Report.Publisher;
+        FPDFDevice.PDFSettings := Report.PDFSettings;
+      end
+      else if FPrintToStream then
       begin
-        FPDFDevice := TppPDFDevice.Create(Self);
-      end;
-      if FPDFStream <> nil then
-      begin
-        FreeAndNil(FPDFStream);
-      end;
-      FPDFStream := TMemoryStream.Create;
+        if FPDFDevice = nil then
+        begin
+          FPDFDevice := TppPDFDevice.Create(Self);
+        end;
+        if FPDFStream <> nil then
+        begin
+          FreeAndNil(FPDFStream);
+        end;
+        FPDFStream := TMemoryStream.Create;
 
-      FPDFDevice.PDFSettings := Report.PDFSettings;
-      FPDFDevice.OutputStream := FPDFStream;
-      FPDFDevice.Publisher := Report.Publisher;
-    end
-    else if config.preview then
-    begin
-      report.DeviceType := 'Screen';
-    end
-    else
-    begin
-      report.ShowPrintDialog := false;
-      report.DeviceType := 'Printer';
+        FPDFDevice.PDFSettings := Report.PDFSettings;
+        FPDFDevice.OutputStream := FPDFStream;
+        FPDFDevice.Publisher := Report.Publisher;
+      end
+      else if (config.preview) then
+      begin
+        report.DeviceType := 'Screen';
+      end
+      else
+      begin
+        report.ShowPrintDialog := false;
+        report.DeviceType := 'Printer';
+      end;
     end;
 
     if not FPrintToFile then
@@ -291,10 +294,10 @@ begin
       report.DeviceType := 'Screen';
     end;
 
-    if PrintToStream or FPrintToFile then
+    if (PrintToStream or FPrintToFile) and (config.tipoSaida <> TSTexto) then
     begin
       Report.InitializeParameters;
-      Report.PrintToDevices
+      Report.PrintToDevices;
     end
     else
       Report.Print;
