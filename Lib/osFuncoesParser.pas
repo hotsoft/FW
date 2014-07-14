@@ -20,6 +20,8 @@ function round(Parametros: TList): Double; forward;
 function masc(Parametros: TList): string; forward;
 function equal(Parametros: TList): Double; forward;
 function trimstr(Parametros: TList): string; forward;
+function maiusculo(Parametros: TList): string; forward;
+
 
 implementation
 
@@ -143,6 +145,11 @@ end;
 function trimstr(Parametros: TList): string;
 begin
   Result := Trim(PChar(Parametros.Items[0]));
+end;
+
+function maiusculo(Parametros: TList): string;
+begin
+  Result := UpperCase(PChar(Parametros.Items[0]));
 end;
 
 end.
