@@ -176,7 +176,8 @@ begin
   FFuncoes.Add(TFuncaoMaquina.Create('ROUND', 1, round));
   FFuncoes.Add(TFuncaoMaquina.Create('MASC', 2, masc));
   FFuncoes.Add(TFuncaoMaquina.Create('EQUAL', 2, equal));
-  FFuncoes.Add(TFuncaoMaquina.Create('TRIM', 1, trimstr)); 
+  FFuncoes.Add(TFuncaoMaquina.Create('TRIM', 1, trimstr));
+  FFuncoes.Add(TFuncaoMaquina.Create('MAIUSCULO', 1, maiusculo));  
 end;
 
 destructor TosMaquina.Destroy;
