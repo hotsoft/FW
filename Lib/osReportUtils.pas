@@ -136,9 +136,13 @@ begin
     findReportById(id);
   if Length(report) > 0 then
   begin
-    ss := TStringStream.Create(report);
-    stream.LoadFromStream(ss);
-    Result := True;
+    try
+      ss := TStringStream.Create(report);
+      stream.LoadFromStream(ss);
+      Result := True;
+    finally
+      FreeAndNil(ss);
+    end;
   end
   else
   begin
