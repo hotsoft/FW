@@ -677,12 +677,12 @@ begin
   AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
   try
     Rewrite(FBat);
-    Writeln(FBat, 'TYPE "' + diretorio + 'COMANDO.TXT" > '+impressora);
+    Writeln(FBat, 'TYPE "' + diretorio + 'COMANDO.TXT" > "'+impressora+'"');
   finally
     CloseFile(FBat);
   end;
 
-  ShellExecute(0, 'Open', PChar(diretorio + 'PRINTLBL.BAT'), nil, nil, Ord(SW_HIDE));
+  ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
 end;
 
 function NomeDaTecla(Key: Word): string;
