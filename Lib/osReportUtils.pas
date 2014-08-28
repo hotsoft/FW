@@ -136,9 +136,13 @@ begin
     findReportById(id);
   if Length(report) > 0 then
   begin
-    ss := TStringStream.Create(report);
-    stream.LoadFromStream(ss);
-    Result := True;
+    try
+      ss := TStringStream.Create(report);
+      stream.LoadFromStream(ss);
+      Result := True;
+    finally
+      FreeAndNil(ss);
+    end;
   end
   else
   begin
@@ -587,21 +591,13 @@ begin
                   begin
                     try
                       item := TStringList.Create;
-                      item.Delimiter := '.';
+                      item.Delimiter := ' ';
                       item.DelimitedText := criterios.Strings[y]; 
 
-                      ord := TdaField.Create(nil);
+                      ord := aSQL.GetFieldForSQLFieldName(item.Strings[0]).Clone(nil);
                       ord.ChildType := 2;
-                      ord.Alias := item.Strings[1];
-                      ord.FieldAlias := item.Strings[1];
-                      ord.FieldName := item.Strings[1];
-                      ord.SQLFieldName := item.Strings[1];
-                      ord.TableAlias := nomePipeline;
-                      ord.TableSQLAlias := item.Strings[0];
 
-                      // na migração para o XE o comportamento da string list pode mudar
-                      // atualmente independente do caracter de quebra o espaço tbm é quebrado
-                      if (item.Count = 3) and (UpperCase(item.Strings[2]) = 'DESC') then
+                      if (item.Count = 2) and (UpperCase(item.Strings[1]) = 'DESC') then
                         aSQL.AddOrderByField(ord,False)
                       else
                         aSQL.AddOrderByField(ord,True);

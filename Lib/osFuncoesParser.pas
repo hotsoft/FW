@@ -21,6 +21,8 @@ function masc(Parametros: TList): string; forward;
 function equal(Parametros: TList): Double; forward;
 function trimstr(Parametros: TList): string; forward;
 function maiusculo(Parametros: TList): string; forward;
+function minusculo(Parametros: TList): string; forward;
+function inicial(Parametros: TList): string; forward;
 
 
 implementation
@@ -154,6 +156,19 @@ end;
 function maiusculo(Parametros: TList): string;
 begin
   Result := UpperCase(PChar(Parametros.Items[0]));
+end;
+
+function minusculo(Parametros: TList): string;
+begin
+  Result := LowerCase(PChar(Parametros.Items[0]));
+end;
+
+function inicial(Parametros: TList): string;
+var
+  texto: string;
+begin
+  texto := UpperCase(PChar(Parametros.Items[0]));
+  Result := UpperCase(Copy(texto,1,1))+LowerCase(Copy(texto,2, Length(texto)));
 end;
 
 end.
