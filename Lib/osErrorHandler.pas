@@ -312,7 +312,7 @@ end;
 
 function TosErrorHandlerForm.IsUF(PField: TField): boolean;
 const
-  SiglasValidas = 'RS SC PR SP MS MT RJ ES MG GO BA PE SE AL PI MA RN CE PB PA AM AC RO RR AP TO DF';
+  SiglasValidas = ' RS SC PR SP MS MT RJ ES MG GO BA PE SE AL PI MA RN CE PB PA AM AC RO RR AP TO DF ';
 var
   SiglaUF : string;
 begin
@@ -320,7 +320,7 @@ begin
   if IsEmpty(SiglaUF) then
     Result := False
   else
-    Result := (Pos(SiglaUF, SiglasValidas) > 0);
+    Result := (Pos(' '+UpperCase(SiglaUF)+' ', SiglasValidas) > 0);
 end;
 
 function TosErrorHandlerForm.IsEmail(PField : TField) : boolean;
