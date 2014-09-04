@@ -55,6 +55,7 @@ type
     property ShowLogPage: boolean read FShowLogPage write FShowLogPage;
     property MovingForward: boolean read FMovingForward;
     property CompleteAction: boolean read FCompleteAction write FCompleteAction;
+    property MudarTela: boolean read FMudarTela write FMudarTela;
   end;
 
 const
