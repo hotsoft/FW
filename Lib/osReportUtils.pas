@@ -19,7 +19,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
     function getMeses: integer;
     function getString: string;
   public
-    constructor Create(dias: integer);
+    constructor Create(dias: integer; Data:TDateTime = 0);
     property dias: integer read getDias;
     property anos: integer read getAnos;
     property meses: integer read getMeses;
@@ -390,10 +390,13 @@ end;
 
 { TIdade }
 
-constructor TIdade.Create(dias: integer);
+constructor TIdade.Create(dias: integer; Data:TDateTime = 0);
 begin
   Fdias := dias;
-  dataReferencia := acCustomSQLMainData.GetServerDate;
+  if Data = 0 then
+    dataReferencia := acCustomSQLMainData.GetServerDate
+  else
+    dataReferencia := Data;
 end;
 
 function TIdade.getAnos: integer;
@@ -452,63 +455,50 @@ end;
 
 function TIdade.getString: string;
 var
-  numDias, numMeses, difMeses, numAnos: integer;
-  dia, mes, ano: word;
-  diaAtual, mesAtual, anoAtual: word;
-  dataNascimento, dataCalculo1, dataCalculo2: TDateTime;
-  difDias: integer;
-  iTemp: integer;
-  strMes: string;
+  mes, mesano: word;
+  ano, ano2: Integer;
+  dataNascimento: TDateTime;
+  Total_dias: Real;
+  Count: Integer;
 begin
-  numAnos := Fdias div 365;
-  if (Fdias mod 365) >= 360 then
-    difMeses := 11
-  else
-    difMeses := (Fdias mod 365) div 30;
-  numDias := (Fdias mod 365) mod 30;
-  if Fdias<limiarDias then
-  begin
-    result := inttoStr(numDias) + ' dia';
-    if numDias>1 then
-      result := result+'s';
-  end;
-  if (Fdias>=limiarDias) AND (Fdias<limiarMeses) then
-  begin
-    if difMeses>1 then
-      result := intToStr(difMeses) + ' meses'
-    else
-      if difMeses>0 then
-        result := intToStr(difMeses) + ' mês';
-    if numDias>0 then
-    begin
-      if difMeses>0 then
-        result := result + ' e ';
-      if numDias>1 then
-        result := result + IntToStr(numDias) + ' dias'
-      else
-        result := result + IntToStr(numDias) + ' dia';
-    end;
-  end;
-  if (Fdias>=limiarMeses) AND (Fdias<limiarAnos) then
-  begin
-    if numAnos > 1 then
-      result := IntToStr(numAnos) + ' anos'
-    else
-      result := IntToStr(numAnos) + ' ano';
-    if difMeses>0 then
-      if difMeses>1 then
-        result := result + ' e ' + IntToStr(difMeses) + ' meses'
-      else
-        result := result + ' e ' + IntToStr(difMeses) + ' mês';
-  end;
-  if Fdias>=limiarAnos then
-  begin
-    if numAnos>1 then
-      result := inttoStr(numAnos) + ' anos'
-    else
-      result := inttoStr(numAnos) + ' ano';
-  end;
+  Total_dias := Fdias;
+  Count:= 1;
+  DataNascimento:= FdataReferencia - Fdias;
 
+  Total_dias:= FDias;
+  Ano := StrToInt(FormatDateTime('YY', DataNascimento));
+  Ano2 := StrToInt(FormatDateTime('YYYY', DataNascimento));
+  while Total_dias >= DaysInAYear(Ano2) do
+  begin
+    if (IsLeapYear(Ano2)) and (Count = 1) then
+    begin
+      Total_dias := Total_dias + 1;
+    end;
+    Total_dias := Total_dias - DaysInAYear(Ano2);
+    Ano := Ano + 1;
+    Ano2 := Ano2 + 1;
+    inc(count);
+  end;
+  
+  Mes := StrToInt(FormatDateTime('MM', DataNascimento));
+  mesano:= Mes;
+  while Total_dias > 28 do
+  begin
+      if Total_dias >= DaysInAMonth(Ano, Mes) then
+      begin
+        
+        Total_dias := Total_dias - DaysInAMonth(Ano, mesano);
+        Mes := Mes + 1;
+        mesano:= mesano + 1;
+        if mesano > 12 then
+          mesano:= 1;
+      end
+      else
+          break;
+  end;
+  Ano := Ano - StrToInt(FormatDateTime('YY', DataNascimento));
+  Mes := Mes - StrToInt(FormatDateTime('MM', DataNascimento));
+  result:= (IntToStr(Ano) + ' anos, ' + IntToStr(Mes) + ' meses e ' + FloatToStr(Total_dias) + ' dias');
 end;
 
 function getIdadeDias(idade: string): integer;
