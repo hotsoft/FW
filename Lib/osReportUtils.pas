@@ -495,7 +495,35 @@ begin
   end;
   Ano := Ano - StrToInt(FormatDateTime('YY', DataNascimento));
   Mes := Mes - StrToInt(FormatDateTime('MM', DataNascimento));
-  result:= (IntToStr(Ano) + ' anos, ' + IntToStr(Mes) + ' meses e ' + FloatToStr(Total_dias) + ' dias');
+
+  Result:= '';
+  if Ano > 0 then
+  begin
+    result:= IntToStr(Ano);
+    if ano > 1 then
+      result:= result + ' anos '
+    else
+      result:= result + ' ano ';
+  end;
+  if (Mes > 0) and (Ano <= 2) then
+  begin
+    result:= Result + IntToStr(Mes);
+    if Mes > 1 then
+      result:= result + ' meses '
+    else
+      result:= result + ' mes ';
+  end;
+    
+  if (Total_dias > 0) and (Ano < 1) then
+  begin
+    result:= Result + FloatToStr(Total_dias);
+    if Total_dias > 1 then
+      result:= result + ' dias '
+    else
+      result:= result + ' dia ';
+  end
+  else if (Total_dias = 0) and (meses = 12) and (ano = 0) then //recem nascido
+    result:= '0 dia'; 
 end;
 
 function getIdadeDias(idade: string): integer;
