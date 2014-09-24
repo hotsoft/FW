@@ -491,7 +491,7 @@ begin
           mesano:= 1;
       end
       else
-          break;
+        break;
   end;
   Ano := Ano - StrToInt(FormatDateTime('YY', DataNascimento));
   Mes := Mes - StrToInt(FormatDateTime('MM', DataNascimento));
@@ -507,6 +507,8 @@ begin
   end;
   if (Mes > 0) and (Ano <= 2) then
   begin
+    if Ano > 0 then
+      Result:= Result + 'e ';
     result:= Result + IntToStr(Mes);
     if Mes > 1 then
       result:= result + ' meses '
@@ -516,6 +518,8 @@ begin
     
   if (Total_dias > 0) and (Ano < 1) then
   begin
+    if (Ano > 0) or (Mes > 0) then
+      Result:= Result + 'e ';
     result:= Result + FloatToStr(Total_dias);
     if Total_dias > 1 then
       result:= result + ' dias '
