@@ -513,7 +513,7 @@ begin
     if Mes > 1 then
       result:= result + ' meses '
     else
-      result:= result + ' mes ';
+      result:= result + ' mês ';
   end;
     
   if (Total_dias > 0) and (Ano < 1) then
