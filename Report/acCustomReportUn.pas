@@ -110,7 +110,7 @@ const
 implementation
 
 uses acCustomSQLMainDataUn, osReportUtils, acCustomRelatorioDataUn, Dialogs,
-  acCustomParametroSistemaDataUn;
+  acCustomParametroSistemaDataUn, osErrorHandler;
 
 {$R *.dfm}
 
@@ -179,6 +179,12 @@ begin
     begin
       ajustarAdendos;
       replaceReportSQLAddWhere(report, stream, PID);
+    end
+    else
+    begin
+      HError.Clear;
+      HError.Add('Relatório não encontrado ou parametrizado');
+      HError.Check;
     end;
 
     if config.tipoSaida <> TSTela then
