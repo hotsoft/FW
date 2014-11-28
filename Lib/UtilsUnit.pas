@@ -739,8 +739,8 @@ begin
     VK_F10: Result := '[F10]'; //F10 key
     VK_F11: Result := '[F11]'; //F11 key
     VK_F12: Result := '[F12]'; //F12 key
-    219: Result := ''; //´ acento
-    222: Result := ''; //~ acento
+    219: Result := '´'; //´ acento
+    222: Result := '~'; //~ acento
   else
     GetKeyboardState(keyboardState);
     SetLength(Result, 2) ;
