@@ -743,7 +743,7 @@ begin
     222: Result := ''; //~ acento
   else
     GetKeyboardState(keyboardState);
-    SetLength(Result, 4) ;
+    SetLength(Result, 10) ;
     asciiResult := ToAscii(key, MapVirtualKey(key, 0), keyboardState, @Result[1], 0) ;
     case asciiResult of
       0: Result := '';
