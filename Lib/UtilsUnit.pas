@@ -69,6 +69,7 @@ function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
 function ConverteRTF(rtf: string): string;
+function ConverteTextoToRTF(Texto: string): string;
 
 implementation
 
@@ -968,6 +969,28 @@ begin
     richEdit.Lines.LoadFromStream(ss);
     richEdit.PlainText := True;
     Result := richEdit.Text;
+  finally
+    FreeAndNil(ss);
+    FreeAndNil(richEdit);
+    FreeAndNil(form);
+  end;
+end;
+
+function ConverteTextoToRTF(Texto: string): string;
+var
+  form: TForm;
+  richEdit: TRichEdit;
+  ss: TStringStream;
+begin
+  try
+    ss := TStringStream.Create(Texto);
+    form := TForm.Create(nil);
+    richEdit := TRichEdit.Create(form);
+    richEdit.Parent := form;
+    richEdit.Text:= Texto;
+    richEdit.PlainText := True;
+    richEdit.Lines.SaveToStream(ss);
+    Result :=  ss.DataString;
   finally
     FreeAndNil(ss);
     FreeAndNil(richEdit);
