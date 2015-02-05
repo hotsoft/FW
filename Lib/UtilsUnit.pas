@@ -988,7 +988,7 @@ begin
     richEdit := TRichEdit.Create(form);
     richEdit.Parent := form;
     richEdit.Text:= Texto;
-    richEdit.PlainText := True;
+    richEdit.PlainText := False;
     richEdit.Lines.SaveToStream(ss);
     Result :=  ss.DataString;
   finally
