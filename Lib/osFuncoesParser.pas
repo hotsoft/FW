@@ -142,7 +142,7 @@ var
 begin
   s1 := PChar(Parametros.Items[1]);
   s2 := PChar(Parametros.Items[0]);
-  if (UpperCase(s1) = UpperCase(s2)) then
+  if (AnsiUpperCase(s1) = AnsiUpperCase(s2)) then
     Result := 1
   else
     Result := 2;
@@ -155,20 +155,20 @@ end;
 
 function maiusculo(Parametros: TList): string;
 begin
-  Result := UpperCase(PChar(Parametros.Items[0]));
+  Result := AnsiUpperCase(PChar(Parametros.Items[0]));
 end;
 
 function minusculo(Parametros: TList): string;
 begin
-  Result := LowerCase(PChar(Parametros.Items[0]));
+  Result := AnsiLowerCase(PChar(Parametros.Items[0]));
 end;
 
 function inicial(Parametros: TList): string;
 var
   texto: string;
 begin
-  texto := UpperCase(PChar(Parametros.Items[0]));
-  Result := UpperCase(Copy(texto,1,1))+LowerCase(Copy(texto,2, Length(texto)));
+  texto := AnsiUpperCase(PChar(Parametros.Items[0]));
+  Result := AnsiUpperCase(Copy(texto,1,1))+AnsiLowerCase(Copy(texto,2, Length(texto)));
 end;
 
 end.
