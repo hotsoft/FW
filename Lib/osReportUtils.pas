@@ -505,7 +505,7 @@ begin
     else
       result:= result + ' ano ';
   end;
-  if (Mes > 0) and (Ano <= 2) then
+  if (Mes > 0) then
   begin
     if Ano > 0 then
       Result:= Result + 'e ';

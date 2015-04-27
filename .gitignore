@@ -1,7 +1,6 @@
-/package/fw.dof
-/dcu_7/*.dcu
-
-/Forms/*.ddp
-/Datamodules/*.ddp
-/package/*.identcache
-/package/*.otares
+*.dof
+*.dcu
+*.ddp
+*.identcache
+*.otares
+*.~*~
