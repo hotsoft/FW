@@ -11,10 +11,15 @@ uses
 type
   varArrayOfcomps = array of TComponent;
 
+  TFuncaoParametroGetDesc = function(const vValor : Variant) : string;
+
   THSHash = class
     class function CalculaHash(conteudo: string): string;
     class function GeraHashPCMed(linha: string): string;
   end;
+
+const 
+  sMODELOMSGLOG = #13+#13+'Campo %s alterado.'+#13+'De: %s'+#13+'Para: %s';  
   
 function isDigitOrControl(Key: char): boolean;
 function RemoveAcento(Str:String): String;
@@ -69,10 +74,28 @@ function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
 function ConverteRTF(rtf: string): string;
+function FieldHasChanged(aField : TField):Boolean;
+function ValueIsEmptyNull(aValue : Variant):Boolean;
+function getDescricaoSexo(const vValor : Variant):String;
+function getDescricaoSimNao(const vValor : Variant):String;
+function getDescricaoTipoResultado(const vValor : Variant):String;
+function CriarMsgLogAlteracaoField(aField : TField):String; overload;
+function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
+function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet; 
+  const sCampoChave: String; const sCampoRetorno: String):String; 
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; aCamposDescricao, aCamposLOG: Array of String): String;
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
+function CriarMsgLogInclusaoExclusaoCDS(oCds: TClientDataSet; oCdsBase: TClientDataSet; 
+  const sCampoChave: String; aCampoDescricao: Array of String): String;
+function CriarMsgLogCDSNotLocateOrigemDestino(oCdsOrigem: TClientDataSet; oCdsDestino: TClientDataSet; 
+  const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
+function isRTFValue(vValor: Variant): Boolean; //{\rtf
+function getCampoSemRTF(const vValor : Variant):String;
+
 
 implementation
 
-uses DateUtils, Variants;
+uses DateUtils, Variants, StatusUnit;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -972,6 +995,272 @@ begin
     FreeAndNil(ss);
     FreeAndNil(richEdit);
     FreeAndNil(form);
+  end;
+end;
+
+function FieldHasChanged(aField : TField):Boolean;
+begin
+  case AField.DataType of
+    ftString : Result := Trim(VarToStrDef(aField.OldValue,'')) <> Trim(VarToStrDef(aField.NewValue,''));
+    ftMemo : Result := Trim(VarToStrDef(aField.OldValue,'')) <> Trim(VarToStrDef(aField.NewValue,''));  
+  else
+    if ValueIsEmptyNull(aField.OldValue) and ValueIsEmptyNull(aField.NewValue) then
+      result := False
+    else
+      Result := aField.OldValue <> aField.NewValue;
+  end;
+end;
+
+function ValueIsEmptyNull(aValue : Variant):Boolean;
+begin
+  Result := VarIsEmpty(aValue) or VarIsNull(aValue) or (VarToStr(aValue) = EmptyStr);
+end;
+
+function getDescricaoSexo(const vValor : Variant):String;
+var 
+  cValor : Char;
+begin
+  cValor := Char(AnsiString(vValor)[1]);
+  case cValor of
+    spMasculino : Result := 'Masculino';
+    spFeminino : Result := 'Feminino';
+    spAmbos : Result := 'Ambos';
+  else
+    result := '';
+  end;
+end;
+
+function getDescricaoSimNao(const vValor : Variant):String;
+var
+  cValor : Char;
+begin
+  cValor := Char(AnsiString(vValor)[1]);
+  case cValor of
+    'S' : Result := 'Sim';
+    'N' : Result := 'Não';
+  else
+    result := '';
+  end;
+end;
+
+function getDescricaoTipoResultado(const vValor : Variant):String;
+var
+  cValor : Char;
+begin
+  cValor := Char(AnsiString(vValor)[1]);
+  case cValor of
+    'G' : Result := 'Germe';
+    'N' : Result := 'Número';
+    'P' : Result := 'Parasita';
+    'T' : Result := 'Texto';
+    'L' : Result := 'Título';
+  else
+    result := '';
+  end;
+end;
+
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
+var 
+  field : TStringField;
+  nCol: Integer;
+begin 
+  if not Assigned(cdsDestino) then
+    cdsDestino := TClientDataSet.Create(nil);
+    
+  for nCol := 0 to cdsOrigem.FieldCount-1 do
+  begin
+    field := TStringField.Create(cdsDestino);
+    Field.FieldKind := fkData;
+    Field.FieldName := cdsOrigem.Fields[nCol].FieldName;
+    Field.DataSet := cdsDestino;
+  end;    
+  cdsDestino.Close;
+  cdsDestino.CreateDataSet;
+    
+  cdsOrigem.First;
+  while not cdsOrigem.Eof do
+  begin
+    cdsDestino.Append;
+    for nCol := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      cdsDestino.FieldByName(cdsDestino.Fields[nCol].FieldName).AsString := 
+        cdsOrigem.FieldByName(cdsDestino.Fields[nCol].FieldName).AsString;
+    end;
+    cdsDestino.Post;
+    cdsOrigem.Next;
+  end;  
+end;
+
+function CriarMsgLogAlteracaoField(aField : TField):String; overload;
+begin
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, getCampoSemRTF(aField.OldValue), 
+      getCampoSemRTF(aField.NewValue)]);
+
+end;
+
+function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
+begin
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, aFuncaoGetDescricao(aField.OldValue),
+      aFuncaoGetDescricao(aField.NewValue)]);
+end;
+
+function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet;const sCampoChave: String;
+  const sCampoRetorno: String):String; 
+var 
+  sDescOld, sDescNew : String;
+begin
+  sDescOld := EmptyStr;
+  sDescNew := EmptyStr;
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+  begin
+    if not ValueIsEmptyNull(aField.OldValue) then
+      sDescOld := oCDSLookup.Lookup(sCampoChave, aField.OldValue, sCampoRetorno);
+    if not ValueIsEmptyNull(aField.NewValue) then
+      sDescNew := oCDSLookup.Lookup(sCampoChave, aField.NewValue, sCampoRetorno);
+
+    if (sDescOld <> EmptyStr) or (sDescNew <> EmptyStr) then
+      Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, sDescOld, sDescNew]);
+  end;
+end;
+
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; aCamposDescricao, aCamposLOG: Array of String): String;
+var
+  nRegCol : Integer;
+  aBookMarkReg : TBookmark;  
+  aMsgReg, aMsgAlt : String;
+begin
+  Result := EmptyStr;
+  if (oCDS = nil) or (not oCDS.Active) or (oCDS.RecordCount = 0)  then
+    Exit;
+  aBookMarkReg := oCDS.Bookmark;  
+  oCDS.DisableControls;
+  try
+    oCDS.First;
+    while not oCDS.Eof do
+    begin
+      aMsgReg := EmptyStr;
+      aMsgAlt := EmptyStr;
+      // loga se não for inclusão
+      if not ValueIsEmptyNull(oCDS.FieldByName(oCDS.Fields[0].FieldName).OldValue) then
+      begin
+        // Todos os Campos
+        if Length(aCamposLOG)=0 then
+        begin
+          for nRegCol := 0 to oCDS.FieldCount-1 do
+          begin
+            if oCDS.FieldByName(oCDS.Fields[nRegCol].FieldName).FieldKind <> fkLookup then
+              aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( 
+                oCDS.FieldByName(oCDS.Fields[nRegCol].FieldName) );
+          end;
+        end
+        // campos do Array
+        else
+        begin
+          for nRegCol := 0 to Length(aCamposLOG)-1 do
+          begin
+            aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( oCDS.FieldByName(aCamposLOG[nRegCol]) );
+          end;      
+        end;
+      
+        if (Length(aCamposDescricao) > 0) and (aMsgAlt <> EmptyStr) then
+        begin
+          aMsgReg := EmptyStr;
+          for nRegCol := 0 to Length(aCamposDescricao)-1 do
+          begin
+            if aMsgReg <> EmptyStr then
+              aMsgReg := aMsgReg + ', ';      
+            aMsgReg := aMsgReg + getCampoSemRTF(oCDS.FieldByName(aCamposDescricao[nRegCol]).AsString);
+          end;
+          aMsgReg := #13 + #13 + 'Alterado ' + aMsgReg;
+        end; 
+
+        // Copy retira uma linha no começo da mensagem dos campos  
+        if aMsgAlt <> EmptyStr then
+          Result := Result + aMsgReg + Copy(aMsgAlt, 2, length(aMsgAlt));
+      end;
+      oCDS.Next;
+    end;
+  finally
+    oCDS.GotoBookmark(aBookMarkReg);
+    oCDS.EnableControls;
+  end;
+end;
+
+function CriarMsgLogInclusaoExclusaoCDS(oCds: TClientDataSet; oCdsBase: TClientDataSet; 
+  const sCampoChave: String; aCampoDescricao: Array of String): String;
+var 
+  aBookMarkReg : TBookmark;
+begin
+  Result := EmptyStr;  
+  aBookMarkReg := oCds.Bookmark;
+  oCds.DisableControls;
+  try
+    // Verifica Registros Excluidos    
+    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(oCdsBase, oCds, sCampoChave, aCampoDescricao, 
+      'Exclusão: ');
+
+    // Verifica Registros Incluídos
+    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(oCds, oCdsBase, sCampoChave, aCampoDescricao, 
+      'Inclusão: ');    
+  finally
+    oCds.GotoBookmark(aBookMarkReg);
+    oCds.EnableControls;
+  end;
+end;
+
+function CriarMsgLogCDSNotLocateOrigemDestino(oCdsOrigem: TClientDataSet; oCdsDestino: TClientDataSet; 
+  const sCampoChave: String; aCampoDescricao: Array of String; const sDescricao : String ): String;
+var
+  nRegCol : Integer;
+  aMsgReg : String;
+begin
+  Result := EmptyStr;
+  oCdsOrigem.First;
+  while not oCdsOrigem.Eof do
+  begin
+    if not oCdsDestino.Locate(sCampoChave, oCdsOrigem.FieldByName(sCampoChave).AsVariant, []) then
+    begin      
+      if Length(aCampoDescricao) > 0 then
+      begin
+        aMsgReg := EmptyStr;
+        for nRegCol := 0 to Length(aCampoDescricao)-1 do
+        begin
+          if aMsgReg <> EmptyStr then
+            aMsgReg := aMsgReg + ', ';      
+          aMsgReg := aMsgReg + getCampoSemRTF(oCdsOrigem.FieldByName(aCampoDescricao[nRegCol]).AsString);
+        end;
+      end;
+      
+      Result := Result + #13 + sDescricao + aMsgReg; 
+    end;
+    oCdsOrigem.Next;
+  end;
+end;
+
+function isRTFValue(vValor: Variant): Boolean; 
+begin
+  Result := False;
+  if not ValueIsEmptyNull(vValor) then
+    Result :=  Copy(vValor, 1, 5) = '{\rtf';
+end;
+
+function getCampoSemRTF(const vValor : Variant):String;
+var
+  sValor : String;
+begin
+  result := EmptyStr;
+  if not ValueIsEmptyNull(vValor) then
+  begin
+    sValor := VarToStr(vValor);
+    if isRTFValue(sValor) then
+      result := ConverteRTF(sValor)
+    else
+      result := sValor;
   end;
 end;
 
