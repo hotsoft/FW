@@ -1043,7 +1043,7 @@ function getDescricaoSexo(const vValor : Variant):String;
 var 
   cValor : Char;
 begin
-  cValor := Char(AnsiString(vValor)[1]);
+  cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
   case cValor of
     spMasculino : Result := 'Masculino';
     spFeminino : Result := 'Feminino';
@@ -1057,7 +1057,7 @@ function getDescricaoSimNao(const vValor : Variant):String;
 var
   cValor : Char;
 begin
-  cValor := Char(AnsiString(vValor)[1]);
+  cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
   case cValor of
     'S' : Result := 'Sim';
     'N' : Result := 'Não';
@@ -1070,7 +1070,7 @@ function getDescricaoTipoResultado(const vValor : Variant):String;
 var
   cValor : Char;
 begin
-  cValor := Char(AnsiString(vValor)[1]);
+  cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
   case cValor of
     'G' : Result := 'Germe';
     'N' : Result := 'Número';
@@ -1084,22 +1084,30 @@ end;
 
 procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
 var 
-  field : TStringField;
+  field : TField;
   nCol: Integer;
 begin 
   if not Assigned(cdsDestino) then
     cdsDestino := TClientDataSet.Create(nil);
-    
-  for nCol := 0 to cdsOrigem.FieldCount-1 do
+
+  if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
   begin
-    field := TStringField.Create(cdsDestino);
-    Field.FieldKind := fkData;
-    Field.FieldName := cdsOrigem.Fields[nCol].FieldName;
-    Field.DataSet := cdsDestino;
-  end;    
-  cdsDestino.Close;
-  cdsDestino.CreateDataSet;
+    for nCol := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      if (cdsOrigem.Fields[nCol]) is TMemoField then
+        field := TMemoField.Create(cdsDestino)
+      else      
+        field := TStringField.Create(cdsDestino);      
+      
+      Field.FieldKind := fkData;
+      Field.FieldName := cdsOrigem.Fields[nCol].FieldName;
+      Field.DataSet := cdsDestino;
+    end;    
+    cdsDestino.Close;
+    cdsDestino.CreateDataSet;
+  end;
     
+
   cdsOrigem.First;
   while not cdsOrigem.Eof do
   begin
@@ -1220,7 +1228,6 @@ var
   aBookMarkReg : TBookmark;
 begin
   Result := EmptyStr;  
-  aBookMarkReg := oCds.Bookmark;
   oCds.DisableControls;
   try
     // Verifica Registros Excluidos    
@@ -1231,7 +1238,6 @@ begin
     Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(oCds, oCdsBase, sCampoChave, aCampoDescricao, 
       'Inclusão: ');    
   finally
-    oCds.GotoBookmark(aBookMarkReg);
     oCds.EnableControls;
   end;
 end;
@@ -1256,7 +1262,7 @@ begin
           if aMsgReg <> EmptyStr then
             aMsgReg := aMsgReg + ', ';      
           aMsgReg := aMsgReg + getCampoSemRTF(oCdsOrigem.FieldByName(aCampoDescricao[nRegCol]).AsString);
-        end;
+        end;                   
       end;
       
       Result := Result + #13 + sDescricao + aMsgReg; 
