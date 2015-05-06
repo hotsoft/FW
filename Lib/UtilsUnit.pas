@@ -1072,11 +1072,11 @@ var
 begin
   cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
   case cValor of
-    'G' : Result := 'Germe';
-    'N' : Result := 'Número';
-    'P' : Result := 'Parasita';
-    'T' : Result := 'Texto';
-    'L' : Result := 'Título';
+    satrGerme : Result := 'Germe';
+    satrNumerico : Result := 'Número';
+    satrParasita : Result := 'Parasita';
+    satrTexto : Result := 'Texto';
+    satrTitulo : Result := 'Título';
   else
     result := '';
   end;
