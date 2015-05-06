@@ -763,8 +763,8 @@ begin
     VK_F10: Result := '[F10]'; //F10 key
     VK_F11: Result := '[F11]'; //F11 key
     VK_F12: Result := '[F12]'; //F12 key
-    219: Result := ''; //´ acento
-    222: Result := ''; //~ acento
+    219: Result := '´'; //´ acento
+    222: Result := '~'; //~ acento
   else
     GetKeyboardState(keyboardState);
     SetLength(Result, 10) ;
@@ -1072,11 +1072,11 @@ var
 begin
   cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
   case cValor of
-    'G' : Result := 'Germe';
-    'N' : Result := 'Número';
-    'P' : Result := 'Parasita';
-    'T' : Result := 'Texto';
-    'L' : Result := 'Título';
+    satrGerme : Result := 'Germe';
+    satrNumerico : Result := 'Número';
+    satrParasita : Result := 'Parasita';
+    satrTexto : Result := 'Texto';
+    satrTitulo : Result := 'Título';
   else
     result := '';
   end;
