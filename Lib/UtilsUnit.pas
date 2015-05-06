@@ -84,7 +84,7 @@ function CriarMsgLogAlteracaoField(aField : TField):String; overload;
 function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
 function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet; 
   const sCampoChave: String; const sCampoRetorno: String):String; 
-function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; aCamposDescricao, aCamposLOG: Array of String): String;
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
 procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
@@ -1085,22 +1085,22 @@ end;
 procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
 var
   field : TField;
-  nCol: Integer;
+  i: Integer;
 begin
   if not Assigned(cdsDestino) then
     cdsDestino := TClientDataSet.Create(nil);
 
   if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
   begin
-    for nCol := 0 to cdsOrigem.FieldCount-1 do
+    for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      if (cdsOrigem.Fields[nCol]) is TMemoField then
+      if (cdsOrigem.Fields[i]) is TMemoField then
         field := TMemoField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
       Field.FieldKind := fkData;
-      Field.FieldName := cdsOrigem.Fields[nCol].FieldName;
+      Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DataSet := cdsDestino;
     end;
     cdsDestino.Close;
@@ -1112,10 +1112,10 @@ begin
   while not cdsOrigem.Eof do
   begin
     cdsDestino.Append;
-    for nCol := 0 to cdsOrigem.FieldCount-1 do
+    for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      cdsDestino.FieldByName(cdsDestino.Fields[nCol].FieldName).AsString :=
-        cdsOrigem.FieldByName(cdsDestino.Fields[nCol].FieldName).AsString;
+      cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString :=
+        cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
     end;
     cdsDestino.Post;
     cdsOrigem.Next;
@@ -1159,16 +1159,16 @@ begin
   end;
 end;
 
-function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; aCamposDescricao, aCamposLOG: Array of String): String;
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
 var
-  nRegCol : Integer;
-  aBookMarkReg : TBookmark;
+  i : Integer;
+  bm : TBookmark;
   aMsgReg, aMsgAlt : String;
 begin
   Result := EmptyStr;
   if (oCDS = nil) or (not oCDS.Active) or (oCDS.RecordCount = 0)  then
     Exit;
-  aBookMarkReg := oCDS.Bookmark;
+  bm := oCDS.Bookmark;
   oCDS.DisableControls;
   try
     oCDS.First;
@@ -1177,35 +1177,35 @@ begin
       aMsgReg := EmptyStr;
       aMsgAlt := EmptyStr;
       // loga se não for inclusão
-      if not ValueIsEmptyNull(oCDS.FieldByName(oCDS.Fields[0].FieldName).OldValue) then
+      if not ValueIsEmptyNull(oCDS.FieldByName(key).OldValue) then
       begin
         // Todos os Campos
         if Length(aCamposLOG)=0 then
         begin
-          for nRegCol := 0 to oCDS.FieldCount-1 do
+          for i := 0 to oCDS.FieldCount-1 do
           begin
-            if oCDS.FieldByName(oCDS.Fields[nRegCol].FieldName).FieldKind <> fkLookup then
+            if oCDS.FieldByName(oCDS.Fields[i].FieldName).FieldKind <> fkLookup then
               aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField(
-                oCDS.FieldByName(oCDS.Fields[nRegCol].FieldName) );
+                oCDS.FieldByName(oCDS.Fields[i].FieldName) );
           end;
         end
         // campos do Array
         else
         begin
-          for nRegCol := 0 to Length(aCamposLOG)-1 do
+          for i := 0 to Length(aCamposLOG)-1 do
           begin
-            aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( oCDS.FieldByName(aCamposLOG[nRegCol]) );
+            aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( oCDS.FieldByName(aCamposLOG[i]) );
           end;
         end;
 
         if (Length(aCamposDescricao) > 0) and (aMsgAlt <> EmptyStr) then
         begin
           aMsgReg := EmptyStr;
-          for nRegCol := 0 to Length(aCamposDescricao)-1 do
+          for i := 0 to Length(aCamposDescricao)-1 do
           begin
             if aMsgReg <> EmptyStr then
               aMsgReg := aMsgReg + ', ';
-            aMsgReg := aMsgReg + getCampoSemRTF(oCDS.FieldByName(aCamposDescricao[nRegCol]).AsString);
+            aMsgReg := aMsgReg + getCampoSemRTF(oCDS.FieldByName(aCamposDescricao[i]).AsString);
           end;
           aMsgReg := #13 + #13 + 'Alterado ' + aMsgReg;
         end;
@@ -1217,7 +1217,7 @@ begin
       oCDS.Next;
     end;
   finally
-    oCDS.GotoBookmark(aBookMarkReg);
+    oCDS.GotoBookmark(bm);
     oCDS.EnableControls;
   end;
 end;
