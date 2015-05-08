@@ -7,7 +7,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
   daQueryDataView, ppTypes,daIDE, daDBExpress, ppCTDsgn, raIDE, myChkBox,
   ppModule, FMTBcd, osCustomDataSetProvider, SqlExpr,
   osSQLDataSetProvider, daSQl, osSQLQuery, osComboFilter, ppDBPipe, osClientDataSet,
-  acReportContainer, Forms; 
+  acReportContainer, Forms, osCustomMainFrm;
 
   type TIdade = class
   private
@@ -630,6 +630,8 @@ begin
                 end;
               end;
             end;
+            if osCustomMainForm.ShowQueryAction.Checked then
+              ShowMessage(aSQL.MagicSQLText.Text);
           end;
         end;
       end;

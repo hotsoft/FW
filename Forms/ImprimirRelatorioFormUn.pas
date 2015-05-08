@@ -35,7 +35,7 @@ var
 implementation
 
 uses osReportUtils, acCustomSQLMainDataUn, osFrm, acCustomParametroSistemaDataUn,
-  acCustomReportUn;
+  acCustomReportUn, ReportUn;
 
 {$R *.dfm}
 
