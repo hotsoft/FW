@@ -47,6 +47,7 @@ type
     SQLConnectionMeta: TosSQLConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
+    
   protected
     BD: string;
     FQueryList: TObjectList;
@@ -83,6 +84,7 @@ type
     procedure StartTransaction;
     procedure Commit;
     procedure Rollback;
+    procedure CloseTransaction;
     function GetNewID(nomeGenerator: String = ''): integer;
     function GetGeneratorValue(nomeGenerator: String): integer;
     procedure GetUserInfo(apelido: string);
@@ -522,6 +524,11 @@ begin
     FTransactionDesc.IsolationLevel := xilREADCOMMITTED;
     SQLConnection.StartTransaction(FTransactionDesc);
   end;
+end;
+
+procedure TacCustomSQLMainData.CloseTransaction;
+begin
+  SQLConnection.Close;
 end;
 
 {-------------------------------------------------------------------------
