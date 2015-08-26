@@ -35,6 +35,7 @@ procedure setHabilitaDBEdit(edt: TDBEdit; enabled: boolean);
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 procedure setHabilitaSpeedButton(btn: TSpeedButton; enabled: boolean);
 procedure setHabilitawwComboBox(comboBox: TwwDBComboBox; enabled: boolean);
+procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
 procedure setHabilitawwDateTimePicker(dateTimePicker: TwwDBDateTimePicker; enabled: boolean);
 function roundToCurr(val: double): double;
 procedure setHabilitaDBCheckBox(edtd: TDBCheckBox; enabled: boolean);
@@ -304,6 +305,20 @@ begin
   else
   begin
     comboBox.ReadOnly := true;
+    comboBox.Color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
+begin
+  if enabled then
+  begin
+    comboBox.Enabled := True;
+    comboBox.Color := clWhite;
+  end
+  else
+  begin
+    comboBox.Enabled := False;
     comboBox.Color := clBtnFace;
   end;
 end;
