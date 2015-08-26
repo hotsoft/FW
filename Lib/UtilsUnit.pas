@@ -91,7 +91,8 @@ function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS
 function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
   const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
 function isRTFValue(vValor: Variant): Boolean; //{\rtf
-function getCampoSemRTF(const vValor : Variant):String;
+function getCampoSemRTF(const vValor : Variant):String;     
+function FormataStringList(texto, delimitador: string): string;
 
 
 implementation
@@ -100,6 +101,12 @@ uses DateUtils, Variants, StatusUnit;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
+
+function FormataStringList(texto, delimitador: string): string;
+begin
+  Result := '"' + StringReplace(texto,
+    delimitador, '"' + delimitador + '"', [rfReplaceAll]) + '"';
+end;  
 
 // 20001020
 function ConverteData(data: string): TDateTime;
