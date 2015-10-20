@@ -126,7 +126,6 @@ type
     EfetuarBackupemarquivolocal1: TMenuItem;
     SaveBackupDialog: TSaveDialog;
     FFilterDepot: TacFilterController;
-    TreeView1: TTreeView;
     pnlPreviewBar: TPanel;
     spbPreviewPrint: TSpeedButton;
     spbPreviewWhole: TSpeedButton;
@@ -140,6 +139,10 @@ type
     mskPreviewPercentage: TMaskEdit;
     spbPreviewCancel: TSpeedButton;
     FReportDepot: TacReportContainer;
+    Panel1: TPanel;
+    TreeView1: TTreeView;
+    EdtPesquisa: TEdit;
+    Splitter1: TSplitter;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -190,6 +193,11 @@ type
     procedure GridCalcCellColors(Sender: TObject; Field: TField;
       State: TGridDrawState; Highlight: Boolean; AFont: TFont;
       ABrush: TBrush);
+    procedure EdtPesquisaChange(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TreeView1CustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
+    procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -216,7 +224,7 @@ type
     // e ignorar o caractere se desejado
     CtrlOrAltPressed: boolean;
     FSuperUserLogged: boolean;
-
+    FIndiceMenu : Integer;
     procedure SetEditForm(const Value: TosCustomEditForm);
     procedure SetActionDblClick(const Value: TAction);
     function GetSelectedList: TStringList;
@@ -258,6 +266,7 @@ type
     property ActionDblClick: TAction read FActionDblClick write SetActionDblClick;
     procedure ExecLastFilter;
     function getReportByResource(name: string; stream: TMemoryStream): boolean;
+    procedure PesquisaMenu(pOrigem: Integer; pIndice : Integer);
   published
     property EditForm: TosCustomEditForm read FEditForm write SetEditForm;
     property SelectedList: TStringList read GetSelectedList;
@@ -286,6 +295,7 @@ var
   vViews: variant;
 begin
   inherited;
+  FIndiceMenu := 0;
   FNewFilter := true;
   FActionDblClick := EditAction;
   FSelectedList := TStringListExt.Create;
@@ -942,6 +952,32 @@ begin
   ShowHomePage(true);
 end;
 
+procedure TosCustomMainForm.PesquisaMenu(pOrigem: Integer; pIndice : Integer);
+var
+  i,vTamanho: integer;
+  vNo: ttreenode;
+begin
+  vTamanho := length(EdtPesquisa.text);
+  if vTamanho > 3 then
+  begin
+    for i := pIndice to TreeView1.Items.Count-1 do
+    begin
+      if UpperCase(Copy(TreeView1.Items[i].Text,1,vTamanho)) = UpperCase(EdtPesquisa.text) then
+      begin
+        vNo := TreeView1.Items[i];
+        TreeView1.Select(vNo);
+        if pOrigem = 0 then        
+           break
+        else
+        begin
+          FIndiceMenu := i ;
+          pOrigem := 0;
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TosCustomMainForm.GridCalcTitleImage(Sender: TObject;
   Field: TField; var TitleImageAttributes: TwwTitleImageAttributes);
 begin
@@ -1558,6 +1594,20 @@ begin
 end;
 
 
+procedure TosCustomMainForm.EdtPesquisaChange(Sender: TObject);
+begin
+  inherited;
+  FIndiceMenu := 0;
+  Self.PesquisaMenu(0,FIndiceMenu);
+end;
+
+procedure TosCustomMainForm.EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  if key = vk_return then
+     Self.PesquisaMenu(1,FIndiceMenu+1);
+end;
+
 procedure TosCustomMainForm.EfetuarBackupemarquivolocal1Click(
   Sender: TObject);
 var
@@ -1588,6 +1638,17 @@ begin
   StatusBar.Panels[2].Text := acCustomSQLMainData.Profile;
 end;
 
+
+procedure TosCustomMainForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  if key = VK_F3 then
+  begin
+    EdtPesquisa.visible := not EdtPesquisa.Visible;
+    if EdtPesquisa.canfocus then
+      EdtPesquisa.setfocus;
+  end;
+end;
 
 procedure TosCustomMainForm.TreeView1Change(Sender: TObject;
   Node: TTreeNode);
@@ -1653,6 +1714,27 @@ begin
 
   PrintAction.Enabled := (FCurrentResource.ReportClassName <> '');
 end;
+
+procedure TosCustomMainForm.TreeView1CustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+  State: TCustomDrawState; var DefaultDraw: Boolean);
+var
+  NodeRect: TRect;
+begin
+  inherited;
+
+  if Node.Selected then
+  begin
+    Sender.Canvas.Brush.Color := clInfoBk;
+    Sender.Canvas.Font.Color  := clBlack;
+  end
+  else
+  begin
+    Sender.Canvas.Brush.Color := TTreeView(Sender).Color;
+    Sender.Canvas.Font.Color  := TTreeView(Sender).Font.Color;
+  end;
+
+end;
+
 
 procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
   Field: TField; State: TGridDrawState; Highlight: Boolean; AFont: TFont;
