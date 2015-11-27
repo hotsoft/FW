@@ -9,9 +9,9 @@ inherited osCustomMainForm: TosCustomMainForm
   Visible = True
   WindowState = wsMaximized
   OnKeyDown = FormKeyDown
-  ExplicitTop = -178
+  ExplicitTop = -54
   ExplicitWidth = 1016
-  ExplicitHeight = 691
+  ExplicitHeight = 699
   PixelsPerInch = 96
   TextHeight = 13
   object ControlBar: TControlBar [0]
@@ -300,6 +300,7 @@ inherited osCustomMainForm: TosCustomMainForm
         TabOrder = 0
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
+        OnKeyDown = TreeView1KeyDown
       end
       object EdtPesquisa: TEdit
         Left = 1

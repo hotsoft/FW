@@ -198,6 +198,7 @@ type
     procedure TreeView1CustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TreeView1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -1605,7 +1606,23 @@ procedure TosCustomMainForm.EdtPesquisaKeyDown(Sender: TObject; var Key: Word; S
 begin
   inherited;
   if key = vk_return then
-     Self.PesquisaMenu(1,FIndiceMenu+1);
+     Self.PesquisaMenu(1,FIndiceMenu+1)
+  else
+  if (key = VK_DOWN) or (key = VK_UP)  then
+  begin
+    if KEY = VK_DOWN then
+    BEGIN
+      vNo := TreeView1.Items[FIndiceMenu+1];
+      TreeView1.Select(vNo);
+      inc(FIndiceMenu);
+    END
+    else if KEY = VK_UP then
+    begin
+      vNo := TreeView1.Items[FIndiceMenu-1];
+      TreeView1.Select(vNo);
+      dec(FIndiceMenu);
+    end;
+  end;
 end;
 
 procedure TosCustomMainForm.EfetuarBackupemarquivolocal1Click(
@@ -1735,6 +1752,15 @@ begin
 
 end;
 
+
+procedure TosCustomMainForm.TreeView1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+VAR
+  i : integer;
+  vNo: ttreenode;
+begin
+  inherited;
+ 
+end;
 
 procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
   Field: TField; State: TGridDrawState; Highlight: Boolean; AFont: TFont;
