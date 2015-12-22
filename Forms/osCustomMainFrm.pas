@@ -224,6 +224,7 @@ type
     CtrlOrAltPressed: boolean;
     FSuperUserLogged: boolean;
     FIndiceMenu : Integer;
+    FUltimoIndiceMenu : Integer;
     procedure SetEditForm(const Value: TosCustomEditForm);
     procedure SetActionDblClick(const Value: TAction);
     function GetSelectedList: TStringList;
@@ -1607,7 +1608,16 @@ begin
   inherited;
   if key = vk_return then
   begin
-    Self.PesquisaMenu(1,FIndiceMenu+1)
+    if (FUltimoIndiceMenu > 0) and (FIndiceMenu = FUltimoIndiceMenu) then
+    begin
+      FIndiceMenu := 0;
+      Self.PesquisaMenu(0,FIndiceMenu);
+    end
+    else
+    begin
+      FUltimoIndiceMenu := FIndiceMenu;    
+      Self.PesquisaMenu(1,FIndiceMenu+1);
+    end;
   end
   else
   if (key = VK_DOWN) or (key = VK_UP) or (key = VK_RIGHT)  then
