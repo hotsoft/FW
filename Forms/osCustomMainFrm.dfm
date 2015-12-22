@@ -8,8 +8,9 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
-  ExplicitWidth = 1024
-  ExplicitHeight = 703
+  ExplicitTop = -30
+  ExplicitWidth = 1016
+  ExplicitHeight = 699
   PixelsPerInch = 96
   TextHeight = 13
   object ControlBar: TControlBar [0]
@@ -195,24 +196,30 @@ inherited osCustomMainForm: TosCustomMainForm
       end>
   end
   object Panel2: TPanel [2]
-    Left = 161
+    Left = 0
     Top = 37
-    Width = 847
+    Width = 1008
     Height = 589
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    object WebBrowser: TWebBrowser
-      Left = 0
+    object Splitter1: TSplitter
+      Left = 165
       Top = 33
-      Width = 847
+      Width = 4
+      Height = 556
+    end
+    object WebBrowser: TWebBrowser
+      Left = 169
+      Top = 33
+      Width = 839
       Height = 556
       Align = alClient
       TabOrder = 2
-      ExplicitWidth = 735
-      ExplicitHeight = 540
+      ExplicitLeft = 185
+      ExplicitWidth = 823
       ControlData = {
-        4C0000008A570000773900000000000000000000000000000000000000000000
+        4C000000B7560000773900000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
         2B2E12620A000000000000004C0000000114020000000000C000000000000046
         8000000000000000000000000000000000000000000000000000000000000000
@@ -221,7 +228,7 @@ inherited osCustomMainForm: TosCustomMainForm
     object ResourcePanel: TPanel
       Left = 0
       Top = 0
-      Width = 847
+      Width = 1008
       Height = 33
       Align = alTop
       Alignment = taLeftJustify
@@ -267,6 +274,42 @@ inherited osCustomMainForm: TosCustomMainForm
       OnCalcTitleImage = GridCalcTitleImage
       TitleImageList = ArrowsImageList
       PaintOptions.AlternatingRowColor = clWhite
+    end
+    object Panel1: TPanel
+      Left = 0
+      Top = 33
+      Width = 165
+      Height = 556
+      Align = alLeft
+      TabOrder = 3
+      object TreeView1: TTreeView
+        Left = 1
+        Top = 1
+        Width = 163
+        Height = 533
+        Align = alClient
+        Color = clBtnFace
+        HotTrack = True
+        Images = BarSmallImages
+        Indent = 19
+        MultiSelectStyle = [msControlSelect, msShiftSelect]
+        ShowLines = False
+        ShowRoot = False
+        StateImages = BarSmallImages
+        TabOrder = 0
+        OnChange = TreeView1Change
+        OnCustomDrawItem = TreeView1CustomDrawItem
+      end
+      object EdtPesquisa: TEdit
+        Left = 1
+        Top = 534
+        Width = 163
+        Height = 21
+        Align = alBottom
+        TabOrder = 1
+        OnChange = EdtPesquisaChange
+        OnKeyDown = EdtPesquisaKeyDown
+      end
     end
   end
   object RelatPanel: TPanel [3]
@@ -705,23 +748,6 @@ inherited osCustomMainForm: TosCustomMainForm
       end
     end
   end
-  object TreeView1: TTreeView [4]
-    Left = 0
-    Top = 37
-    Width = 161
-    Height = 589
-    Align = alLeft
-    Color = clBtnFace
-    HotTrack = True
-    Images = BarSmallImages
-    Indent = 19
-    MultiSelectStyle = [msControlSelect, msShiftSelect]
-    ShowLines = False
-    ShowRoot = False
-    StateImages = BarSmallImages
-    TabOrder = 4
-    OnChange = TreeView1Change
-  end
   inherited ActionList: TosActionList
     Images = MainImageList
     Left = 784
@@ -847,7 +873,7 @@ inherited osCustomMainForm: TosCustomMainForm
       OnExecute = LogoutActionExecute
     end
   end
-  object MainMenu: TMainMenu [6]
+  object MainMenu: TMainMenu [5]
     Left = 812
     Top = 72
     object Arquivo: TMenuItem
@@ -920,12 +946,12 @@ inherited osCustomMainForm: TosCustomMainForm
       Caption = 'Ajuda'
     end
   end
-  object FilterDatasource: TDataSource [7]
+  object FilterDatasource: TDataSource [6]
     DataSet = FilterDataset
     Left = 724
     Top = 112
   end
-  object FilterDataset: TosClientDataset [8]
+  object FilterDataset: TosClientDataset [7]
     Aggregates = <>
     FetchOnDemand = False
     Params = <>
@@ -938,7 +964,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 696
     Top = 112
   end
-  object PopupMenu: TPopupMenu [9]
+  object PopupMenu: TPopupMenu [8]
     Left = 812
     Top = 112
     object Novo1: TMenuItem
@@ -979,7 +1005,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 4
     Top = 96
     Bitmap = {
-      494C0101010004003C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101010003003C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000CECEBD00C6C6BD00C6BDB500C6BDB500C6BD
@@ -1518,7 +1544,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 36
     Top = 96
     Bitmap = {
-      494C0101010004003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101010003003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2022,7 +2048,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 279401
     PrinterSetup.mmPaperWidth = 215900
-    PrinterSetup.PaperSize = 119
+    PrinterSetup.PaperSize = 120
     Template.DatabaseSettings.DataPipeline = plItem
     Template.DatabaseSettings.NameField = 'Name'
     Template.DatabaseSettings.TemplateField = 'Template'
@@ -2095,7 +2121,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 674
     Top = 52
     Bitmap = {
-      494C01010A000E003C0016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A000C003C0016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000058000000420000000100200000000000C05A
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
