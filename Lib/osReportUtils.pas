@@ -19,7 +19,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
     function getMeses: integer;
     function getString: string;
   public
-    constructor Create(dias: integer);
+    constructor Create(dias: integer; referencia: TDateTime = 0);
     property dias: integer read getDias;
     property anos: integer read getAnos;
     property meses: integer read getMeses;
@@ -390,10 +390,13 @@ end;
 
 { TIdade }
 
-constructor TIdade.Create(dias: integer);
+constructor TIdade.Create(dias: integer; referencia: TDateTime = 0);
 begin
   Fdias := dias;
-  dataReferencia := acCustomSQLMainData.GetServerDate
+  if referencia = 0 then
+    dataReferencia := acCustomSQLMainData.GetServerDate
+  else
+    dataReferencia := referencia  
 end;
 
 function TIdade.getAnos: integer;
