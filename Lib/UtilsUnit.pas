@@ -94,7 +94,7 @@ function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; Alter
 function isRTFValue(vValor: Variant): Boolean; //{\rtf
 function getCampoSemRTF(const vValor : Variant):String;     
 function FormataStringList(texto, delimitador: string): string;
-
+procedure TrimAppMemorySize;
 
 implementation
 
@@ -1314,5 +1314,19 @@ begin
       result := sValor;
   end;
 end;
+
+procedure TrimAppMemorySize;
+var
+  MainHandle : THandle;
+begin
+  try
+    MainHandle := OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessID) ;
+    SetProcessWorkingSetSize(MainHandle, $FFFFFFFF, $FFFFFFFF) ;
+    CloseHandle(MainHandle) ;
+  except
+  end;
+  Application.ProcessMessages;
+end;
+
 
 end.
