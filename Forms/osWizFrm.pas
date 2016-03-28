@@ -34,6 +34,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
   private
+    FShowLogPage: boolean;
     FMovingForward: boolean;
     FCompleteAction: boolean;
     FMudarTela: Boolean;
@@ -51,6 +52,7 @@ type
     function PageCount : integer;
     procedure Log(const PMessage: string; const Args: array of const; const PTime: boolean = True);
     property IndexLastPage: integer read GetIndexLastPage;
+    property ShowLogPage: boolean read FShowLogPage write FShowLogPage;
     property MovingForward: boolean read FMovingForward;
     property CompleteAction: boolean read FCompleteAction write FCompleteAction;
     property MudarTela: boolean read FMudarTela write FMudarTela;
@@ -109,20 +111,23 @@ begin
   begin
     if btnAvancar.Caption = constConcluirCaption then
     begin
-      pgcWizard.Visible := False;
-      try
-        btnVoltar.Enabled := False;
-        NextPage;
-        UpdatePage;
-        btnAvancar.Enabled := False;
-        btnCancelar.Caption := constFecharCaption;
-        btnCancelar.Enabled := False;
-        WizardConclusion;
-      except
-        pgcWizard.Visible := True;
-        raise;
-      end;
-      Close;
+        pgcWizard.Visible := False;
+        try
+          btnVoltar.Enabled := False;
+          NextPage;
+          UpdatePage;
+          btnAvancar.Enabled := False;
+          btnCancelar.Caption := constFecharCaption;
+          btnCancelar.Enabled := False;
+          WizardConclusion;
+        except
+          pgcWizard.Visible := True;
+          raise;
+        end;
+        if FShowLogPage then
+          btnCancelar.Enabled := True
+        else
+          Close;
     end
     else
       NextPage;
@@ -212,6 +217,7 @@ end;
 procedure TosWizForm.FormShow(Sender: TObject);
 begin
   FMudarTela := False;
+  ShowLogPage := True;
   btnAvancar.Enabled := True;
   btnCancelar.Caption := constCancelarCaption;
   btnCancelar.Enabled := True;
