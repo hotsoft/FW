@@ -41,6 +41,8 @@ type
   protected
     procedure UpdatePage; virtual;
   public
+    FBotaoAvancar : Boolean;
+    FBotaoVoltar : Boolean;
     procedure WizardConclusion; virtual;
     procedure NextPage; virtual;
     procedure PreviousPage; virtual;
@@ -90,42 +92,52 @@ end;
 procedure TosWizForm.btnVoltarClick(Sender: TObject);
 begin
   inherited;
-  FMudarTela := True;
-  CompleteAction := True;
-  FMovingForward := False;
-  OnLeavePage.Execute;
-  if CompleteAction then
-    PreviousPage;
+  try
+    FBotaoVoltar := True;
+    FMudarTela := True;
+    CompleteAction := True;
+    FMovingForward := False;
+    OnLeavePage.Execute;
+    if CompleteAction then
+      PreviousPage;
+  finally
+    FBotaoVoltar := False  ;
+  end;
 end;
 
 procedure TosWizForm.btnAvancarClick(Sender: TObject);
 begin
   inherited;
-  FMudarTela := True;
-  CompleteAction := True;
-  FMovingForward := True;
-  OnLeavePage.Execute;
-  if CompleteAction then
-  begin
-    if btnAvancar.Caption = constConcluirCaption then
+  try
+    FBotaoAvancar := True;
+    FMudarTela := True;
+    CompleteAction := True;
+    FMovingForward := True;
+    OnLeavePage.Execute;
+    if CompleteAction then
     begin
-      pgcWizard.Visible := False;
-      try
-        btnVoltar.Enabled := False;
+      if btnAvancar.Caption = constConcluirCaption then
+      begin
+        pgcWizard.Visible := False;
+        try
+          btnVoltar.Enabled := False;
+          NextPage;
+          UpdatePage;
+          btnAvancar.Enabled := False;
+          btnCancelar.Caption := constFecharCaption;
+          btnCancelar.Enabled := False;
+          WizardConclusion;
+        except
+          pgcWizard.Visible := True;
+          raise;
+        end;
+        Close;
+      end
+      else
         NextPage;
-        UpdatePage;
-        btnAvancar.Enabled := False;
-        btnCancelar.Caption := constFecharCaption;
-        btnCancelar.Enabled := False;
-        WizardConclusion;
-      except
-        pgcWizard.Visible := True;
-        raise;
-      end;
-      Close;
-    end
-    else
-      NextPage;
+    end;
+  finally
+    FBotaoAvancar := False;
   end;
 end;
 
