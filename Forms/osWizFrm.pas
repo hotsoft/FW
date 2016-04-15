@@ -41,8 +41,6 @@ type
   protected
     procedure UpdatePage; virtual;
   public
-    FBotaoAvancar : Boolean;
-    FBotaoVoltar : Boolean;
     procedure WizardConclusion; virtual;
     procedure NextPage; virtual;
     procedure PreviousPage; virtual;
@@ -92,52 +90,42 @@ end;
 procedure TosWizForm.btnVoltarClick(Sender: TObject);
 begin
   inherited;
-  try
-    FBotaoVoltar := True;
-    FMudarTela := True;
-    CompleteAction := True;
-    FMovingForward := False;
-    OnLeavePage.Execute;
-    if CompleteAction then
-      PreviousPage;
-  finally
-    FBotaoVoltar := False  ;
-  end;
+  FMudarTela := True;
+  CompleteAction := True;
+  FMovingForward := False;
+  OnLeavePage.Execute;
+  if CompleteAction then
+    PreviousPage;
 end;
 
 procedure TosWizForm.btnAvancarClick(Sender: TObject);
 begin
   inherited;
-  try
-    FBotaoAvancar := True;
-    FMudarTela := True;
-    CompleteAction := True;
-    FMovingForward := True;
-    OnLeavePage.Execute;
-    if CompleteAction then
+  FMudarTela := True;
+  CompleteAction := True;
+  FMovingForward := True;
+  OnLeavePage.Execute;
+  if CompleteAction then
+  begin
+    if btnAvancar.Caption = constConcluirCaption then
     begin
-      if btnAvancar.Caption = constConcluirCaption then
-      begin
-        pgcWizard.Visible := False;
-        try
-          btnVoltar.Enabled := False;
-          NextPage;
-          UpdatePage;
-          btnAvancar.Enabled := False;
-          btnCancelar.Caption := constFecharCaption;
-          btnCancelar.Enabled := False;
-          WizardConclusion;
-        except
-          pgcWizard.Visible := True;
-          raise;
-        end;
-        Close;
-      end
-      else
+      pgcWizard.Visible := False;
+      try
+        btnVoltar.Enabled := False;
         NextPage;
-    end;
-  finally
-    FBotaoAvancar := False;
+        UpdatePage;
+        btnAvancar.Enabled := False;
+        btnCancelar.Caption := constFecharCaption;
+        btnCancelar.Enabled := False;
+        WizardConclusion;
+      except
+        pgcWizard.Visible := True;
+        raise;
+      end;
+      Close;
+    end
+    else
+      NextPage;
   end;
 end;
 
