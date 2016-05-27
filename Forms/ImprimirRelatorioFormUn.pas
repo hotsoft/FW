@@ -224,7 +224,8 @@ end;
 procedure TImprimirRelatorioForm.ReportPreviewFormCreate(Sender: TObject);
 begin
   inherited;
-  report.PreviewForm.WindowState := wsMaximized;
+  report.PreviewFormSettings.ZoomSetting := zs100Percent;
+  report.PreviewFormSettings.WindowState := wsMaximized;
 end;
 
 function TImprimirRelatorioForm.findComponentUserName(name: String): TComponent;
