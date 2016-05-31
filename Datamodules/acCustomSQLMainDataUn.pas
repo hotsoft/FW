@@ -79,7 +79,7 @@ type
 
     function GetNextSequence(Nome: string): integer;
     function GetServerDate: TDatetime;
-    function GetServerDatetime: TDatetime;
+    function GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
     function InTransaction: boolean;
     procedure StartTransaction;
     procedure Commit;
@@ -459,11 +459,14 @@ begin
   Result := StrToDatetime(FormatDatetime('dd/mm/yyyy', GetServerDatetime));
 end;
 
-function TacCustomSQLMainData.GetServerDatetime: TDatetime;
+function TacCustomSQLMainData.GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
 var
   Query: TosSQLQuery;
 begin
   Query := GetQuery;
+  if (aConnection <> nil) then
+    Query.SQLConnection := aConnection;
+  
   try
     with Query, Query.SQL do
     begin
