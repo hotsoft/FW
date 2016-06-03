@@ -1123,7 +1123,10 @@ begin
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      if (cdsOrigem.Fields[i] is TStringField) then
+        Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
+      
     end;
     cdsDestino.Close;
     cdsDestino.CreateDataSet;
