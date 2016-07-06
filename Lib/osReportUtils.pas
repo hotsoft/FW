@@ -544,7 +544,7 @@ begin
   case tipoIdade[1] of
     'd': fatorMult := 1;
     'm': fatorMult := 30;
-    'a': fatorMult := 360;
+    'a': fatorMult := 365;
   end;
   original := StrToInt(copy(idade, 1, length(idade)-1));
   result := original * fatorMult;

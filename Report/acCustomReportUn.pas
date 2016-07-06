@@ -552,7 +552,8 @@ end;
 
 procedure TacCustomReport.ReportPreviewFormCreate(Sender: TObject);
 begin
-  //
+  report.PreviewForm.WindowState := wsMaximized;
+  TppViewer(report.Previewform.Viewer).ZoomSetting := zs100Percent
 end;
 
 function TacCustomReport.getPaperName(printerName: String): String;

@@ -79,13 +79,13 @@ type
 
     function GetNextSequence(Nome: string): integer;
     function GetServerDate: TDatetime;
-    function GetServerDatetime: TDatetime;
+    function GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
     function InTransaction: boolean;
     procedure StartTransaction;
     procedure Commit;
     procedure Rollback;
     procedure CloseTransaction;
-    function GetNewID(nomeGenerator: String = ''): integer;
+    function GetNewID(nomeGenerator: String= ''; aConnection: TSQLConnection = nil): integer;
     function GetGeneratorValue(nomeGenerator: String): integer;
     procedure GetUserInfo(apelido: string);
 
@@ -413,7 +413,7 @@ begin
   SQLConnection.Commit(FTransactionDesc);
 end;
 
-function TacCustomSQLMainData.GetNewID(nomeGenerator: String): integer;
+function TacCustomSQLMainData.GetNewID(nomeGenerator: String= ''; aConnection: TSQLConnection = nil): integer;
 var
   v: variant;
   qryAux: TosSQLDataSet;
@@ -423,11 +423,18 @@ begin
     // Se estourou a faixa, lê um novo HighValue
     if (FIDLowValue = 10) or (FIDHighValue = -1) then
     begin
-      v := prvFilter.GetIDHigh;
-      if v = NULL then
-        raise Exception.Create('Não conseguiu obter o ID do server para inclusão');
-      FIDHighValue := v;
-      FIDLowValue := 0;
+      try
+        if (aConnection <> nil) then
+          FilterQuery.SQLConnection := aConnection;
+      
+        v := prvFilter.GetIDHigh;
+        if v = NULL then
+          raise Exception.Create('Não conseguiu obter o ID do server para inclusão');
+        FIDHighValue := v;
+        FIDLowValue := 0;
+      finally
+        FilterQuery.SQLConnection := Self.SQLConnection;
+      end;
     end;
     Result := FIDHighValue * 10 + FIDLowValue;
     Inc(FIDLowValue);
@@ -435,6 +442,8 @@ begin
   begin
     qryAux := GeTosSQLDataset;
     try
+      if (aConnection <> nil) then
+        qryAux.SQLConnection := aConnection;
       qryAux.CommandText := 'select gen_id('+nomeGenerator+', 1) from RDB$DATABASE';
       qryAux.Open;
       result := qryAux.Fields[0].AsInteger;
@@ -459,11 +468,14 @@ begin
   Result := StrToDatetime(FormatDatetime('dd/mm/yyyy', GetServerDatetime));
 end;
 
-function TacCustomSQLMainData.GetServerDatetime: TDatetime;
+function TacCustomSQLMainData.GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
 var
   Query: TosSQLQuery;
 begin
   Query := GetQuery;
+  if (aConnection <> nil) then
+    Query.SQLConnection := aConnection;
+  
   try
     with Query, Query.SQL do
     begin
