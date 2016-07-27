@@ -9,6 +9,7 @@ uses
   osSQLConnection, osSQLQuery, WinSock;
 
 type
+  TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
   varArrayOfcomps = array of TComponent;
 
   TFuncaoParametroGetDesc = function(const vValor : Variant) : string;
