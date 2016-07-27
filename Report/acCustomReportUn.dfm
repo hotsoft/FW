@@ -2,8 +2,6 @@ object acCustomReport: TacCustomReport
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Left = 505
-  Top = 393
   Height = 208
   Width = 206
   object FilterDatasource: TDataSource
@@ -58,7 +56,7 @@ object acCustomReport: TacCustomReport
     PDFSettings.FontEncoding = feAnsi
     PDFSettings.ImageCompressionLevel = 25
     PreviewFormSettings.WindowState = wsMaximized
-    PreviewFormSettings.ZoomSetting = zsPageWidth
+    PreviewFormSettings.ZoomSetting = zs100Percent
     RTFSettings.DefaultFont.Charset = DEFAULT_CHARSET
     RTFSettings.DefaultFont.Color = clWindowText
     RTFSettings.DefaultFont.Height = -13
@@ -73,7 +71,7 @@ object acCustomReport: TacCustomReport
     XLSSettings.Title = 'Report'
     Left = 128
     Top = 96
-    Version = '15.01'
+    Version = '15.0'
     mmColumnWidth = 188914
     object Detail: TppDetailBand
       Background1.Brush.Style = bsClear

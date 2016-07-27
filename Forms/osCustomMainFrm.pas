@@ -313,42 +313,47 @@ begin
     Width := 0;
     Height := 0;
     Application.Terminate;
+    Application.ProcessMessages;
   end;
-  Grid.Align := alClient;
-  RelatPanel.Align := alClient;
 
-//preparar a abertura dos reports
-//verificar se vale a pena manter uma SQLConnection só para os relatórios
-  SQLConnection.Close;
-  with TStringList.Create do
+  if (not Application.Terminated) then
   begin
-    try
-      LoadFromFile('AppParams.ini');
-      for i := 0 to Count - 1 do
-      begin
-        sName := Names[i];
-        SQLConnection.Params.Values[sName] := Values[sName];
-      end;
-      if SQLConnection.Params.Values['DataBaseMeta']<>'' then
-        SQLConnection.Params.Values['Database'] :=
-          SQLConnection.Params.Values['DatabaseMeta'];
-    finally
-      Free;
-    end;
-  end;
+    Grid.Align := alClient;
+    RelatPanel.Align := alClient;
 
-  //TTMCI
-  //para buscar os metadados dos filtros usar o SQLConnection de metadados
-  acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
-  qry := acCustomSQLMainData.GetQuery;
-  try
-    qry.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
-    qry.SQL.Text := 'SELECT NAME FROM XFILTERDEF';
-    qry.Open;
-    qry.First;
-  finally
-    FreeAndNil(qry);
-    acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnection;
+  //preparar a abertura dos reports
+  //verificar se vale a pena manter uma SQLConnection só para os relatórios
+    SQLConnection.Close;
+    with TStringList.Create do
+    begin
+      try
+        LoadFromFile('AppParams.ini');
+        for i := 0 to Count - 1 do
+        begin
+          sName := Names[i];
+          SQLConnection.Params.Values[sName] := Values[sName];
+        end;
+        if SQLConnection.Params.Values['DataBaseMeta']<>'' then
+          SQLConnection.Params.Values['Database'] :=
+            SQLConnection.Params.Values['DatabaseMeta'];
+      finally
+        Free;
+      end;
+    end;
+
+    //TTMCI
+    //para buscar os metadados dos filtros usar o SQLConnection de metadados
+    acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
+    qry := acCustomSQLMainData.GetQuery;
+    try
+      qry.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
+      qry.SQL.Text := 'SELECT NAME FROM XFILTERDEF';
+      qry.Open;
+      qry.First;
+    finally
+      FreeAndNil(qry);
+      acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnection;
+    end;
   end;
 end;
 
