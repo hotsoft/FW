@@ -578,19 +578,22 @@ end;
 procedure TacCustomSQLMainData.UpdateVersion(PTableName: string);
 var
   Query: TosSQLQuery;
+  _Versao: integer;
 begin
   Query := GetQuery;
   try
-    with Query, Query.SQL do
-    begin
-      Text :=
-      'UPDATE ' +
-        'VersaoTabela ' +
-      'SET Versao = Versao + 1' +
-      'WHERE ' +
-        'NomeTabela = ' + QuotedStr(PTableName);
-      ExecSql;
-    end;
+    Query.SQL.Text := Format('SELECT Versao FROM VersaoTabela WHERE nomeTabela = %s', [QuotedStr(PTableName)]);
+    Query.Open;
+    _Versao := 1;
+    if (not Query.IsEmpty) then
+      _Versao := Query.FieldByName('Versao').AsInteger + 1;
+    
+    Query.SQL.Text := Format(
+    'UPDATE OR INSERT INTO ' +
+    ' VersaoTabela (nometabela, Versao) ' +
+    ' VALUES (%s,  %d) ' +
+    ' MATCHING (nomeTabela) ', [QuotedStr(PTableName), _Versao]);
+    Query.ExecSql;
   finally
     FreeQuery(Query);
   end;
