@@ -31,25 +31,24 @@ object acCustomSQLMainData: TacCustomSQLMainData
     Top = 96
   end
   object SQLConnection: TosSQLConnection
-    ConnectionName = 'IBLocal'
+    ConnectionName = 'IBConnection'
     DriverName = 'Interbase'
     LoginPrompt = False
     Params.Strings = (
-      'BlobSize=32'
-      'CommitRetain='
-      
-        'Database=localhost:C:\projetos\clientes\labmaster\DB\cli\LabMast' +
-        'er.GDB'
       'DriverName=Interbase'
-      'ErrorResourceFile='
-      'LocaleCode='
+      'Database=database.gdb'
+      'RoleName=RoleName'
+      'User_Name=sysdba'
       'Password=masterkey'
-      'RoleName='
       'ServerCharSet='
       'SQLDialect=3'
-      'Interbase TransIsolation='
-      'User_Name=SYSDBA'
-      'WaitOnLocks=')
+      'ErrorResourceFile='
+      'LocaleCode=0000'
+      'BlobSize=-1'
+      'CommitRetain=False'
+      'WaitOnLocks=True'
+      'IsolationLevel=ReadCommitted'
+      'Trim Char=False')
     Left = 100
     Top = 80
   end
