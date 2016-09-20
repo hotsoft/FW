@@ -9,7 +9,7 @@ uses
   ppModule, raCodMod, ppMemo, ppVar, ppBands, ppStrtch, ppSubRpt, ppCtrls,
   ppPrnabl, ppCache, ppDB, ppDBPipe, ppTypes, Forms, ppViewr, daSQl,
   daDataModule, daQueryDataView, TypInfo, Printers,
-  ppPDFDevice, ppPrintr, ppParameter, ppArchiv;
+  ppPDFDevice, ppPrintr, ppParameter, ppArchiv, System.Zlib;
 
 type
   TTipoAdendo = (taWHERE, taORDER);
@@ -216,6 +216,7 @@ begin
         end;
         FPDFDevice.FileName := FTextFileName;
         FPDFDevice.Publisher := Report.Publisher;
+        Report.PDFSettings.UseJPEGCompression := False;
         FPDFDevice.PDFSettings := Report.PDFSettings;
       end
       else if FPrintToStream then
