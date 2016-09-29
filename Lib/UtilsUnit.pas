@@ -1028,9 +1028,9 @@ var
   richEdit: TRichEdit;
   ss: TStringStream;
 begin
-  try
-    if not isRTFValue(Texto) then
-    begin   
+  if not isRTFValue(Texto) then
+  begin 
+    try
       ss := TStringStream.Create(Texto);
       form := TForm.Create(nil);
       richEdit := TRichEdit.Create(form);
@@ -1039,11 +1039,11 @@ begin
       richEdit.PlainText := False;
       richEdit.Lines.SaveToStream(ss);
       Result :=  ss.DataString;
+    finally
+      FreeAndNil(ss);
+      FreeAndNil(richEdit);
+      FreeAndNil(form);
     end;
-  finally
-    FreeAndNil(ss);
-    FreeAndNil(richEdit);
-    FreeAndNil(form);
   end;
 end;
 
