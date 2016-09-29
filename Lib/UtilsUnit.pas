@@ -1029,14 +1029,17 @@ var
   ss: TStringStream;
 begin
   try
-    ss := TStringStream.Create(Texto);
-    form := TForm.Create(nil);
-    richEdit := TRichEdit.Create(form);
-    richEdit.Parent := form;
-    richEdit.Text:= Texto;
-    richEdit.PlainText := False;
-    richEdit.Lines.SaveToStream(ss);
-    Result :=  ss.DataString;
+    if not isRTFValue(Texto) then
+    begin   
+      ss := TStringStream.Create(Texto);
+      form := TForm.Create(nil);
+      richEdit := TRichEdit.Create(form);
+      richEdit.Parent := form;
+      richEdit.Text:= Texto;
+      richEdit.PlainText := False;
+      richEdit.Lines.SaveToStream(ss);
+      Result :=  ss.DataString;
+    end;
   finally
     FreeAndNil(ss);
     FreeAndNil(richEdit);
