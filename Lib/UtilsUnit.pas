@@ -96,6 +96,7 @@ function isRTFValue(vValor: Variant): Boolean; //{\rtf
 function getCampoSemRTF(const vValor : Variant):String;     
 function FormataStringList(texto, delimitador: string): string;
 procedure TrimAppMemorySize;
+function ApenasLetrasNumeros(nStr:String): String;
 
 implementation
 
@@ -103,6 +104,17 @@ uses DateUtils, Variants, StatusUnit;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
+
+
+function ApenasLetrasNumeros(nStr:String): String;
+Var
+   I: Integer;
+begin
+  Result := '';
+  for I := 1 to Length(nStr) do
+    if nStr[I] in['0'..'9','a'..'z','A'..'Z',Chr(8)] then
+       Result := Result + nStr[I]; 
+end;   
 
 function FormataStringList(texto, delimitador: string): string;
 begin
