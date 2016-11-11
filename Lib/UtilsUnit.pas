@@ -97,6 +97,7 @@ function getCampoSemRTF(const vValor : Variant):String;
 function FormataStringList(texto, delimitador: string): string;
 procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
+function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 
 implementation
 
@@ -1347,5 +1348,10 @@ begin
   Application.ProcessMessages;
 end;
 
+function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
+begin
+  Result := Trim(Valor);
+  Result := DupeString('0',Tamanho - Length(Result)) + Result;
+end;
 
 end.
