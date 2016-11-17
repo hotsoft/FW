@@ -98,6 +98,7 @@ function FormataStringList(texto, delimitador: string): string;
 procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
+function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 
 implementation
 
@@ -1352,6 +1353,17 @@ function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 begin
   Result := Trim(Valor);
   Result := DupeString('0',Tamanho - Length(Result)) + Result;
+end;
+
+function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := Result + ' ';  
+  Result := Valor + Result ;
 end;
 
 end.
