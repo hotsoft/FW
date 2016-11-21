@@ -96,6 +96,9 @@ function isRTFValue(vValor: Variant): Boolean; //{\rtf
 function getCampoSemRTF(const vValor : Variant):String;     
 function FormataStringList(texto, delimitador: string): string;
 procedure TrimAppMemorySize;
+function ApenasLetrasNumeros(nStr:String): String;
+function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
+function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 
 implementation
 
@@ -103,6 +106,17 @@ uses DateUtils, Variants, StatusUnit;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
+
+
+function ApenasLetrasNumeros(nStr:String): String;
+Var
+   I: Integer;
+begin
+  Result := '';
+  for I := 1 to Length(nStr) do
+    if nStr[I] in['0'..'9','a'..'z','A'..'Z',Chr(8)] then
+       Result := Result + nStr[I]; 
+end;   
 
 function FormataStringList(texto, delimitador: string): string;
 begin
@@ -1028,19 +1042,22 @@ var
   richEdit: TRichEdit;
   ss: TStringStream;
 begin
-  try
-    ss := TStringStream.Create(Texto);
-    form := TForm.Create(nil);
-    richEdit := TRichEdit.Create(form);
-    richEdit.Parent := form;
-    richEdit.Text:= Texto;
-    richEdit.PlainText := False;
-    richEdit.Lines.SaveToStream(ss);
-    Result :=  ss.DataString;
-  finally
-    FreeAndNil(ss);
-    FreeAndNil(richEdit);
-    FreeAndNil(form);
+  if not isRTFValue(Texto) then
+  begin 
+    try
+      ss := TStringStream.Create(Texto);
+      form := TForm.Create(nil);
+      richEdit := TRichEdit.Create(form);
+      richEdit.Parent := form;
+      richEdit.Text:= Texto;
+      richEdit.PlainText := False;
+      richEdit.Lines.SaveToStream(ss);
+      Result :=  ss.DataString;
+    finally
+      FreeAndNil(ss);
+      FreeAndNil(richEdit);
+      FreeAndNil(form);
+    end;
   end;
 end;
 
@@ -1332,5 +1349,21 @@ begin
   Application.ProcessMessages;
 end;
 
+function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
+begin
+  Result := Trim(Valor);
+  Result := DupeString('0',Tamanho - Length(Result)) + Result;
+end;
+
+function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := Result + ' ';  
+  Result := Valor + Result ;
+end;
 
 end.
