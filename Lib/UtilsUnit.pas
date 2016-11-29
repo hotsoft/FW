@@ -15,7 +15,7 @@ type
   TFuncaoParametroGetDesc = function(const vValor : Variant) : string;
 
   THSHash = class
-    class function CalculaHash(conteudo: string): string;
+    class function CalculaHash(conteudo: string; pDig : Integer = 2): string;
     class function GeraHashPCMed(linha: string): string;
   end;
 
@@ -980,7 +980,7 @@ begin
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
-class function THSHash.CalculaHash(conteudo: string): string;
+class function THSHash.CalculaHash(conteudo: string; pDig : Integer = 2): string;
 var
   sum, i : Integer;
   HFrame : string;
@@ -990,7 +990,7 @@ begin
   begin
     sum := sum + Ord(conteudo[i]);
   end;
-  HFrame := IntToHex(sum mod 256,2);
+  HFrame := IntToHex(sum mod 256,pDig);
 
   if (Length(HFrame) < 2) then
   HFrame := '0' + HFrame;
