@@ -16,7 +16,7 @@ uses
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
-  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions;
+  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -143,6 +143,10 @@ type
     TreeView1: TTreeView;
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
+    edtLimit: TSpinEdit;
+    Label1: TLabel;
+    tbrSkip: TToolBar;
+    SkipButton: TToolButton;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -197,7 +201,9 @@ type
     procedure TreeView1CustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure SkipButtonClick(Sender: TObject);
   private
+    FSkip: Boolean;
     FNewFilter: boolean;
     FUserName: string;
     FEditForm: TosCustomEditForm;
@@ -541,8 +547,17 @@ procedure TosCustomMainForm.FilterActionExecute(Sender: TObject);
 var
   sent: string;
   data: oleVariant;
+  NewFilter : Boolean;
 begin
   inherited;
+  NewFilter := False;
+  if TComponent(Sender).Name <> 'SkipButton' then
+  begin
+    FSkip := False;
+    NewFilter := True;
+    //SkipButton.Enabled := True;
+    //Edtlimit.Enabled := True;
+  end;
   data := FilterDataset.data;
   FModifiedList.Clear;
   if Assigned(FCurrentResource) then
@@ -553,13 +568,19 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        sent := ConsultaCombo.ExecuteFilter;
+        sent := ConsultaCombo.ExecuteFilter(NewFilter, Edtlimit.Value, FSkip);
         if sent = '' then
         begin
           FilterDataset.data := data;
           ConsultaCombo.ConfigFields(ConsultaCombo.ItemIndex);
         end;
       end;
+      {if FilterDataset.RecordCount <= edtLimit.Value then
+      begin
+        SkipButton.Enabled := False;
+        Edtlimit.Enabled := False;
+      end;}
+      
 
       FIDField := FilterDataset.Fields.FindField('ID');
       CheckMultiSelection;
@@ -583,7 +604,7 @@ begin
   Screen.Cursor := crHourglass;
   try
     FilterDataset.Close;
-    ConsultaCombo.ExecuteFilter(FNewFilter);
+    ConsultaCombo.ExecuteFilter(FNewFilter, edtLimit.Value, FSkip);
     FNewFilter := false;
     FIDField := FilterDataset.Fields.FindField('ID');
     CheckMultiSelection;
@@ -724,6 +745,13 @@ procedure TosCustomMainForm.ShowQueryActionExecute(Sender: TObject);
 begin
   inherited;
   ShowQueryAction.Checked := not ShowQueryAction.Checked;
+end;
+
+procedure TosCustomMainForm.SkipButtonClick(Sender: TObject);
+begin
+  inherited;
+  FSkip := True;
+  FilterActionExecute(SkipButton);
 end;
 
 procedure TosCustomMainForm.ResourceClick(Sender: TObject);
