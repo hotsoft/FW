@@ -26,7 +26,7 @@ object acCustomSQLMainData: TacCustomSQLMainData
   end
   object prvFilter: TosSQLDataSetProvider
     DataSet = FilterQuery
-    Options = [poReadOnly, poNoReset, poAllowCommandText]
+    Options = [poReadOnly, poAllowCommandText]
     Left = 348
     Top = 96
   end

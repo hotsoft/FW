@@ -202,8 +202,8 @@ type
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SkipButtonClick(Sender: TObject);
+    procedure edtLimitChange(Sender: TObject);
   private
-    FSkip: Boolean;
     FNewFilter: boolean;
     FUserName: string;
     FEditForm: TosCustomEditForm;
@@ -243,6 +243,7 @@ type
     procedure checkOperations;
 
     procedure adjustReportZoom;
+    procedure AtualizaPanelRecordCount;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -547,17 +548,8 @@ procedure TosCustomMainForm.FilterActionExecute(Sender: TObject);
 var
   sent: string;
   data: oleVariant;
-  NewFilter : Boolean;
 begin
   inherited;
-  NewFilter := False;
-  if TComponent(Sender).Name <> 'SkipButton' then
-  begin
-    FSkip := False;
-    NewFilter := True;
-    //SkipButton.Enabled := True;
-    //Edtlimit.Enabled := True;
-  end;
   data := FilterDataset.data;
   FModifiedList.Clear;
   if Assigned(FCurrentResource) then
@@ -568,19 +560,13 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        sent := ConsultaCombo.ExecuteFilter(NewFilter, Edtlimit.Value, FSkip);
+        sent := ConsultaCombo.ExecuteFilter();
         if sent = '' then
         begin
           FilterDataset.data := data;
           ConsultaCombo.ConfigFields(ConsultaCombo.ItemIndex);
         end;
       end;
-      {if FilterDataset.RecordCount <= edtLimit.Value then
-      begin
-        SkipButton.Enabled := False;
-        Edtlimit.Enabled := False;
-      end;}
-      
 
       FIDField := FilterDataset.Fields.FindField('ID');
       CheckMultiSelection;
@@ -604,7 +590,7 @@ begin
   Screen.Cursor := crHourglass;
   try
     FilterDataset.Close;
-    ConsultaCombo.ExecuteFilter(FNewFilter, edtLimit.Value, FSkip);
+    ConsultaCombo.ExecuteFilter(FNewFilter);
     FNewFilter := false;
     FIDField := FilterDataset.Fields.FindField('ID');
     CheckMultiSelection;
@@ -613,10 +599,15 @@ begin
   end;
 end;
 
+procedure TosCustomMainForm.AtualizaPanelRecordCount;
+begin
+  StatusBar.Panels[0].Text := Format('%d/%d', [FilterDataset.RecNo, FilterDataset.RecordCount]);
+end;
+
 procedure TosCustomMainForm.FilterDatasetAfterScroll(DataSet: TDataSet);
 begin
   inherited;
-  StatusBar.Panels[0].Text := Format('%d/%d', [FilterDataset.RecNo, FilterDataset.RecordCount]);
+  Self.AtualizaPanelRecordCount;
   OnCheckActionsAction.Execute;
 
   // Toda vez que um registro for selecionado manualmente pelo usuário a string
@@ -750,8 +741,11 @@ end;
 procedure TosCustomMainForm.SkipButtonClick(Sender: TObject);
 begin
   inherited;
-  FSkip := True;
-  FilterActionExecute(SkipButton);
+  if FilterDataSet.Active then
+  begin
+    FilterDataSet.GetNextPacket;
+    Self.AtualizaPanelRecordCount;
+  end;
 end;
 
 procedure TosCustomMainForm.ResourceClick(Sender: TObject);
@@ -1627,6 +1621,12 @@ begin
 end;
 
 
+procedure TosCustomMainForm.edtLimitChange(Sender: TObject);
+begin
+  inherited;
+  FilterDataSet.PacketRecords := edtLimit.Value;
+end;
+
 procedure TosCustomMainForm.EdtPesquisaChange(Sender: TObject);
 begin
   inherited;
@@ -1708,6 +1708,8 @@ begin
   FSuperUserName := 'FWSuperUser';
 
   StatusBar.Panels[2].Text := acCustomSQLMainData.Profile;
+
+  FilterDataSet.PacketRecords := edtLimit.Value;
 end;
 
 
