@@ -16,7 +16,10 @@ uses
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
-  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin;
+  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, cxGraphics,
+  cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxStyles, cxCustomData, cxFilter, cxData,
+  cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, cxLocalization;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -147,6 +150,11 @@ type
     Label1: TLabel;
     tbrSkip: TToolBar;
     SkipButton: TToolButton;
+    DevGrid: TcxGrid;
+    TvGrid: TcxGridDBTableView;
+    LvGrid: TcxGridLevel;
+    ChDev: TCheckBox;
+    Tradutor: TcxLocalizer;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -168,7 +176,6 @@ type
     procedure GridCalcTitleImage(Sender: TObject; Field: TField;
       var TitleImageAttributes: TwwTitleImageAttributes);
     procedure GridTitleButtonClick(Sender: TObject; AFieldName: String);
-    procedure FilterDatasetBeforeClose(DataSet: TDataSet);
     procedure PrintFilterActionExecute(Sender: TObject);
     procedure LoginActionExecute(Sender: TObject);
     procedure LogoutActionExecute(Sender: TObject);
@@ -202,6 +209,8 @@ type
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SkipButtonClick(Sender: TObject);
+    procedure ChDevClick(Sender: TObject);
+    procedure FilterDatasetBeforeClose(DataSet: TDataSet);
   private
     FSkip: Boolean;
     FNewFilter: boolean;
@@ -325,6 +334,7 @@ begin
   if (not Application.Terminated) then
   begin
     Grid.Align := alClient;
+    DevGrid.Align := alClient;
     RelatPanel.Align := alClient;
 
   //preparar a abertura dos reports
@@ -361,6 +371,18 @@ begin
       acCustomSQLMainData.FilterQuery.SQLConnection := acCustomSQLMainData.SQLConnection;
     end;
   end;
+end;
+
+
+procedure TosCustomMainForm.FilterDatasetBeforeClose(DataSet: TDataSet);
+begin
+  inherited;
+  // Limpa o nome do índice porque os índices se tornam inválidos quando o
+  // dataset é fechado
+  FilterDataset.IndexName := '';
+
+  // SortField conterá um endereço inválido aqui
+  SortField := nil;
 end;
 
 procedure TosCustomMainForm.EditActionExecute(Sender: TObject);
@@ -469,6 +491,12 @@ begin
 
   // Redesenha o grid para que seja mostrada a seta na coluna apropriada
   Grid.RedrawGrid;
+  DevGrid.Repaint;    //fabiano
+  TvGrid.DataController.CreateAllItems(True);
+
+  TvGrid.GetColumnByFieldName('ID').Visible := False;
+
+  TvGrid.DataController.Summary.FooterSummaryValues[0] := TvGrid.DataController.RecordCount;
 end;
 
 procedure TosCustomMainForm.SetActionDblClick(const Value: TAction);
@@ -480,6 +508,21 @@ procedure TosCustomMainForm.GridDblClick(Sender: TObject);
 begin
   inherited;
   ActionDblClick.Execute;
+end;
+
+procedure TosCustomMainForm.ChDevClick(Sender: TObject);
+begin
+  inherited;
+  if ChDev.Checked then
+  begin
+     DevGrid.Visible := True;
+     Grid.Visible := False;
+  end
+  else
+  begin
+     DevGrid.Visible := False;
+     Grid.Visible := True;
+  end;
 end;
 
 procedure TosCustomMainForm.CheckActionsExecute(Sender: TObject);
@@ -731,6 +774,7 @@ begin
   end;
 end;
 
+
 procedure TosCustomMainForm.FilterDatasetBeforeOpen(DataSet: TDataSet);
 begin
   inherited;
@@ -961,6 +1005,7 @@ begin
   FilterDataset.Close;
   StatusBar.Panels[0].Text := '';
   Grid.Visible := False;
+  DevGrid.Visible := False; //fabiano
   RelatPanel.Visible := False;
   controlActions(false);
   ResourcePanel.Visible := false;
@@ -972,6 +1017,7 @@ end;
 procedure TosCustomMainForm.HideHomePage(tipo: TTipoExibicao);
 begin
   Grid.Visible := tipo = teGrid;
+  DevGrid.Visible := tipo = teGrid;// fabiano
   RelatPanel.Visible := tipo = teRelat;
   if tipo=teRelat then
     controlActions(false);
@@ -1045,6 +1091,7 @@ begin
   // que este evento será disparado apenas quando o dataset estiver aberto e com
   // fields válidos)
   Field := Grid.DataSource.DataSet.FieldByName(AFieldName);
+
   // Se o usuário clicou no mesmo field de antes então...
   if Field = SortField then
     // ... muda o sentido da seta
@@ -1058,8 +1105,6 @@ begin
     AscendingSort := True;
     Grid.RedrawGrid;
   end;
-
-
 
   // Apaga o índice atual
   if FilterDataset.IndexFieldCount > 0 then
@@ -1077,17 +1122,6 @@ begin
   // Define o nome do índice e ordena novamente o dataset (caso já seja aquele
   // o nome do índice)
   FilterDataset.IndexName := SortIndexName;
-end;
-
-procedure TosCustomMainForm.FilterDatasetBeforeClose(DataSet: TDataSet);
-begin
-  inherited;
-  // Limpa o nome do índice porque os índices se tornam inválidos quando o
-  // dataset é fechado
-  FilterDataset.IndexName := '';
-
-  // SortField conterá um endereço inválido aqui
-  SortField := nil;
 end;
 
 function TosCustomMainForm.Login: boolean;
@@ -1708,6 +1742,15 @@ begin
   FSuperUserName := 'FWSuperUser';
 
   StatusBar.Panels[2].Text := acCustomSQLMainData.Profile;
+
+  // VERIFICA SE EXISTE O ARQUIVO DENTRO DA PASTA
+  if FileExists(ExtractFilePath(Application.ExeName)+'\Tradutor.INI') then
+  begin
+    Tradutor.LoadFromFile(ExtractFilePath(Application.ExeName)+ '\Tradutor.INI');
+    Tradutor.LanguageIndex := 1; // MUDA DE LINGUAGEM
+    Tradutor.Active := TRUE;     // ATIVA O COMPONENTE
+  end;
+
 end;
 
 

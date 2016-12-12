@@ -8,8 +8,8 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
-  ExplicitWidth = 1016
-  ExplicitHeight = 699
+  ExplicitWidth = 1024
+  ExplicitHeight = 704
   PixelsPerInch = 96
   TextHeight = 13
   object ControlBar: TControlBar [0]
@@ -280,10 +280,19 @@ inherited osCustomMainForm: TosCustomMainForm
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 1
+      object ChDev: TCheckBox
+        Left = 856
+        Top = 10
+        Width = 138
+        Height = 17
+        Caption = 'DevExpress'
+        TabOrder = 0
+        OnClick = ChDevClick
+      end
     end
     object Grid: TwwDBGrid
-      Left = 56
-      Top = 46
+      Left = 59
+      Top = 39
       Width = 389
       Height = 283
       IniAttributes.FileName = 'LabMaster.ini.ini'
@@ -347,6 +356,39 @@ inherited osCustomMainForm: TosCustomMainForm
         TabOrder = 1
         OnChange = EdtPesquisaChange
         OnKeyDown = EdtPesquisaKeyDown
+      end
+    end
+    object DevGrid: TcxGrid
+      Left = 117
+      Top = 6
+      Width = 250
+      Height = 200
+      TabOrder = 4
+      Visible = False
+      object TvGrid: TcxGridDBTableView
+        Navigator.Buttons.CustomButtons = <>
+        DataController.DataSource = FilterDatasource
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.MultiSelect = True
+        OptionsView.ColumnAutoWidth = True
+        OptionsView.Footer = True
+        OptionsView.FooterAutoHeight = True
+        OptionsView.FooterMultiSummaries = True
+        OptionsView.GroupFooterMultiSummaries = True
+        OptionsView.GroupFooters = gfAlwaysVisible
+        OptionsView.GroupRowStyle = grsOffice11
+        OptionsView.GroupSummaryLayout = gslAlignWithColumns
+        OptionsView.RowSeparatorColor = clGradientActiveCaption
+      end
+      object LvGrid: TcxGridLevel
+        GridView = TvGrid
       end
     end
   end
@@ -1043,7 +1085,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 4
     Top = 96
     Bitmap = {
-      494C0101010003003C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000300440020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000CECEBD00C6C6BD00C6BDB500C6BDB500C6BD
@@ -1582,7 +1624,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 36
     Top = 96
     Bitmap = {
-      494C0101010003003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000300440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1753,7 +1795,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 144
     Top = 240
     Bitmap = {
-      494C0101020004003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1903,7 +1945,7 @@ inherited osCustomMainForm: TosCustomMainForm
     DataPipeline = ppDBPipeline
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'A4'
+    PrinterSetup.PaperName = 'A4 (210 x 297 mm)'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -2077,7 +2119,7 @@ inherited osCustomMainForm: TosCustomMainForm
     AutoStop = False
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Letter'
+    PrinterSetup.PaperName = 'Carta (8,5 x 11 pol.; 216 x 279 mm)'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -2159,7 +2201,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 674
     Top = 52
     Bitmap = {
-      494C01010B000C003C0016001600FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C01010B000C00440016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000058000000420000000100200000000000C05A
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2914,7 +2956,7 @@ inherited osCustomMainForm: TosCustomMainForm
       00080003C0003F0080003C0000080003C0003F0080003C0000080003C0007F00
       80003C0000080003C0007F0080007C0000080007C0007F008000FC000008000F
       C000FF008001FC000008001FE000FF008003FC000008003FF001FF008007FC00
-      0008007FF807FF00}
+      0008007FF807FF0000000000000000000000000000000000000000000000}
   end
   object SQLConnection: TSQLConnection
     ConnectionName = 'IBLocal'
@@ -2950,5 +2992,10 @@ inherited osCustomMainForm: TosCustomMainForm
   object FReportDepot: TacReportContainer
     Left = 905
     Top = 37
+  end
+  object Tradutor: TcxLocalizer
+    FileName = 'C:\repositorio\lm\bin\Tradutor.INI'
+    Left = 320
+    Top = 85
   end
 end
