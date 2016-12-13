@@ -367,10 +367,12 @@ inherited osCustomMainForm: TosCustomMainForm
       Visible = False
       object TvGrid: TcxGridDBTableView
         Navigator.Buttons.CustomButtons = <>
+        OnCustomDrawCell = TvGridCustomDrawCell
         DataController.DataSource = FilterDatasource
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnHiding = True
         OptionsData.CancelOnExit = False
         OptionsData.Deleting = False
         OptionsData.DeletingConfirmation = False
@@ -382,7 +384,7 @@ inherited osCustomMainForm: TosCustomMainForm
         OptionsView.FooterAutoHeight = True
         OptionsView.FooterMultiSummaries = True
         OptionsView.GroupFooterMultiSummaries = True
-        OptionsView.GroupFooters = gfAlwaysVisible
+        OptionsView.GroupFooters = gfVisibleWhenExpanded
         OptionsView.GroupRowStyle = grsOffice11
         OptionsView.GroupSummaryLayout = gslAlignWithColumns
         OptionsView.RowSeparatorColor = clGradientActiveCaption
@@ -2995,7 +2997,7 @@ inherited osCustomMainForm: TosCustomMainForm
   end
   object Tradutor: TcxLocalizer
     FileName = 'C:\repositorio\lm\bin\Tradutor.INI'
-    Left = 320
-    Top = 85
+    Left = 520
+    Top = 37
   end
 end

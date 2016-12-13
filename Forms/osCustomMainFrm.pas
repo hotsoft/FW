@@ -211,6 +211,8 @@ type
     procedure SkipButtonClick(Sender: TObject);
     procedure ChDevClick(Sender: TObject);
     procedure FilterDatasetBeforeClose(DataSet: TDataSet);
+    procedure TvGridCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     FSkip: Boolean;
     FNewFilter: boolean;
@@ -492,11 +494,12 @@ begin
   // Redesenha o grid para que seja mostrada a seta na coluna apropriada
   Grid.RedrawGrid;
   DevGrid.Repaint;    //fabiano
+  TvGrid.DataController.ClearDetails;
   TvGrid.DataController.CreateAllItems(True);
 
   TvGrid.GetColumnByFieldName('ID').Visible := False;
 
-  TvGrid.DataController.Summary.FooterSummaryValues[0] := TvGrid.DataController.RecordCount;
+  TvGrid.DataController.Summary.FooterSummaryValues[1] := TvGrid.DataController.RecordCount;
 end;
 
 procedure TosCustomMainForm.SetActionDblClick(const Value: TAction);
@@ -1838,6 +1841,17 @@ begin
 end;
 
 
+
+procedure TosCustomMainForm.TvGridCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+begin
+  inherited;
+   if AViewInfo.GridRecord.Selected then
+   begin
+     ACanvas.Brush.Color := clScrollBar; //ACanvas.Font.Color;
+     ACanvas.Font.Color  := clWhite;
+   end;
+end;
 
 procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
   Field: TField; State: TGridDrawState; Highlight: Boolean; AFont: TFont;
