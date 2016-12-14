@@ -19,7 +19,9 @@ uses
   acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, cxGraphics,
   cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxStyles, cxCustomData, cxFilter, cxData,
   cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
-  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, cxLocalization;
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, cxLocalization, cxDBLookupComboBox,
+  cxCalendar, cxTimeEdit, cxImageComboBox, cxCalc, cxBlobEdit, cxSpinEdit, cxGridCustomPopupMenu,
+  cxGridPopupMenu, cxGridCardView, SkinDemoUtils;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -150,11 +152,41 @@ type
     Label1: TLabel;
     tbrSkip: TToolBar;
     SkipButton: TToolButton;
+    ChDev: TCheckBox;
+    Tradutor: TcxLocalizer;
+    StyleRepository: TcxStyleRepository;
+    cxStyle1: TcxStyle;
+    cxStyle2: TcxStyle;
+    cxStyle3: TcxStyle;
+    cxStyle4: TcxStyle;
+    cxStyle5: TcxStyle;
+    cxStyle6: TcxStyle;
+    cxStyle7: TcxStyle;
+    cxStyle8: TcxStyle;
+    cxStyle9: TcxStyle;
+    cxStyle10: TcxStyle;
+    cxStyle11: TcxStyle;
+    cxStyle12: TcxStyle;
+    cxStyle13: TcxStyle;
+    cxStyle14: TcxStyle;
+    cxStyle15: TcxStyle;
+    cxStyle16: TcxStyle;
+    cxStyle17: TcxStyle;
+    cxStyle18: TcxStyle;
+    cxStyle19: TcxStyle;
+    cxStyle20: TcxStyle;
+    cxStyle21: TcxStyle;
+    cxStyle22: TcxStyle;
+    cxStyle23: TcxStyle;
+    cxStyle24: TcxStyle;
+    GridTableViewStyleSheetDevExpress: TcxGridTableViewStyleSheet;
+    GridCardViewStyleSheetDevExpress: TcxGridCardViewStyleSheet;
+    cxGridPopupMenu1: TcxGridPopupMenu;
     DevGrid: TcxGrid;
     TvGrid: TcxGridDBTableView;
     LvGrid: TcxGridLevel;
-    ChDev: TCheckBox;
-    Tradutor: TcxLocalizer;
+    cxGridPopupMenu2: TcxGridPopupMenu;
+    cxGridPopupMenu3: TcxGridPopupMenu;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -211,8 +243,9 @@ type
     procedure SkipButtonClick(Sender: TObject);
     procedure ChDevClick(Sender: TObject);
     procedure FilterDatasetBeforeClose(DataSet: TDataSet);
-    procedure TvGridCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+    procedure TvGrid2CustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
       AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure FilterDatasetAfterClose(DataSet: TDataSet);
   private
     FSkip: Boolean;
     FNewFilter: boolean;
@@ -457,10 +490,17 @@ begin
     ExecLastFilter;
 end;
 
+procedure TosCustomMainForm.FilterDatasetAfterClose(DataSet: TDataSet);
+begin
+  inherited;
+  TvGrid.ClearItems;
+end;
+
 procedure TosCustomMainForm.FilterDatasetAfterOpen(DataSet: TDataSet);
 var
   IndexOptions: TIndexOptions;
   orderColumn: string;
+
 begin
   inherited;
   OnCheckActionsAction.Execute;
@@ -493,13 +533,17 @@ begin
 
   // Redesenha o grid para que seja mostrada a seta na coluna apropriada
   Grid.RedrawGrid;
-  DevGrid.Repaint;    //fabiano
-  TvGrid.DataController.ClearDetails;
-  TvGrid.DataController.CreateAllItems(True);
 
+  //fabiano
+  TvGrid.DataController.BeginUpdate;
+  TvGrid.ClearItems;
+  FilterDataset.open;
+  TvGrid.DataController.CreateAllItems(False);
+  TvGrid.DataController.EndUpdate;
   TvGrid.GetColumnByFieldName('ID').Visible := False;
 
-  TvGrid.DataController.Summary.FooterSummaryValues[1] := TvGrid.DataController.RecordCount;
+
+ // TvGrid.DataController.Summary.FooterSummaryValues[1] := TvGrid.DataController.RecordCount;
 end;
 
 procedure TosCustomMainForm.SetActionDblClick(const Value: TAction);
@@ -787,6 +831,7 @@ begin
     Clipboard.AsText := FilterDataset.CommandText;
   end;
 end;
+
 
 procedure TosCustomMainForm.ShowQueryActionExecute(Sender: TObject);
 begin
@@ -1325,6 +1370,7 @@ begin
   LoginAction.Caption := 'Login';
 end;
 
+
 procedure TosCustomMainForm.LoadTreeView;
 var
   i: integer;
@@ -1842,7 +1888,7 @@ end;
 
 
 
-procedure TosCustomMainForm.TvGridCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+procedure TosCustomMainForm.TvGrid2CustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
   AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
 begin
   inherited;
@@ -1875,8 +1921,10 @@ begin
   result := TosCustomLoginForm;
 end;
 
+
 initialization
   FormatSettings.ShortDateFormat := 'dd/mm/yyyy';
 
 
 end.
+

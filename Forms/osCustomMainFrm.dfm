@@ -254,8 +254,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Height = 556
       Align = alClient
       TabOrder = 2
-      ExplicitLeft = 185
-      ExplicitWidth = 823
+      ExplicitLeft = 170
       ControlData = {
         4C000000B7560000773900000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
@@ -367,27 +366,25 @@ inherited osCustomMainForm: TosCustomMainForm
       Visible = False
       object TvGrid: TcxGridDBTableView
         Navigator.Buttons.CustomButtons = <>
-        OnCustomDrawCell = TvGridCustomDrawCell
         DataController.DataSource = FilterDatasource
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        OptionsBehavior.FocusCellOnTab = True
         OptionsCustomize.ColumnHiding = True
         OptionsData.CancelOnExit = False
         OptionsData.Deleting = False
         OptionsData.DeletingConfirmation = False
         OptionsData.Editing = False
         OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
         OptionsSelection.MultiSelect = True
-        OptionsView.ColumnAutoWidth = True
+        OptionsView.CellAutoHeight = True
         OptionsView.Footer = True
-        OptionsView.FooterAutoHeight = True
-        OptionsView.FooterMultiSummaries = True
-        OptionsView.GroupFooterMultiSummaries = True
-        OptionsView.GroupFooters = gfVisibleWhenExpanded
-        OptionsView.GroupRowStyle = grsOffice11
-        OptionsView.GroupSummaryLayout = gslAlignWithColumns
-        OptionsView.RowSeparatorColor = clGradientActiveCaption
+        OptionsView.Indicator = True
+        Preview.MaxLineCount = 1
+        Preview.RightIndent = 10
+        Styles.StyleSheet = GridTableViewStyleSheetDevExpress
       end
       object LvGrid: TcxGridLevel
         GridView = TvGrid
@@ -1041,6 +1038,7 @@ inherited osCustomMainForm: TosCustomMainForm
     BeforeOpen = FilterDatasetBeforeOpen
     AfterOpen = FilterDatasetAfterOpen
     BeforeClose = FilterDatasetBeforeClose
+    AfterClose = FilterDatasetAfterClose
     AfterScroll = FilterDatasetAfterScroll
     DataProvider = acCustomSQLMainData.prvFilter
     Left = 696
@@ -1087,7 +1085,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 4
     Top = 96
     Bitmap = {
-      494C010101000300440020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101010003004C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000CECEBD00C6C6BD00C6BDB500C6BDB500C6BD
@@ -1626,7 +1624,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 36
     Top = 96
     Bitmap = {
-      494C010101000300440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101010003004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1797,7 +1795,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 144
     Top = 240
     Bitmap = {
-      494C010102000400440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020004004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2203,7 +2201,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 674
     Top = 52
     Bitmap = {
-      494C01010B000C00440016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010B000C004C0016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000058000000420000000100200000000000C05A
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2997,7 +2995,229 @@ inherited osCustomMainForm: TosCustomMainForm
   end
   object Tradutor: TcxLocalizer
     FileName = 'C:\repositorio\lm\bin\Tradutor.INI'
-    Left = 520
-    Top = 37
+    Left = 624
+    Top = 269
+  end
+  object StyleRepository: TcxStyleRepository
+    Left = 400
+    Top = 48
+    PixelsPerInch = 96
+    object cxStyle1: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle5: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 14811135
+      TextColor = clBlack
+    end
+    object cxStyle6: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 14811135
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clNavy
+    end
+    object cxStyle7: TcxStyle
+      AssignedValues = [svColor]
+      Color = 14872561
+    end
+    object cxStyle8: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = clMoneyGreen
+      TextColor = clBlack
+    end
+    object cxStyle9: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 12937777
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clWhite
+    end
+    object cxStyle10: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle11: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = clMoneyGreen
+      TextColor = clBlack
+    end
+    object cxStyle12: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle13: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 14811135
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clNavy
+    end
+    object cxStyle14: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 12937777
+      TextColor = clWhite
+    end
+    object cxStyle15: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle16: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 12937777
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clWhite
+    end
+    object cxStyle17: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 12937777
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clWhite
+    end
+    object cxStyle18: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle19: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle20: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16247513
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle21: TcxStyle
+      AssignedValues = [svColor]
+      Color = 15451300
+    end
+    object cxStyle22: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = clMoneyGreen
+      TextColor = clBlack
+    end
+    object cxStyle23: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 16749885
+      TextColor = clWhite
+    end
+    object cxStyle24: TcxStyle
+      AssignedValues = [svColor, svTextColor]
+      Color = 12937777
+      TextColor = clWhite
+    end
+    object GridTableViewStyleSheetDevExpress: TcxGridTableViewStyleSheet
+      Caption = 'DevExpress'
+      Styles.Background = cxStyle1
+      Styles.Content = cxStyle2
+      Styles.ContentEven = cxStyle3
+      Styles.ContentOdd = cxStyle4
+      Styles.FilterBox = cxStyle5
+      Styles.Inactive = cxStyle10
+      Styles.IncSearch = cxStyle11
+      Styles.Selection = cxStyle14
+      Styles.Footer = cxStyle6
+      Styles.Group = cxStyle7
+      Styles.GroupByBox = cxStyle8
+      Styles.Header = cxStyle9
+      Styles.Indicator = cxStyle12
+      Styles.Preview = cxStyle13
+      BuiltIn = True
+    end
+    object GridCardViewStyleSheetDevExpress: TcxGridCardViewStyleSheet
+      Caption = 'DevExpress'
+      Styles.Background = cxStyle15
+      Styles.Content = cxStyle18
+      Styles.ContentEven = cxStyle19
+      Styles.ContentOdd = cxStyle20
+      Styles.Inactive = cxStyle21
+      Styles.IncSearch = cxStyle22
+      Styles.Selection = cxStyle24
+      Styles.CaptionRow = cxStyle16
+      Styles.CardBorder = cxStyle17
+      Styles.RowCaption = cxStyle23
+      BuiltIn = True
+    end
+  end
+  object cxGridPopupMenu1: TcxGridPopupMenu
+    PopupMenus = <>
+    Left = 472
+    Top = 256
+  end
+  object cxGridPopupMenu2: TcxGridPopupMenu
+    PopupMenus = <>
+    Left = 432
+    Top = 72
+  end
+  object cxGridPopupMenu3: TcxGridPopupMenu
+    Grid = DevGrid
+    PopupMenus = <>
+    Left = 398
+    Top = 230
   end
 end
