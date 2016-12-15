@@ -84,20 +84,20 @@ inherited osCustomMainForm: TosCustomMainForm
         ImageIndex = 5
         Style = tbsSeparator
       end
-      object ToolButton4: TToolButton
+      object PaginaInicialToolButton: TToolButton
         Left = 161
+        Top = 0
+        Caption = 'P'#225'gina Inicial'
+        ImageIndex = 9
+        OnClick = PaginaInicial
+      end
+      object ToolButton4: TToolButton
+        Left = 190
         Top = 0
         Width = 8
         Caption = 'ToolButton4'
         ImageIndex = 9
         Style = tbsSeparator
-      end
-      object PaginaInicialToolButton: TToolButton
-        Left = 169
-        Top = 0
-        Caption = 'P'#225'gina Inicial'
-        ImageIndex = 9
-        OnClick = PaginaInicial
       end
     end
     object ConsultaPanel: TPanel
@@ -1085,7 +1085,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 4
     Top = 96
     Bitmap = {
-      494C0101010003004C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000300500020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000CECEBD00C6C6BD00C6BDB500C6BDB500C6BD
@@ -1624,7 +1624,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 36
     Top = 96
     Bitmap = {
-      494C0101010003004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000300500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1795,7 +1795,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 144
     Top = 240
     Bitmap = {
-      494C0101020004004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2201,7 +2201,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 674
     Top = 52
     Bitmap = {
-      494C01010B000C004C0016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010B000C00500016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000058000000420000000100200000000000C05A
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2995,12 +2995,12 @@ inherited osCustomMainForm: TosCustomMainForm
   end
   object Tradutor: TcxLocalizer
     FileName = 'C:\repositorio\lm\bin\Tradutor.INI'
-    Left = 624
-    Top = 269
+    Left = 512
+    Top = 237
   end
   object StyleRepository: TcxStyleRepository
-    Left = 400
-    Top = 48
+    Left = 448
+    Top = 232
     PixelsPerInch = 96
     object cxStyle1: TcxStyle
       AssignedValues = [svColor]
@@ -3204,17 +3204,7 @@ inherited osCustomMainForm: TosCustomMainForm
       BuiltIn = True
     end
   end
-  object cxGridPopupMenu1: TcxGridPopupMenu
-    PopupMenus = <>
-    Left = 472
-    Top = 256
-  end
-  object cxGridPopupMenu2: TcxGridPopupMenu
-    PopupMenus = <>
-    Left = 432
-    Top = 72
-  end
-  object cxGridPopupMenu3: TcxGridPopupMenu
+  object Summary: TcxGridPopupMenu
     Grid = DevGrid
     PopupMenus = <>
     Left = 398

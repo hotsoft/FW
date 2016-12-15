@@ -181,12 +181,10 @@ type
     cxStyle24: TcxStyle;
     GridTableViewStyleSheetDevExpress: TcxGridTableViewStyleSheet;
     GridCardViewStyleSheetDevExpress: TcxGridCardViewStyleSheet;
-    cxGridPopupMenu1: TcxGridPopupMenu;
     DevGrid: TcxGrid;
     TvGrid: TcxGridDBTableView;
     LvGrid: TcxGridLevel;
-    cxGridPopupMenu2: TcxGridPopupMenu;
-    cxGridPopupMenu3: TcxGridPopupMenu;
+    Summary: TcxGridPopupMenu;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
