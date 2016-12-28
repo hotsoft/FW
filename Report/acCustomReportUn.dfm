@@ -53,7 +53,7 @@ object acCustomReport: TacCustomReport
     PDFSettings.EncryptSettings.AllowPrint = True
     PDFSettings.EncryptSettings.Enabled = False
     PDFSettings.EncryptSettings.KeyLength = kl40Bit
-    PDFSettings.FontEncoding = feAnsi
+    PDFSettings.FontEncoding = feUnicode
     PDFSettings.ImageCompressionLevel = 25
     PreviewFormSettings.WindowState = wsMaximized
     PreviewFormSettings.ZoomSetting = zs100Percent
