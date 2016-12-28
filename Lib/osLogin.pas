@@ -49,6 +49,7 @@ var
 begin
   query := TosSQLDataSet.Create(nil);
   try
+    query.Name := 'qryGetInfoUsuarioLogadoSistema';
     query.SQLConnection := acCustomSQLMainData.SQLConnection;
     query.commandText := 'SELECT IDUsuario, Apelido, Nome, Status FROM Usuario ' +
                          ' where UPPER(Apelido)= ' + QuotedStr(UpperCase(acCustomSQLMainData.ApelidoUsuario));

@@ -891,6 +891,7 @@ var
 begin
   try
     qry := TosSQLQuery.Create(nil);
+    qry.Name := 'qryGetDateTime';
     qry.SQLConnection := conn;
     qry.SQL.Text := 'select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE';
     qry.Open;
@@ -908,6 +909,7 @@ begin
   try
     qry := TosSQLQuery.Create(nil);
     qry.SQLConnection := conn;
+    qry.Name := 'qryGetNewId';
     qry.SQL.Text := 'select gen_id(KGIDHIGH, 1) id from RDB$DATABASE';
     qry.Open;
 
@@ -924,6 +926,7 @@ begin
   try
     qry := TosSQLQuery.Create(nil);
     qry.SQLConnection := conn;
+    qry.Name := 'qryGetGenerator';
     qry.SQL.Text := 'select gen_id('+generator+', 1) id from RDB$DATABASE';
     qry.Open;
 
