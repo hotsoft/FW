@@ -405,7 +405,7 @@ end;
 procedure TacCustomSQLMainData.FreeQuery(Query: TosSQLQuery);
 begin
   Query.Close;
-  Query.Destroy;
+  FreeAndNil(Query);
 end;
 
 procedure TacCustomSQLMainData.Commit(var Transaction: TDBXTransaction);
@@ -532,7 +532,7 @@ function TacCustomSQLMainData.StartTransaction: TDBXTransaction;
 begin
   Result := nil;
   if not SQLConnection.InTransaction then
-    Result := SQLConnection.BeginTransaction;
+    Result := SQLConnection.BeginTransaction(TDBXIsolations.ReadCommitted);
 end;
 
 procedure TacCustomSQLMainData.CloseTransaction;
