@@ -1079,7 +1079,10 @@ end;
 
 function ValueIsEmptyNull(aValue : Variant):Boolean;
 begin
-  Result := VarIsEmpty(aValue) or VarIsNull(aValue) or (VarToStr(aValue) = EmptyStr);
+  Result := VarIsEmpty(aValue) or VarIsNull(aValue);
+
+  if (not Result) and VarIsStr(aValue) then
+    Result := Trim(varToStr(aValue)) = EmptyStr
 end;
 
 function getDescricaoSexo(const vValor : Variant):String;
