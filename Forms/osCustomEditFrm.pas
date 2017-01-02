@@ -72,13 +72,13 @@ type
     procedure SetExternalCDS(const Value: TosClientDataset);
     procedure SetDatamodule(const Value: TDatamodule);
     function GetKeyValues: Variant;
-    procedure ControlButtons;
   protected
     FMasterDataset: TosClientDataset;
     FKeyValues: variant;
     FFormMode: TFormMode;
     FExternalCDS: TosClientDataset;
     FIsModified: boolean;
+    procedure ControlButtons;
     procedure MasterDatasetAfterEdit(DataSet: TDataSet); virtual;
     procedure CheckMasterDataset;
     procedure Loaded; override;
