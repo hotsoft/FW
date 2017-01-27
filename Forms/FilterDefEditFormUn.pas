@@ -9,7 +9,7 @@ uses
   wwdbedit, Wwdotdot, Wwdbcomb, Menus, ImgList,
   osActionList, ToolWin, Buttons, ExtCtrls, osComboSearch, osUtils, osSQLDataSet, ppReport,
   daDataModule, daQueryDataView, ppTypes, daSQL, ppClass, ppComm, ppRelatv,
-  ppProd;
+  ppProd, ppParameter, System.Actions;
 
 type
   TFilterDefEditForm = class(TosCustomEditForm)
@@ -69,6 +69,10 @@ type
     cdsEditDetailORDERCOLUMN: TStringField;
     DBCheckBox1: TDBCheckBox;
     cdsEditDetailORDERTYPE: TStringField;
+    Tblimite: TTabSheet;
+    Label7: TLabel;
+    EdLimite: TDBEdit;
+    cdsEditDetailLIMITE: TIntegerField;
     procedure TestarActionExecute(Sender: TObject);
     procedure cdsEditNewRecord(DataSet: TDataSet);
     procedure ApagarFiltroActionExecute(Sender: TObject);
