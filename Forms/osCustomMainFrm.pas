@@ -211,6 +211,7 @@ type
     FSelectedList: TStringListExt;
     FSelectionField: TField;
     lastValidSentence: string;
+    currentCount: Integer;
 
     // Field que está sendo usado para ordenação
     SortField: TField;
@@ -553,10 +554,9 @@ begin
   NewFilter := False;
   if TComponent(Sender).Name <> 'SkipButton' then
   begin
+    currentCount := 0;
     FSkip := False;
     NewFilter := True;
-    //SkipButton.Enabled := True;
-    //Edtlimit.Enabled := True;
   end;
   data := FilterDataset.data;
   FModifiedList.Clear;
@@ -575,15 +575,11 @@ begin
           ConsultaCombo.ConfigFields(ConsultaCombo.ItemIndex);
         end;
       end;
-      {if FilterDataset.RecordCount <= edtLimit.Value then
-      begin
-        SkipButton.Enabled := False;
-        Edtlimit.Enabled := False;
-      end;}
-      
-
       FIDField := FilterDataset.Fields.FindField('ID');
       CheckMultiSelection;
+
+      SkipButton.Enabled := ((FilterDataset.RecordCount - currentCount) = edtLimit.Value);
+      currentCount := FilterDataset.RecordCount; 
     finally
       Screen.Cursor := crDefault;
     end;
@@ -625,6 +621,8 @@ begin
   // este método
   if not IncrementalSearchScrolling then
     CurrentSearchString := '';
+
+  SkipButton.Enabled := SkipButton.Enabled and not FilterDataset.Eof;
 end;
 
 function TosCustomMainForm.GetSelectedList: TStringList;

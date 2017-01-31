@@ -118,7 +118,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
     Top = 272
     Width = 490
     Height = 195
-    ActivePage = Tblimite
+    ActivePage = TabSheet1
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 3
     object TabSheet1: TTabSheet
