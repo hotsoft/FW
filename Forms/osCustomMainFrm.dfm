@@ -131,6 +131,7 @@ inherited osCustomMainForm: TosCustomMainForm
         Width = 30
         Height = 13
         Caption = 'Limite:'
+        Visible = False
       end
       object tbrFilter: TToolBar
         Left = 284
@@ -188,6 +189,7 @@ inherited osCustomMainForm: TosCustomMainForm
         MinValue = 0
         TabOrder = 3
         Value = 1000
+        Visible = False
       end
       object tbrSkip: TToolBar
         Left = 424
@@ -202,6 +204,7 @@ inherited osCustomMainForm: TosCustomMainForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 4
+        Visible = False
         object SkipButton: TToolButton
           Left = 0
           Top = 0
@@ -2077,7 +2080,7 @@ inherited osCustomMainForm: TosCustomMainForm
     AutoStop = False
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Letter'
+    PrinterSetup.PaperName = 'Carta'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
