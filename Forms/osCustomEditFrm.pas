@@ -87,7 +87,6 @@ type
     procedure ChangeColor(PReadOnly: boolean);
     procedure ReconcileError(DataSet: TCustomClientDataSet; E: EReconcileError;
                              UpdateKind: TUpdateKind; var Action: TReconcileAction);
-    procedure ControlButtons;
   public
     continue: boolean;
     constructor Create(AOwner: TComponent); override;
