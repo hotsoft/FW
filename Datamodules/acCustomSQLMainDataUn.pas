@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Data.DBXFirebird, FMTBcd, SqlExpr, osSQLDataSet, DB,
   osSQLConnection, Provider, osCustomDataSetProvider, osSQLDataSetProvider,
   DBTables, osClientDataSet, Contnrs, osSQLQuery, Forms, Types, Variants,
-  Data.DBXInterBase;
+  Data.DBXInterBase, Data.DBXCommon;
 
 const
 
@@ -81,9 +81,9 @@ type
     function GetServerDate: TDatetime;
     function GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
     function InTransaction: boolean;
-    procedure StartTransaction;
-    procedure Commit;
-    procedure Rollback;
+    function StartTransaction: TDBXTransaction;
+    procedure Commit(var Transaction: TDBXTransaction);
+    procedure Rollback(var Transaction: TDBXTransaction);
     procedure CloseTransaction;
     function GetNewID(nomeGenerator: String= ''; aConnection: TSQLConnection = nil): integer;
     function GetGeneratorValue(nomeGenerator: String): integer;
@@ -405,12 +405,12 @@ end;
 procedure TacCustomSQLMainData.FreeQuery(Query: TosSQLQuery);
 begin
   Query.Close;
-  Query.Destroy;
+  FreeAndNil(Query);
 end;
 
-procedure TacCustomSQLMainData.Commit;
+procedure TacCustomSQLMainData.Commit(var Transaction: TDBXTransaction);
 begin
-  SQLConnection.Commit(FTransactionDesc);
+  SQLConnection.CommitFreeAndNil(Transaction);
 end;
 
 function TacCustomSQLMainData.GetNewID(nomeGenerator: String= ''; aConnection: TSQLConnection = nil): integer;
@@ -523,19 +523,16 @@ begin
   Result := SQLConnection.InTransaction;
 end;
 
-procedure TacCustomSQLMainData.Rollback;
+procedure TacCustomSQLMainData.RollBack(var Transaction: TDBXTransaction);
 begin
-  SQLConnection.Rollback(FTransactionDesc);
+  SQLConnection.RollbackFreeAndNil(Transaction);
 end;
 
-procedure TacCustomSQLMainData.StartTransaction;
+function TacCustomSQLMainData.StartTransaction: TDBXTransaction;
 begin
+  Result := nil;
   if not SQLConnection.InTransaction then
-  begin
-    FTransactionDesc.TransactionID := 1;
-    FTransactionDesc.IsolationLevel := xilREADCOMMITTED;
-    SQLConnection.StartTransaction(FTransactionDesc);
-  end;
+    Result := SQLConnection.BeginTransaction(TDBXIsolations.ReadCommitted);
 end;
 
 procedure TacCustomSQLMainData.CloseTransaction;
