@@ -125,14 +125,6 @@ inherited osCustomMainForm: TosCustomMainForm
         Flat = True
         OnClick = EditarTodosButtonClick
       end
-      object Label1: TLabel
-        Left = 324
-        Top = 8
-        Width = 30
-        Height = 13
-        Caption = 'Limite:'
-        Visible = False
-      end
       object tbrFilter: TToolBar
         Left = 284
         Top = 0
@@ -179,40 +171,6 @@ inherited osCustomMainForm: TosCustomMainForm
         Height = 21
         TabOrder = 2
         OnDblClick = SearchEditDblClick
-      end
-      object edtLimit: TSpinEdit
-        Left = 359
-        Top = 5
-        Width = 55
-        Height = 22
-        MaxValue = 1000
-        MinValue = 0
-        TabOrder = 3
-        Value = 1000
-        Visible = False
-      end
-      object tbrSkip: TToolBar
-        Left = 424
-        Top = 0
-        Width = 29
-        Height = 29
-        Align = alNone
-        AutoSize = True
-        ButtonHeight = 29
-        ButtonWidth = 29
-        Caption = 'tbrSkip'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        Visible = False
-        object SkipButton: TToolButton
-          Left = 0
-          Top = 0
-          Hint = 'Carrega os pr'#243'ximos registros'
-          Action = FilterAction
-          ImageIndex = 10
-          OnClick = SkipButtonClick
-        end
       end
     end
   end
