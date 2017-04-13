@@ -1144,6 +1144,7 @@ begin
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1293,27 +1294,33 @@ function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; Alter
 var
   nRegCol : Integer;
   aMsgReg : String;
+  _Str: TStringList;
+  _Valor: string;
 begin
   Result := EmptyStr;
-  OriginalCDS.First;
-  while not OriginalCDS.Eof do
-  begin
-    if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+  _Str := TStringList.Create;
+  try
+    OriginalCDS.First;
+    while not OriginalCDS.Eof do
     begin
-      if Length(aCampoDescricao) > 0 then
+      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
       begin
-        aMsgReg := EmptyStr;
-        for nRegCol := 0 to Length(aCampoDescricao)-1 do
+        if Length(aCampoDescricao) > 0 then
         begin
-          if aMsgReg <> EmptyStr then
-            aMsgReg := aMsgReg + ', ';
-          aMsgReg := aMsgReg + getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+          aMsgReg := EmptyStr;
+          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          begin
+            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+            if _valor <> EmptyStr then
+              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+          end;
         end;
+        Result := Result + #13 + sDescricao + _Str.CommaText;
       end;
-
-      Result := Result + #13 + sDescricao + aMsgReg;
+      OriginalCDS.Next;
     end;
-    OriginalCDS.Next;
+  finally
+    FreeAndNil(_Str);
   end;
 end;
 
