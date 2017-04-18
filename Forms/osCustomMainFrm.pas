@@ -541,10 +541,8 @@ procedure TosCustomMainForm.FilterActionExecute(Sender: TObject);
 var
   sent: string;
   data: oleVariant;
-  NewFilter : Boolean;
 begin
   inherited;
-  NewFilter := False;
   data := FilterDataset.data;
   FModifiedList.Clear;
   if Assigned(FCurrentResource) then
@@ -555,7 +553,7 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        sent := ConsultaCombo.ExecuteFilter(NewFilter);
+        sent := ConsultaCombo.ExecuteFilter;
         if sent = '' then
         begin
           FilterDataset.data := data;
