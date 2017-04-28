@@ -6,7 +6,8 @@ uses
   IBServices, INIFiles, Forms, AbZipper, Windows, SysUtils, StrUtils, Controls,
   osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils,
-  osSQLConnection, osSQLQuery, WinSock;
+  osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg,
+  Vcl.Imaging.GifImg;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -99,6 +100,8 @@ procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function Base64FromBinary(const FileName: String): string;
+function BinaryFromBase64(const base64: string): TBytesStream;
 
 implementation
 
@@ -1367,6 +1370,95 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function Base64FromBinary(const FileName: String): string;
+var
+  Input: TBytesStream;
+  Output: TStringStream;
+begin
+  Input := TBytesStream.Create;
+  try
+    Input.LoadFromFile(FileName);
+    Input.Position := 0;
+    Output := TStringStream.Create('', TEncoding.ASCII);
+    try
+      Soap.EncdDecd.EncodeStream(Input, Output);
+      Result := Output.DataString;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+function BinaryFromBase64(const base64: string): TBytesStream;
+var
+  Input: TStringStream;
+  Output: TBytesStream;
+begin
+  Input := TStringStream.Create(base64, TEncoding.ASCII);
+  try
+    Output := TBytesStream.Create;
+    try
+      Soap.EncdDecd.DecodeStream(Input, Output);
+      Output.Position := 0;
+      Result := TBytesStream.Create;
+      try
+        Result.LoadFromStream(Output);
+      except
+        Result.Free;
+        raise;
+      end;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+procedure DetectImage(const InputFileName: string; BM: TBitmap);
+var
+  FS: TFileStream;
+  FirstBytes: AnsiString;
+  Graphic: TGraphic;
+begin
+  Graphic := nil;
+  FS := TFileStream.Create(InputFileName, fmOpenRead);
+  try
+    SetLength(FirstBytes, 8);
+    FS.Read(FirstBytes[1], 8);
+    if Copy(FirstBytes, 1, 2) = 'BM' then
+    begin
+      Graphic := TBitmap.Create;
+    end else
+    if FirstBytes = #137'PNG'#13#10#26#10 then
+    begin
+      Graphic := TPngImage.Create;
+    end else
+    if Copy(FirstBytes, 1, 3) =  'GIF' then
+    begin
+      Graphic := TGIFImage.Create;
+    end else
+    if Copy(FirstBytes, 1, 2) = #$FF#$D8 then
+    begin
+      Graphic := TJPEGImage.Create;
+    end;
+    if Assigned(Graphic) then
+    begin
+      try
+        FS.Seek(0, soFromBeginning);
+        Graphic.LoadFromStream(FS);
+        BM.Assign(Graphic);
+      except
+      end;
+      Graphic.Free;
+    end;
+  finally
+    FS.Free;
+  end;
 end;
 
 end.
