@@ -8,6 +8,7 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
+  ExplicitTop = -128
   ExplicitWidth = 1016
   ExplicitHeight = 699
   PixelsPerInch = 96
@@ -25,7 +26,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 262
-      Height = 29
+      Height = 22
       AutoSize = True
       ButtonHeight = 29
       ButtonWidth = 29
@@ -243,8 +244,8 @@ inherited osCustomMainForm: TosCustomMainForm
       TabOrder = 1
     end
     object Grid: TwwDBGrid
-      Left = 56
-      Top = 46
+      Left = 83
+      Top = 39
       Width = 389
       Height = 283
       IniAttributes.FileName = 'LabMaster.ini.ini'
@@ -305,8 +306,10 @@ inherited osCustomMainForm: TosCustomMainForm
         Width = 163
         Height = 21
         Align = alBottom
+        AutoSelect = False
         TabOrder = 1
         OnChange = EdtPesquisaChange
+        OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
       end
     end

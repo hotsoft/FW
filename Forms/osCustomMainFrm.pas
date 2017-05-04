@@ -197,6 +197,7 @@ type
     procedure TreeView1CustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure EdtPesquisaEnter(Sender: TObject);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -279,7 +280,7 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn;
 
 {$R *.DFM}
 
@@ -1608,14 +1609,31 @@ begin
   Self.PesquisaMenu(0,FIndiceMenu);
 end;
 
+procedure TosCustomMainForm.EdtPesquisaEnter(Sender: TObject);
+begin
+  inherited;
+  self.OnKeyDown := nil;
+end;
+
 procedure TosCustomMainForm.EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   vNo : TTreeNode;
+  TerminalConsultaForm : TTerminalConsultaEditForm;
 begin
   inherited;
   if key = vk_return then
   begin
-    if (FUltimoIndiceMenu > 0) and (FIndiceMenu = FUltimoIndiceMenu) then
+    if isNumeric(EdtPesquisa.Text, False) then
+    begin
+      try
+        TerminalConsultaForm := TTerminalConsultaEditForm.Create(self);
+        TerminalConsultaForm.pDigitacao := EdtPesquisa.Text;
+        TerminalConsultaForm.ShowModal;
+      except
+        FreeAndNil(TerminalConsultaForm);
+      end;
+    end
+    else if (FUltimoIndiceMenu > 0) and (FIndiceMenu = FUltimoIndiceMenu) then
     begin
       FIndiceMenu := 0;
       Self.PesquisaMenu(0,FIndiceMenu);

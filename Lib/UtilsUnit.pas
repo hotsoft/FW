@@ -99,6 +99,7 @@ procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function KeyToStr(Key:Word): String;
 
 implementation
 
@@ -116,7 +117,7 @@ begin
   for I := 1 to Length(nStr) do
     if nStr[I] in['0'..'9','a'..'z','A'..'Z',Chr(8)] then
        Result := Result + nStr[I]; 
-end;   
+end;
 
 function FormataStringList(texto, delimitador: string): string;
 begin
@@ -1367,6 +1368,21 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function KeyToStr(Key:Word): String;
+var
+  keyboardState: TKeyboardState;
+  asciiResult: Integer;
+begin
+  GetKeyboardState(keyboardState);
+  SetLength(Result, 2);
+  asciiResult := ToAscii(key, MapVirtualKey(key, 0), keyboardState, @Result[1], 0);
+  case asciiResult of
+    1: SetLength(Result, 1)  ;
+    2:;
+    else Result := '';
+  end;
 end;
 
 end.
