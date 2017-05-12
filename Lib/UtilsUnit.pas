@@ -102,6 +102,7 @@ function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function Base64FromBinary(const FileName: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 procedure dgCreateProcess(const FileName: string);
 
 implementation
@@ -1420,45 +1421,60 @@ begin
   end;
 end;
 
-procedure DetectImage(const InputFileName: string; BM: TBitmap);
+procedure DetectImage(BS:TBytesStream; BM: TBitmap);
 var
-  FS: TFileStream;
   FirstBytes: AnsiString;
   Graphic: TGraphic;
 begin
   Graphic := nil;
-  FS := TFileStream.Create(InputFileName, fmOpenRead);
+  SetLength(FirstBytes, 8);
+  BS.Read(FirstBytes[1], 8);
+  if Copy(FirstBytes, 1, 2) = 'BM' then
+  begin
+    Graphic := TBitmap.Create;
+  end else
+  if FirstBytes = #137'PNG'#13#10#26#10 then
+  begin
+    Graphic := TPngImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 3) =  'GIF' then
+  begin
+    Graphic := TGIFImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 2) = #$FF#$D8 then
+  begin
+    Graphic := TJPEGImage.Create;
+  end;
+  if Assigned(Graphic) then
+  begin
+    try
+      BS.Seek(0, soFromBeginning);
+      Graphic.LoadFromStream(BS);
+      BM.Assign(Graphic);
+    except
+    end;
+    Graphic.Free;
+  end;
+end;
+
+
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+var
+  ms : TMemoryStream;
+  base64String : AnsiString;
+  myFile: TBytesStream;
+begin
+  ms := TMemoryStream.Create;
   try
-    SetLength(FirstBytes, 8);
-    FS.Read(FirstBytes[1], 8);
-    if Copy(FirstBytes, 1, 2) = 'BM' then
-    begin
-      Graphic := TBitmap.Create;
-    end else
-    if FirstBytes = #137'PNG'#13#10#26#10 then
-    begin
-      Graphic := TPngImage.Create;
-    end else
-    if Copy(FirstBytes, 1, 3) =  'GIF' then
-    begin
-      Graphic := TGIFImage.Create;
-    end else
-    if Copy(FirstBytes, 1, 2) = #$FF#$D8 then
-    begin
-      Graphic := TJPEGImage.Create;
-    end;
-    if Assigned(Graphic) then
-    begin
-      try
-        FS.Seek(0, soFromBeginning);
-        Graphic.LoadFromStream(FS);
-        BM.Assign(Graphic);
-      except
-      end;
-      Graphic.Free;
-    end;
-  finally
-    FS.Free;
+    Result := TBitmap.Create;
+    base64Field.SaveToStream(ms);
+    ms.Position := 0;
+
+    SetString(base64String, PAnsiChar(ms.Memory), ms.Size);
+    myFile := BinaryFromBase64(base64String);
+    DetectImage(myFile, Result);
+  finally   
+    ms.Free;
   end;
 end;
 
