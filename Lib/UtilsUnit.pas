@@ -448,8 +448,6 @@ end;
 
 function isNumeric(valor: string;
   acceptThousandSeparator: Boolean = False): boolean;
-var
-  decimal: char;
 begin
   valor := Trim(valor);
   if acceptThousandSeparator then
@@ -1275,8 +1273,6 @@ end;
 
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
-var
-  aBookMarkReg : TBookmark;
 begin
   Result := EmptyStr;
   AlteradoCDS.DisableControls;
