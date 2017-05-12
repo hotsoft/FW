@@ -103,6 +103,7 @@ function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function Base64FromBinary(const FileName: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+procedure dgCreateProcess(const FileName: string);
 
 implementation
 
@@ -1456,6 +1457,7 @@ begin
   end;
 end;
 
+
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 var
   ms : TMemoryStream;
@@ -1473,7 +1475,33 @@ begin
     DetectImage(myFile, Result);
   finally   
     ms.Free;
-  end; 
+  end;
+end;
+
+procedure dgCreateProcess(const FileName: string);
+var ProcInfo: TProcessInformation;
+    StartInfo: TStartupInfo;
+begin
+     {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
+     FillMemory(@StartInfo, SizeOf(StartInfo), 0);
+     StartInfo.cb := SizeOf(StartInfo);
+     StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
+     StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
+     StartInfo.dwXSize := Screen.Width;
+     StartInfo.dwYSize := Screen.Height;
+     StartInfo.dwX := 0;
+     StartInfo.dwY := 0;
+
+     CreateProcess(
+       nil,
+       PChar(FileName),
+       nil, Nil, False,
+       DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
+       nil, nil,
+       StartInfo,
+       ProcInfo);
+     CloseHandle(ProcInfo.hProcess);
+     CloseHandle(ProcInfo.hThread);
 end;
 
 end.
