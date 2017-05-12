@@ -1472,7 +1472,11 @@ begin
 
     SetString(base64String, PAnsiChar(ms.Memory), ms.Size);
     myFile := BinaryFromBase64(base64String);
-    DetectImage(myFile, Result);
+    try
+      DetectImage(myFile, Result);
+    finally
+      myFile.Free;
+    end;
   finally   
     ms.Free;
   end;
