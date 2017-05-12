@@ -107,7 +107,7 @@ procedure dgCreateProcess(const FileName: string);
 
 implementation
 
-uses DateUtils, Variants, StatusUnit;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1485,27 +1485,39 @@ end;
 procedure dgCreateProcess(const FileName: string);
 var ProcInfo: TProcessInformation;
     StartInfo: TStartupInfo;
+    FrmMensagem : TFrmMensagemAguarde;
 begin
-     {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
-     FillMemory(@StartInfo, SizeOf(StartInfo), 0);
-     StartInfo.cb := SizeOf(StartInfo);
-     StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
-     StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
-     StartInfo.dwXSize := Screen.Width;
-     StartInfo.dwYSize := Screen.Height;
-     StartInfo.dwX := 0;
-     StartInfo.dwY := 0;
+  FrmMensagem := TFrmMensagemAguarde.Create(Application);
+  try
+    FrmMensagem.Show;
+    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
+    FrmMensagem.Update;
 
-     CreateProcess(
-       nil,
-       PChar(FileName),
-       nil, Nil, False,
-       DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
-       nil, nil,
-       StartInfo,
-       ProcInfo);
-     CloseHandle(ProcInfo.hProcess);
-     CloseHandle(ProcInfo.hThread);
+    {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
+    FillMemory(@StartInfo, SizeOf(StartInfo), 0);
+    StartInfo.cb := SizeOf(StartInfo);
+    StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
+    StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
+    StartInfo.dwXSize := Screen.Width;
+    StartInfo.dwYSize := Screen.Height;
+    StartInfo.dwX := 0;
+    StartInfo.dwY := 0;
+
+    CreateProcess(
+      nil,
+      PChar(FileName),
+      nil, Nil, False,
+      DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
+      nil, nil,
+      StartInfo,
+      ProcInfo);
+    CloseHandle(ProcInfo.hProcess);
+    CloseHandle(ProcInfo.hThread);
+  finally
+    SleepEx(10000, False);
+    FrmMensagem.Close;
+    FrmMensagem.Release;
+  end;
 end;
 
 end.
