@@ -6,7 +6,8 @@ uses
   IBServices, INIFiles, Forms, AbZipper, Windows, SysUtils, StrUtils, Controls,
   osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils,
-  osSQLConnection, osSQLQuery, WinSock;
+  osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg,
+  Vcl.Imaging.GifImg;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -99,10 +100,14 @@ procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function Base64FromBinary(const FileName: String): string;
+function BinaryFromBase64(const base64: string): TBytesStream;
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+procedure dgCreateProcess(const FileName: string);
 
 implementation
 
-uses DateUtils, Variants, StatusUnit;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -443,8 +448,6 @@ end;
 
 function isNumeric(valor: string;
   acceptThousandSeparator: Boolean = False): boolean;
-var
-  decimal: char;
 begin
   valor := Trim(valor);
   if acceptThousandSeparator then
@@ -1271,8 +1274,6 @@ end;
 
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
-var
-  aBookMarkReg : TBookmark;
 begin
   Result := EmptyStr;
   AlteradoCDS.DisableControls;
@@ -1374,6 +1375,152 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function Base64FromBinary(const FileName: String): string;
+var
+  Input: TBytesStream;
+  Output: TStringStream;
+begin
+  Input := TBytesStream.Create;
+  try
+    Input.LoadFromFile(FileName);
+    Input.Position := 0;
+    Output := TStringStream.Create('', TEncoding.ASCII);
+    try
+      Soap.EncdDecd.EncodeStream(Input, Output);
+      Result := Output.DataString;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+function BinaryFromBase64(const base64: string): TBytesStream;
+var
+  Input: TStringStream;
+  Output: TBytesStream;
+begin
+  Input := TStringStream.Create(base64, TEncoding.ASCII);
+  try
+    Output := TBytesStream.Create;
+    try
+      Soap.EncdDecd.DecodeStream(Input, Output);
+      Output.Position := 0;
+      Result := TBytesStream.Create;
+      try
+        Result.LoadFromStream(Output);
+      except
+        Result.Free;
+        raise;
+      end;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+procedure DetectImage(BS:TBytesStream; BM: TBitmap);
+var
+  FirstBytes: AnsiString;
+  Graphic: TGraphic;
+begin
+  Graphic := nil;
+  SetLength(FirstBytes, 8);
+  BS.Read(FirstBytes[1], 8);
+  if Copy(FirstBytes, 1, 2) = 'BM' then
+  begin
+    Graphic := TBitmap.Create;
+  end else
+  if FirstBytes = #137'PNG'#13#10#26#10 then
+  begin
+    Graphic := TPngImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 3) =  'GIF' then
+  begin
+    Graphic := TGIFImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 2) = #$FF#$D8 then
+  begin
+    Graphic := TJPEGImage.Create;
+  end;
+  if Assigned(Graphic) then
+  begin
+    try
+      BS.Seek(0, soFromBeginning);
+      Graphic.LoadFromStream(BS);
+      BM.Assign(Graphic);
+    except
+    end;
+    Graphic.Free;
+  end;
+end;
+
+
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+var
+  ms : TMemoryStream;
+  base64String : AnsiString;
+  myFile: TBytesStream;
+begin
+  ms := TMemoryStream.Create;
+  try
+    Result := TBitmap.Create;
+    base64Field.SaveToStream(ms);
+    ms.Position := 0;
+
+    SetString(base64String, PAnsiChar(ms.Memory), ms.Size);
+    myFile := BinaryFromBase64(base64String);
+    try
+      DetectImage(myFile, Result);
+    finally
+      myFile.Free;
+    end;
+  finally   
+    ms.Free;
+  end;
+end;
+
+procedure dgCreateProcess(const FileName: string);
+var ProcInfo: TProcessInformation;
+    StartInfo: TStartupInfo;
+    FrmMensagem : TFrmMensagemAguarde;
+begin
+  FrmMensagem := TFrmMensagemAguarde.Create(Application);
+  try
+    FrmMensagem.Show;
+    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
+    FrmMensagem.Update;
+
+    {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
+    FillMemory(@StartInfo, SizeOf(StartInfo), 0);
+    StartInfo.cb := SizeOf(StartInfo);
+    StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
+    StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
+    StartInfo.dwXSize := Screen.Width;
+    StartInfo.dwYSize := Screen.Height;
+    StartInfo.dwX := 0;
+    StartInfo.dwY := 0;
+
+    CreateProcess(
+      nil,
+      PChar(FileName),
+      nil, Nil, False,
+      DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
+      nil, nil,
+      StartInfo,
+      ProcInfo);
+    CloseHandle(ProcInfo.hProcess);
+    CloseHandle(ProcInfo.hThread);
+  finally
+    SleepEx(10000, False);
+    FrmMensagem.Close;
+    FrmMensagem.Release;
+  end;
 end;
 
 end.
