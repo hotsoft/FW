@@ -104,10 +104,11 @@ function Base64FromBinary(const FileName: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 procedure dgCreateProcess(const FileName: string);
+function TestConection(const url: String): boolean;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1325,7 +1326,7 @@ begin
   end;
 end;
 
-function isRTFValue(vValor: Variant): Boolean; 
+function isRTFValue(vValor: Variant): Boolean;
 begin
   Result := False;
   if not ValueIsEmptyNull(vValor) then
@@ -1460,7 +1461,6 @@ begin
   end;
 end;
 
-
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 var
   ms : TMemoryStream;
@@ -1520,6 +1520,40 @@ begin
     SleepEx(10000, False);
     FrmMensagem.Close;
     FrmMensagem.Release;
+  end;
+end;
+
+function TestConection(const url: String): boolean;
+var
+  HTTPClient: TidHTTP;
+  Stream: TStringStream;
+  LHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  Result := False;
+  Stream := TStringStream.Create('');
+
+  HTTPClient := TidHTTP.Create(nil);
+  LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
+  HTTPClient.IOHandler := LHandler;
+  HTTPClient.HandleRedirects := True;
+  HTTPClient.AllowCookies := True;
+  HTTPClient.Request.ContentType := 'utf-8';
+  HTTPClient.ReadTimeout := 1000;
+  HTTPClient.ConnectTimeout := 1000;
+
+  try
+    try
+      HTTPClient.Get(url, Stream);
+      Stream.Position := 0;
+      Result := HTTPClient.ResponseCode.ToBoolean;
+    except
+      on E: Exception do
+        Result := False;
+    end;
+  finally
+    Stream.Free;
+    LHandler.Free;
+    HTTPClient.Free;
   end;
 end;
 
