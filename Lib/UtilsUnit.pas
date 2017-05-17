@@ -104,10 +104,11 @@ function Base64FromBinary(const FileName: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 procedure dgCreateProcess(const FileName: string);
+function TestConection(const url: String): boolean;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1147,6 +1148,7 @@ begin
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1294,31 +1296,37 @@ function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; Alter
 var
   nRegCol : Integer;
   aMsgReg : String;
+  _Str: TStringList;
+  _Valor: string;
 begin
   Result := EmptyStr;
-  OriginalCDS.First;
-  while not OriginalCDS.Eof do
-  begin
-    if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+  _Str := TStringList.Create;
+  try
+    OriginalCDS.First;
+    while not OriginalCDS.Eof do
     begin
-      if Length(aCampoDescricao) > 0 then
+      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
       begin
-        aMsgReg := EmptyStr;
-        for nRegCol := 0 to Length(aCampoDescricao)-1 do
+        if Length(aCampoDescricao) > 0 then
         begin
-          if aMsgReg <> EmptyStr then
-            aMsgReg := aMsgReg + ', ';
-          aMsgReg := aMsgReg + getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+          aMsgReg := EmptyStr;
+          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          begin
+            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+            if _valor <> EmptyStr then
+              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+          end;
         end;
+        Result := Result + #13 + sDescricao + _Str.CommaText;
       end;
-
-      Result := Result + #13 + sDescricao + aMsgReg;
+      OriginalCDS.Next;
     end;
-    OriginalCDS.Next;
+  finally
+    FreeAndNil(_Str);
   end;
 end;
 
-function isRTFValue(vValor: Variant): Boolean; 
+function isRTFValue(vValor: Variant): Boolean;
 begin
   Result := False;
   if not ValueIsEmptyNull(vValor) then
@@ -1453,7 +1461,6 @@ begin
   end;
 end;
 
-
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 var
   ms : TMemoryStream;
@@ -1513,6 +1520,40 @@ begin
     SleepEx(10000, False);
     FrmMensagem.Close;
     FrmMensagem.Release;
+  end;
+end;
+
+function TestConection(const url: String): boolean;
+var
+  HTTPClient: TidHTTP;
+  Stream: TStringStream;
+  LHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  Result := False;
+  Stream := TStringStream.Create('');
+
+  HTTPClient := TidHTTP.Create(nil);
+  LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
+  HTTPClient.IOHandler := LHandler;
+  HTTPClient.HandleRedirects := True;
+  HTTPClient.AllowCookies := True;
+  HTTPClient.Request.ContentType := 'utf-8';
+  HTTPClient.ReadTimeout := 1000;
+  HTTPClient.ConnectTimeout := 1000;
+
+  try
+    try
+      HTTPClient.Get(url, Stream);
+      Stream.Position := 0;
+      Result := HTTPClient.ResponseCode.ToBoolean;
+    except
+      on E: Exception do
+        Result := False;
+    end;
+  finally
+    Stream.Free;
+    LHandler.Free;
+    HTTPClient.Free;
   end;
 end;
 
