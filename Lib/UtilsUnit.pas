@@ -1493,7 +1493,7 @@ begin
   FrmMensagem := TFrmMensagemAguarde.Create(Application);
   try
     FrmMensagem.Show;
-    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
+    FrmMensagem.setMensagem('Aguarde, Preparando acesso... ', True);
     FrmMensagem.Update;
 
     {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
@@ -1517,6 +1517,9 @@ begin
     CloseHandle(ProcInfo.hProcess);
     CloseHandle(ProcInfo.hThread);
   finally
+    FrmMensagem.setMensagem('Aguarde, carregando... ', True);
+    FrmMensagem.Update;
+
     SleepEx(10000, False);
     FrmMensagem.Close;
     FrmMensagem.Release;

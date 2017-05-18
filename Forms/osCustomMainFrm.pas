@@ -862,7 +862,11 @@ begin
     begin
       ClearViews;
       FilterDefName := FCurrentResource.FilterDefName;
-      GetViews;
+      try
+        GetViews;
+      except
+        Exit;
+      end;
       if ItemIndex <> -1 then
         FilterAction.Execute;
     end;
