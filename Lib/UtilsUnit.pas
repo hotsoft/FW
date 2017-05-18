@@ -105,6 +105,9 @@ function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 procedure dgCreateProcess(const FileName: string);
 function TestConection(const url: String): boolean;
+function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
+  const FieldName: string): Boolean;
+
 
 implementation
 
@@ -1555,6 +1558,70 @@ begin
     LHandler.Free;
     HTTPClient.Free;
   end;
+end;
+
+
+function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
+  const FieldName: string): Boolean;
+var
+  i: Integer;
+  NewIndexName: string;
+  IndexOptions: TIndexOptions;
+  Field: TField;
+begin
+  Result := False;
+  Field := ClientDataSet.Fields.FindField(FieldName);
+
+  //se for lookup ou calculado
+  if Field.FieldKind in [fkLookup, fkCalculated] then
+    exit;
+
+  //Se fieldname inválido, exit.
+  if Field = nil then Exit;
+
+  //se field type inválido, exit.
+  if (Field is TObjectField) or (Field is TBlobField) or
+    (Field is TAggregateField) or (Field is TVariantField)
+    or (Field is TBinaryField) then Exit;
+
+  //Obter IndexDefs e IndexName usando RTTI
+  //Garantir que IndexDefs esteja atualizado.
+  ClientDataSet.IndexDefs.Update;
+
+  //se um índice ascendente já estiver em uso,
+  //mudar para um índice descendente.
+  if ClientDataSet.IndexName = FieldName + '__IdxA'
+    then
+  begin
+    NewIndexName := FieldName + '__IdxD';
+    IndexOptions := [ixDescending];
+  end
+  else
+  begin
+    NewIndexName := FieldName + '__IdxA';
+    IndexOptions := [];
+  end;
+
+ //Procurar um índice existente
+  for i := 0 to Pred(ClientDataSet.IndexDefs.Count) do
+  begin
+    if ClientDataSet.IndexDefs[i].Name = NewIndexName then
+    begin
+      Result := True;
+      Break
+    end; //if
+  end; // for
+
+  //Se não enconttrado índice existente, criar um
+  if not Result then
+  begin
+    ClientDataSet.AddIndex(NewIndexName,
+      FieldName, IndexOptions);
+    Result := True;
+  end; // if not
+
+  //Configurar o índice.
+  ClientDataSet.IndexName := NewIndexName;
 end;
 
 end.
