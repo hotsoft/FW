@@ -107,6 +107,7 @@ procedure dgCreateProcess(const FileName: string);
 function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
+function GetShortName(sLongName: string): string;
 
 
 implementation
@@ -1622,6 +1623,23 @@ begin
 
   //Configurar o índice.
   ClientDataSet.IndexName := NewIndexName;
+end;
+
+function GetShortName(sLongName: string): string;
+var
+  sShortName    : string;
+  nShortNameLen : integer;
+begin
+  SetLength(sShortName, MAX_PATH);
+  nShortNameLen := GetShortPathName(
+    PChar(sLongName), PChar(sShortName), MAX_PATH - 1
+  );
+  if (0 = nShortNameLen) then
+  begin
+    // handle errors...
+  end;
+  SetLength(sShortName, nShortNameLen);
+  Result := sShortName;
 end;
 
 end.
