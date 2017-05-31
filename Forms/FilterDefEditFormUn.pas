@@ -69,10 +69,6 @@ type
     cdsEditDetailORDERCOLUMN: TStringField;
     DBCheckBox1: TDBCheckBox;
     cdsEditDetailORDERTYPE: TStringField;
-    Tblimite: TTabSheet;
-    Label7: TLabel;
-    EdLimite: TDBEdit;
-    cdsEditDetailLIMITE: TIntegerField;
     procedure TestarActionExecute(Sender: TObject);
     procedure cdsEditNewRecord(DataSet: TDataSet);
     procedure ApagarFiltroActionExecute(Sender: TObject);
