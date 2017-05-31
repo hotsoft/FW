@@ -1541,8 +1541,8 @@ begin
   HTTPClient.HandleRedirects := True;
   HTTPClient.AllowCookies := True;
   HTTPClient.Request.ContentType := 'utf-8';
-  HTTPClient.ReadTimeout := 1000;
-  HTTPClient.ConnectTimeout := 1000;
+  HTTPClient.ReadTimeout := 30000;
+  HTTPClient.ConnectTimeout := 30000;
 
   try
     try
