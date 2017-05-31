@@ -6,7 +6,8 @@ uses
   IBServices, INIFiles, Forms, AbZipper, Windows, SysUtils, StrUtils, Controls,
   osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils,
-  osSQLConnection, osSQLQuery, WinSock;
+  osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg,
+  Vcl.Imaging.GifImg;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -100,10 +101,18 @@ function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
+function Base64FromBinary(const FileName: String): string;
+function BinaryFromBase64(const base64: string): TBytesStream;
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+procedure dgCreateProcess(const FileName: string);
+function TestConection(const url: String): boolean;
+function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
+  const FieldName: string): Boolean;
+
 
 implementation
 
-uses DateUtils, Variants, StatusUnit;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -444,8 +453,6 @@ end;
 
 function isNumeric(valor: string;
   acceptThousandSeparator: Boolean = False): boolean;
-var
-  decimal: char;
 begin
   valor := Trim(valor);
   if acceptThousandSeparator then
@@ -1145,6 +1152,7 @@ begin
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1271,8 +1279,6 @@ end;
 
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
-var
-  aBookMarkReg : TBookmark;
 begin
   Result := EmptyStr;
   AlteradoCDS.DisableControls;
@@ -1294,31 +1300,37 @@ function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; Alter
 var
   nRegCol : Integer;
   aMsgReg : String;
+  _Str: TStringList;
+  _Valor: string;
 begin
   Result := EmptyStr;
-  OriginalCDS.First;
-  while not OriginalCDS.Eof do
-  begin
-    if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+  _Str := TStringList.Create;
+  try
+    OriginalCDS.First;
+    while not OriginalCDS.Eof do
     begin
-      if Length(aCampoDescricao) > 0 then
+      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
       begin
-        aMsgReg := EmptyStr;
-        for nRegCol := 0 to Length(aCampoDescricao)-1 do
+        if Length(aCampoDescricao) > 0 then
         begin
-          if aMsgReg <> EmptyStr then
-            aMsgReg := aMsgReg + ', ';
-          aMsgReg := aMsgReg + getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+          aMsgReg := EmptyStr;
+          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          begin
+            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+            if _valor <> EmptyStr then
+              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+          end;
         end;
+        Result := Result + #13 + sDescricao + _Str.CommaText;
       end;
-
-      Result := Result + #13 + sDescricao + aMsgReg;
+      OriginalCDS.Next;
     end;
-    OriginalCDS.Next;
+  finally
+    FreeAndNil(_Str);
   end;
 end;
 
-function isRTFValue(vValor: Variant): Boolean; 
+function isRTFValue(vValor: Variant): Boolean;
 begin
   Result := False;
   if not ValueIsEmptyNull(vValor) then
@@ -1384,5 +1396,249 @@ begin
     else Result := '';
   end;
 end;
+
+function Base64FromBinary(const FileName: String): string;
+var
+  Input: TBytesStream;
+  Output: TStringStream;
+begin
+  Input := TBytesStream.Create;
+  try
+    Input.LoadFromFile(FileName);
+    Input.Position := 0;
+    Output := TStringStream.Create('', TEncoding.ASCII);
+    try
+      Soap.EncdDecd.EncodeStream(Input, Output);
+      Result := Output.DataString;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+function BinaryFromBase64(const base64: string): TBytesStream;
+var
+  Input: TStringStream;
+  Output: TBytesStream;
+begin
+  Input := TStringStream.Create(base64, TEncoding.ASCII);
+  try
+    Output := TBytesStream.Create;
+    try
+      Soap.EncdDecd.DecodeStream(Input, Output);
+      Output.Position := 0;
+      Result := TBytesStream.Create;
+      try
+        Result.LoadFromStream(Output);
+      except
+        Result.Free;
+        raise;
+      end;
+    finally
+      Output.Free;
+    end;
+  finally
+    Input.Free;
+  end;
+end;
+
+procedure DetectImage(BS:TBytesStream; BM: TBitmap);
+var
+  FirstBytes: AnsiString;
+  Graphic: TGraphic;
+begin
+  Graphic := nil;
+  SetLength(FirstBytes, 8);
+  BS.Read(FirstBytes[1], 8);
+  if Copy(FirstBytes, 1, 2) = 'BM' then
+  begin
+    Graphic := TBitmap.Create;
+  end else
+  if FirstBytes = #137'PNG'#13#10#26#10 then
+  begin
+    Graphic := TPngImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 3) =  'GIF' then
+  begin
+    Graphic := TGIFImage.Create;
+  end else
+  if Copy(FirstBytes, 1, 2) = #$FF#$D8 then
+  begin
+    Graphic := TJPEGImage.Create;
+  end;
+  if Assigned(Graphic) then
+  begin
+    try
+      BS.Seek(0, soFromBeginning);
+      Graphic.LoadFromStream(BS);
+      BM.Assign(Graphic);
+    except
+    end;
+    Graphic.Free;
+  end;
+end;
+
+function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+var
+  ms : TMemoryStream;
+  base64String : AnsiString;
+  myFile: TBytesStream;
+begin
+  ms := TMemoryStream.Create;
+  try
+    Result := TBitmap.Create;
+    base64Field.SaveToStream(ms);
+    ms.Position := 0;
+
+    SetString(base64String, PAnsiChar(ms.Memory), ms.Size);
+    myFile := BinaryFromBase64(base64String);
+    try
+      DetectImage(myFile, Result);
+    finally
+      myFile.Free;
+    end;
+  finally   
+    ms.Free;
+  end;
+end;
+
+procedure dgCreateProcess(const FileName: string);
+var ProcInfo: TProcessInformation;
+    StartInfo: TStartupInfo;
+    FrmMensagem : TFrmMensagemAguarde;
+begin
+  FrmMensagem := TFrmMensagemAguarde.Create(Application);
+  try
+    FrmMensagem.Show;
+    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
+    FrmMensagem.Update;
+
+    {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
+    FillMemory(@StartInfo, SizeOf(StartInfo), 0);
+    StartInfo.cb := SizeOf(StartInfo);
+    StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
+    StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
+    StartInfo.dwXSize := Screen.Width;
+    StartInfo.dwYSize := Screen.Height;
+    StartInfo.dwX := 0;
+    StartInfo.dwY := 0;
+
+    CreateProcess(
+      nil,
+      PChar(FileName),
+      nil, Nil, False,
+      DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
+      nil, nil,
+      StartInfo,
+      ProcInfo);
+    CloseHandle(ProcInfo.hProcess);
+    CloseHandle(ProcInfo.hThread);
+  finally
+    SleepEx(10000, False);
+    FrmMensagem.Close;
+    FrmMensagem.Release;
+  end;
+end;
+
+function TestConection(const url: String): boolean;
+var
+  HTTPClient: TidHTTP;
+  Stream: TStringStream;
+  LHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  Result := False;
+  Stream := TStringStream.Create('');
+
+  HTTPClient := TidHTTP.Create(nil);
+  LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
+  HTTPClient.IOHandler := LHandler;
+  HTTPClient.HandleRedirects := True;
+  HTTPClient.AllowCookies := True;
+  HTTPClient.Request.ContentType := 'utf-8';
+  HTTPClient.ReadTimeout := 1000;
+  HTTPClient.ConnectTimeout := 1000;
+
+  try
+    try
+      HTTPClient.Get(url, Stream);
+      Stream.Position := 0;
+      Result := HTTPClient.ResponseCode.ToBoolean;
+    except
+      on E: Exception do
+        Result := False;
+    end;
+  finally
+    Stream.Free;
+    LHandler.Free;
+    HTTPClient.Free;
+  end;
+end;
+
+
+function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
+  const FieldName: string): Boolean;
+var
+  i: Integer;
+  NewIndexName: string;
+  IndexOptions: TIndexOptions;
+  Field: TField;
+begin
+  Result := False;
+  Field := ClientDataSet.Fields.FindField(FieldName);
+
+  //se for lookup ou calculado
+  if Field.FieldKind in [fkLookup, fkCalculated] then
+    exit;
+
+  //Se fieldname inválido, exit.
+  if Field = nil then Exit;
+
+  //se field type inválido, exit.
+  if (Field is TObjectField) or (Field is TBlobField) or
+    (Field is TAggregateField) or (Field is TVariantField)
+    or (Field is TBinaryField) then Exit;
+
+  //Obter IndexDefs e IndexName usando RTTI
+  //Garantir que IndexDefs esteja atualizado.
+  ClientDataSet.IndexDefs.Update;
+
+  //se um índice ascendente já estiver em uso,
+  //mudar para um índice descendente.
+  if ClientDataSet.IndexName = FieldName + '__IdxA'
+    then
+  begin
+    NewIndexName := FieldName + '__IdxD';
+    IndexOptions := [ixDescending];
+  end
+  else
+  begin
+    NewIndexName := FieldName + '__IdxA';
+    IndexOptions := [];
+  end;
+
+ //Procurar um índice existente
+  for i := 0 to Pred(ClientDataSet.IndexDefs.Count) do
+  begin
+    if ClientDataSet.IndexDefs[i].Name = NewIndexName then
+    begin
+      Result := True;
+      Break
+    end; //if
+  end; // for
+
+  //Se não enconttrado índice existente, criar um
+  if not Result then
+  begin
+    ClientDataSet.AddIndex(NewIndexName,
+      FieldName, IndexOptions);
+    Result := True;
+  end; // if not
+
+  //Configurar o índice.
+  ClientDataSet.IndexName := NewIndexName;
+end;
+
 
 end.
