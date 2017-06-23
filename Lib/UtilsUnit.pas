@@ -107,11 +107,11 @@ procedure dgCreateProcess(const FileName: string);
 function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
-
+function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil): Boolean;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1624,5 +1624,59 @@ begin
   ClientDataSet.IndexName := NewIndexName;
 end;
 
+function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil) : Boolean;
+var
+  _idHTTP: TIdHTTP;
+  _resCode: Integer;
+
+  function Fallback: Boolean;
+  var
+    _FHttp: TIdHTTP;
+  begin
+    _FHttp := TIdHTTP.Create(AOwner);
+    try
+      Result := False;
+      try
+        if stream is TIdMultiPartFormDataStream  then
+          _FHttp.Post(address, TIdMultiPartFormDataStream(stream))
+        else
+          _FHttp.Post(address, TStringStream(stream));
+        _resCode := _FHttp.Response.ResponseCode;
+        Result := (_resCode > 99) and (_resCode < 400);
+      except
+        on E : Exception do
+        begin
+        end
+      end;
+    finally
+      FreeAndNil(_FHttp);
+    end;
+  end;
+begin
+  Result := False;
+  _resCode := -1;
+  _idHTTP := TIdHTTP.Create(AOwner);
+  try
+    try
+      _idHTTP.ReadTimeout := 30000;
+      _idHTTP.ConnectTimeout := 30000;
+      _idHTTP.AllowCookies := True;
+
+      _IdHTTP.Head(address);
+      _resCode := _IdHTTP.Response.ResponseCode;
+
+      Result := (_resCode > 99) and (_resCode < 400);
+      if not Result then
+        Result := Fallback;
+    except
+      on E : Exception do
+      begin
+        Result := Fallback;
+      end;
+    end;
+  finally
+    FreeAndNil(_idHTTP);
+  end;
+end;
 
 end.
