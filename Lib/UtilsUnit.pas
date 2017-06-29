@@ -3,11 +3,11 @@ unit UtilsUnit;
 interface
 
 uses
-  IBServices, INIFiles, Forms, AbZipper, Windows, SysUtils, StrUtils, Controls,
-  osComboSearch, graphics, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
-  Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils,
-  osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg,
-  Vcl.Imaging.GifImg;
+  IBServices, INIFiles, Forms, AbZipper, StrUtils, Controls,
+  osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
+  Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
+  osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
+  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -108,6 +108,32 @@ function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil): Boolean;
+function GetMacAddress: string;
+function GetWindowsDir: string;
+function GetPcName: string;
+function GetPrinters: string;
+function GetWindowsVersion: string;
+function GetLanguage: string;
+function GetScrollState: string;
+function ScreenResolution: string;
+function FreeDiskSpace(strDisk: string): string;
+function TimeInWindows: string;
+function GetPowerStatus: string;
+function GetUser: string;
+function GetProcessList: string;
+function GetSystemDecimal: string;
+function GetSystemInfo: string;
+function GetWindowPID(sFile: String): Cardinal;
+function EnumProcess(hHwnd: HWND; lParam : integer; var FProcessa: Boolean;
+ var FHWND: HWND; var FPid: DWORD; var iListOfProcess: Integer): boolean; stdcall;
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
+function EnumWindowsProc(Wnd: HWND; List: TStringList): BOOL; stdcall;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+function KillTask(const ExeFileName: string): Integer;
 
 implementation
 
@@ -1679,4 +1705,405 @@ begin
   end;
 end;
 
+function GetMacAddress: string;
+var
+  Lib: Cardinal;
+  Func: function(GUID: PGUID): Longint; stdcall;
+  GUID1, GUID2: TGUID;
+begin
+  Result := EmptyStr;
+  Lib := LoadLibrary('rpcrt4.dll');
+  if Lib <> 0 then
+  begin
+    try
+      @Func := GetProcAddress(Lib, 'UuidCreateSequential');
+      if Assigned(Func) then
+      begin
+        if (Func(@GUID1) = 0) and
+           (Func(@GUID2) = 0) and
+           (GUID1.D4[2] = GUID2.D4[2]) and
+           (GUID1.D4[3] = GUID2.D4[3]) and
+           (GUID1.D4[4] = GUID2.D4[4]) and
+           (GUID1.D4[5] = GUID2.D4[5]) and
+           (GUID1.D4[6] = GUID2.D4[6]) and
+           (GUID1.D4[7] = GUID2.D4[7]) then
+        begin
+          Result :=
+            IntToHex(GUID1.D4[2], 2) + '-' +
+            IntToHex(GUID1.D4[3], 2) + '-' +
+            IntToHex(GUID1.D4[4], 2) + '-' +
+            IntToHex(GUID1.D4[5], 2) + '-' +
+            IntToHex(GUID1.D4[6], 2) + '-' +
+            IntToHex(GUID1.D4[7], 2);
+        end;
+      end;
+    finally
+      FreeLibrary(Lib)
+    end;
+  end;
+end;
+
+function GetWindowsDir: string;
+var
+  PWindowsDir: array [0..255] of Char;
+begin
+  Result := EmptyStr;
+  GetWindowsDirectory(PWindowsDir,255);
+  Result := StrPas(PWindowsDir);
+end;
+
+function GetPowerStatus: string;
+var
+  PowerStatus: TSystemPowerStatus;
+begin
+  Result := EmptyStr;
+  GetSystemPowerStatus(PowerStatus);
+  if PowerStatus.ACLineStatus=1 then
+    Result := 'AC power online'
+  else
+    Result := 'AC power offline';
+end;
+
+function GetPrinters: string;
+begin
+  Result := Printer.Printers.Text;
+end;
+
+function GetSystemDecimal: string;
+var
+  MyDecimal: PChar;
+begin
+  Result := EmptyStr;
+  try
+    MyDecimal:=StrAlloc(10);
+    GetLocaleInfo(
+      LOCALE_SYSTEM_DEFAULT,
+      LOCALE_SDECIMAL,
+      MyDecimal,
+      10);
+    Result := 'System decimal is - "'+MyDecimal+'"';
+  finally
+    FreeMem(MyDecimal);
+  end;
+end;
+
+function GetPcName: string;
+var
+  CompName: array[0..256] of Char;
+  i: DWord;
+begin
+  Result := EmptyStr;
+  i:=256;
+  GetComputerName(CompName, i);
+  Result := StrPas(CompName);
+end;
+
+function GetProcessList: string;
+var
+  Wnd: hWnd;
+  Buff: array [0..127] of Char;
+begin
+  Result := EmptyStr;
+
+  Wnd:=GetWindow(Application.Handle, gw_HWndFirst);
+  while Wnd<>0 do
+  begin
+    if (Wnd<>Application.Handle) and
+      IsWindowVisible(Wnd) and
+      (GetWindow(Wnd, gw_Owner)=0) and
+      (GetWindowText(Wnd, Buff, sizeof(buff))<>0) then
+    begin
+      GetWindowText(Wnd, Buff, SizeOf(Buff));
+      Result := Result + #13#10 + StrPas(Buff);
+    end;
+    Wnd:=GetWindow(Wnd, gw_hWndNext);
+  end;
+end;
+
+function GetUser: string;
+var
+  StrUserName: PChar;
+  Size: DWord;
+begin
+  Result := EmptyStr;
+  try
+    Size:=250;
+    GetMem(StrUserName, Size);
+    GetUserName(StrUserName, Size);
+    Result := StrPas(StrUserName);
+  finally
+    FreeMem(StrUserName);
+  end;
+end;
+
+function GetWindowsVersion: string;
+begin
+  Result := TOSVersion.ToString;
+end;
+
+function TimeInWindows: string;
+begin
+  Result := FormatFloat('0#', GetTickCount div 1000 div 60);
+end;
+
+function FreeDiskSpace(strDisk: string): string;
+var
+  Bytes, Sectors: Cardinal;
+  freeClusters, totalClusters: Cardinal;
+begin
+  GetDiskFreeSpace(PChar(strDisk), Sectors, Bytes, freeClusters, totalClusters);
+  FreeDiskSpace := FormatFloat('###,###', (Sectors * Bytes * freeClusters));
+end;
+
+function ScreenResolution: string;
+var
+  X, Y: longint;
+begin
+  Result := EmptyStr;
+
+  X := GetSystemMetrics(SM_CXSCREEN);
+  Y := GetSystemMetrics(SM_CYSCREEN);
+  Result := Format('%dx%d', [X, Y]);
+end;
+
+function GetScrollState: string;
+begin
+  Result := EmptyStr;
+
+  if Odd(GetKeyState(VK_SCROLL)) then
+    Result := 'On'
+  else
+    Result := 'Off';
+end;
+
+function GetLanguage: string;
+var
+  LanguageID: LangID;
+  Lang: array[0..100] of char;
+begin
+  Result := EmptyStr;
+
+  LanguageID := GetSystemDefaultLangID;
+  VerLanguageName(LanguageID, Lang, 100);
+  Result := string(Lang);
+end;
+
+function GetSystemInfo: string;
+begin
+  Result := 'INFORMAÇÕES DO SISTEMA:';
+  Result := Result + #13#10 + '---------------------------------------------------------------------------';
+  Result := Result + #13#10 + 'Mac Address: '          + GetMacAddress;
+  Result := Result + #13#10 + 'Diretório do Windows: ' + GetWindowsDir;
+  Result := Result + #13#10 + 'Nome do Computador: '   + GetPcName;
+  Result := Result + #13#10 + 'Impressoras: ' + #13#10 + GetPrinters;
+  Result := Result + #13#10 + 'Versão do Windows: '    + GetWindowsVersion;
+  Result := Result + #13#10 + 'Idioma: '               + GetLanguage;
+  Result := Result + #13#10 + 'Estado do Scroll: '     + GetScrollState;
+  Result := Result + #13#10 + 'Resolução da Tela: '    + ScreenResolution;
+  Result := Result + #13#10 + 'Espaço Livre no C: '    + FreeDiskSpace('C');
+  Result := Result + #13#10 + 'Horário do Windows: '   + TimeInWindows;
+  Result := Result + #13#10 + 'Estado de Energia: '    + GetPowerStatus;
+  Result := Result + #13#10 + 'Usuário: '              + GetUser;
+  Result := Result + #13#10 + 'Lista de Processos: '   + GetProcessList;
+  Result := Result + #13#10 + '---------------------------------------------------------------------------';
+  //Result := GetSystemDecimal;
+end;
+
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
+begin
+  if Trim(ATaskName) <> EmptyStr then
+  begin
+    FTaskName := ATaskName;
+    FPid := GetWindowPID(ATaskName);
+    FProcessa := True;
+    if not EnumWindows(@EnumProcess, iListOfProcess) then
+      Exit
+    else
+      Application.ProcessMessages;
+
+    Result := FHWND;
+  end;
+end;
+
+function GetWindowPID(sFile: String): Cardinal;
+var
+  verSystem: TOSVersionInfo;
+  hdlProcess: THandle;
+  bPath: Bool;
+  arrPid: Array [0..1023] of DWORD;
+  iC: DWord;
+  k,iCount: Integer;
+  arrModul: Array [0..299] of Char;
+  hdlModul: HMODULE;
+  xHWND : HWND;
+begin
+  Result := 0;
+  if ExtractFileName(sFile)=sFile then
+    bPath:=false
+  else
+    bPath:=true;
+
+  verSystem.dwOSVersionInfoSize:=SizeOf(TOSVersionInfo);
+  GetVersionEx(verSystem);
+  if verSystem.dwPlatformId=VER_PLATFORM_WIN32_NT then
+  begin
+    EnumProcesses(@arrPid,SizeOf(arrPid),iC);
+    iCount := iC div SizeOf(DWORD);
+    for k := 0 to Pred(iCount) do
+    begin
+      hdlProcess:=OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,false,arrPid [k]);
+      xHWND := hwnd(hdlProcess);
+      if (hdlProcess<>0) then
+      begin
+        EnumProcessModules(hdlProcess,@hdlModul,SizeOf(hdlModul),iC);
+        GetModuleFilenameEx(hdlProcess,hdlModul,arrModul,SizeOf(arrModul));
+        if bPath then
+        begin
+          if CompareText(arrModul,sFile) = 0 then
+          begin
+            Result := arrPid[k];
+          end;
+        end
+        else
+        begin
+          if CompareText(ExtractFileName(arrModul),sFile) = 0 then
+          begin
+            Result := arrPid[k];
+          end;
+        end;
+        CloseHandle(hdlProcess);
+      end;
+    end;
+  end;
+end;
+
+function EnumProcess(hHwnd: HWND; lParam : integer; var FProcessa: Boolean;
+ var FHWND: HWND; var FPid: DWORD; var iListOfProcess: Integer): boolean; stdcall;
+var
+  pPid : DWORD;
+  ClassName : string;
+  AHWND : HWND;
+begin
+  try
+    if not FProcessa then
+      Exit;
+
+    FHWND := 0;
+    //Se retornar nulo, cancela e sai
+    if (hHwnd=NULL) then
+    begin
+      result := false;
+    end
+    else
+    begin
+      AHWND := hHWND;
+      GetWindowThreadProcessId(hHwnd,pPid);
+      //ClassName do Processo
+      SetLength(ClassName, 255);
+      SetLength(ClassName,
+                GetClassName(hHwnd,
+                             PChar(className),
+                             Length(className)));
+      if (pPid = FPid) and (UpperCase(className) = UpperCase('TApplication')) then
+      begin
+        FHWND := AHWND;
+        FProcessa := False;
+        Result := true;
+        Abort;
+      end;
+      Result := true;
+    end;
+  except
+  end;
+end;
+
+function EnumWindowsProc (Wnd: HWND; List: TStringList): BOOL; stdcall;
+(*Copy all Task-names into a list*)
+var
+  Caption: Array [0..128] of Char;
+begin
+  Result := True;
+  SendMessage(Wnd, WM_GETTEXT, Sizeof(Caption), integer(@Caption));
+  List.AddObject(Caption, TObject(Wnd));
+end;
+
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  try
+    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+    Result := False;
+    while Integer(ContinueLoop) <> 0 do
+    begin
+      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+        UpperCase(ExeFileName))) then
+      begin
+        Result := True;
+        ValidaTravamento(UpperCase(ExeFileName), FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+      end;
+      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+    end;
+  finally
+    CloseHandle(FSnapshotHandle);
+  end;
+end;
+
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: DWORD;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+var
+ dwResult: DWORD;
+ ValorRetorno: Longint;
+ ObjOleVar : OLEVariant;
+ AppHandle : THandle;
+begin
+  AppHandle:= UtilsUnit.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+  if AppHandle <> 0 then
+  begin
+    ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+     SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+    if ValorRetorno > 0 then
+      //addLogTrava('Respondendo')
+      Result := True
+    else
+      //addLogTrava('*** NÃO RESPONDENDO ***');
+      Result := False;
+  end;
+end;
+
+function KillTask(const ExeFileName: string): Integer;
+const
+  PROCESS_TERMINATE = $0001;
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  Result := 0;
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  while Integer(ContinueLoop) <> 0 do
+  begin
+    if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+      UpperCase(ExeFileName))) then
+      Result := Integer(TerminateProcess(
+                        OpenProcess(PROCESS_TERMINATE,
+                                    BOOL(0),
+                                    FProcessEntry32.th32ProcessID),
+                                    0));
+     ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+  end;
+  CloseHandle(FSnapshotHandle);
+end;
+
 end.
+
