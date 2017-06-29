@@ -79,6 +79,7 @@ function GetIPAddress: string;
 function ConverteRTF(rtf: string): string;
 function ConverteTextoToRTF(Texto: string): string;
 function FieldHasChanged(aField : TField):Boolean;
+procedure CheckChangedFields(aDataSet: TClientDataSet; aChangedFields: TStringList);
 function ValueIsEmptyNull(aValue : Variant):Boolean;
 function getDescricaoSexo(const vValor : Variant):String;
 function getDescricaoSimNao(const vValor : Variant):String;
@@ -1106,6 +1107,27 @@ begin
       Result := aField.OldValue <> aField.NewValue;
   end;
 end;
+
+procedure CheckChangedFields(aDataSet: TClientDataSet; aChangedFields: TStringList);
+var
+  _i: integer;
+begin
+  aChangedFields.Clear;
+  for _i := 0 to aDataSet.FieldCount - 1 do
+  begin
+    if (aDataSet.Fields[_i].FieldKind = fkData) and
+       (aDataSet.Fields[_i].DataType in [ftString, ftSmallint, ftInteger, ftWord,
+                                         ftBoolean, ftFloat, ftCurrency, ftBCD, ftDate, ftTime, ftDateTime,
+                                         ftWideString, ftLargeint, ftLongWord, ftShortint,
+                                         ftByte, ftExtended]) and
+       (not aDataSet.Fields[_i].IsNull) then
+    begin
+      if UtilsUnit.FieldHasChanged(aDataSet.Fields[_i]) then
+        aChangedFields.Add(aDataSet.Fields[_i].FieldName);
+    end;
+  end;
+end;
+
 
 function ValueIsEmptyNull(aValue : Variant):Boolean;
 begin
