@@ -2091,16 +2091,16 @@ begin
   Result := False;
 
   try
-  AppHandle:= UtilsUnit.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
-  if AppHandle <> 0 then
-  begin
-    ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
-     SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
-    if ValorRetorno > 0 then
-      Result := True
-    else
-      Result := False;
-  end;
+    AppHandle:= UtilsUnit.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+    if AppHandle <> 0 then
+    begin
+      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+      if ValorRetorno > 0 then
+        Result := True
+      else
+        Result := False;
+    end;
   except
   end;
 end;
