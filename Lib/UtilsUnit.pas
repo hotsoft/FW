@@ -127,12 +127,12 @@ function GetSystemInfo: string;
 function GetWindowPID(sFile: String): Cardinal;
 function EnumProcess(hHwnd: HWND; lParam : integer; var FProcessa: Boolean;
  var FHWND: HWND; var FPid: DWORD; var iListOfProcess: Integer): boolean; stdcall;
-function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: DWORD;
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
 function EnumWindowsProc(Wnd: HWND; List: TStringList): BOOL; stdcall;
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: DWORD;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
-function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: DWORD;
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 function KillTask(const ExeFileName: string): Integer;
 
@@ -150,8 +150,8 @@ Var
 begin
   Result := '';
   for I := 1 to Length(nStr) do
-    if nStr[I] in['0'..'9','a'..'z','A'..'Z',Chr(8)] then
-       Result := Result + nStr[I]; 
+    if CharInSet(nStr[I], ['0'..'9','a'..'z','A'..'Z',Chr(8)]) then
+       Result := Result + nStr[I];
 end;   
 
 function FormataStringList(texto, delimitador: string): string;
@@ -870,6 +870,7 @@ end;
 
 function ConverteTecladoNumerico(Key: Word): Word;
 begin
+  Result := 190;
   case Key of
     VK_NUMPAD0: Result := 48;	//96 0 key (numeric keypad)
     VK_NUMPAD1: Result := 49;	//97 1 key (numeric keypad)
@@ -1525,7 +1526,7 @@ begin
     ms.Position := 0;
 
     SetString(base64String, PAnsiChar(ms.Memory), ms.Size);
-    myFile := BinaryFromBase64(base64String);
+    myFile := BinaryFromBase64(string(base64String));
     try
       DetectImage(myFile, Result);
     finally
@@ -1580,7 +1581,6 @@ var
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
-  Result := False;
   Stream := TStringStream.Create('');
 
   HTTPClient := TidHTTP.Create(nil);
@@ -1701,7 +1701,6 @@ var
     end;
   end;
 begin
-  Result := False;
   _resCode := -1;
   _idHTTP := TIdHTTP.Create(AOwner);
   try
@@ -1796,6 +1795,7 @@ var
   MyDecimal: PChar;
 begin
   Result := EmptyStr;
+  MyDecimal := Pwidechar(Widestring(EmptyStr));
   try
     MyDecimal:=StrAlloc(10);
     GetLocaleInfo(
@@ -1848,6 +1848,7 @@ var
   Size: DWord;
 begin
   Result := EmptyStr;
+  StrUserName := Pwidechar(Widestring(EmptyStr));
   try
     Size:=250;
     GetMem(StrUserName, Size);
@@ -1931,13 +1932,15 @@ begin
   //Result := GetSystemDecimal;
 end;
 
-function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: DWORD;
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
 begin
+  Result := FHWND;
+
   if Trim(ATaskName) <> EmptyStr then
   begin
     FTaskName := ATaskName;
-    FPid := GetWindowPID(ATaskName);
+    FPid := PDWORD_PTR(GetWindowPID(ATaskName));
     FProcessa := True;
     if not EnumWindows(@EnumProcess, iListOfProcess) then
       Exit
@@ -1958,7 +1961,6 @@ var
   k,iCount: Integer;
   arrModul: Array [0..299] of Char;
   hdlModul: HMODULE;
-  xHWND : HWND;
 begin
   Result := 0;
   if ExtractFileName(sFile)=sFile then
@@ -1975,7 +1977,6 @@ begin
     for k := 0 to Pred(iCount) do
     begin
       hdlProcess:=OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,false,arrPid [k]);
-      xHWND := hwnd(hdlProcess);
       if (hdlProcess<>0) then
       begin
         EnumProcessModules(hdlProcess,@hdlModul,SizeOf(hdlModul),iC);
@@ -2007,6 +2008,8 @@ var
   ClassName : string;
   AHWND : HWND;
 begin
+  Result := True;
+
   try
     if not FProcessa then
       Exit;
@@ -2031,10 +2034,10 @@ begin
       begin
         FHWND := AHWND;
         FProcessa := False;
-        Result := true;
+        Result := True;
         Abort;
       end;
-      Result := true;
+      Result := True;
     end;
   except
   end;
@@ -2050,7 +2053,7 @@ begin
   List.AddObject(Caption, TObject(Wnd));
 end;
 
-function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: DWORD;
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 var
   ContinueLoop: BOOL;
@@ -2078,25 +2081,27 @@ begin
   end;
 end;
 
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: DWORD;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 var
- dwResult: DWORD;
+ dwResult: PDWORD_PTR;
  ValorRetorno: Longint;
- ObjOleVar : OLEVariant;
  AppHandle : THandle;
 begin
+  Result := False;
+
+  try
   AppHandle:= UtilsUnit.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
   if AppHandle <> 0 then
   begin
     ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
      SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
     if ValorRetorno > 0 then
-      //addLogTrava('Respondendo')
       Result := True
     else
-      //addLogTrava('*** NÃO RESPONDENDO ***');
       Result := False;
+  end;
+  except
   end;
 end;
 
