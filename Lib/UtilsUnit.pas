@@ -104,6 +104,7 @@ function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function Base64FromBinary(const FileName: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
+function Base64FromStream(const input: TStream): string;
 procedure dgCreateProcess(const FileName: string);
 function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
@@ -1448,6 +1449,20 @@ begin
     end;
   finally
     Input.Free;
+  end;
+end;
+
+function Base64FromStream(const input: TStream): string;
+var
+  Output: TStringStream;
+begin
+  input.Position := 0;
+  Output := TStringStream.Create('', TEncoding.ASCII);
+  try
+    Soap.EncdDecd.EncodeStream(input, Output);
+    Result := Output.DataString;
+  finally
+    Output.Free;
   end;
 end;
 
