@@ -123,6 +123,7 @@ function TimeInWindows: string;
 function GetPowerStatus: string;
 function GetUser: string;
 function GetProcessList: string;
+function getMemoryUsed: Integer;
 function GetSystemDecimal: string;
 function GetSystemInfo: string;
 function GetWindowPID(sFile: String): Cardinal;
@@ -1851,10 +1852,21 @@ begin
       (GetWindowText(Wnd, Buff, sizeof(buff))<>0) then
     begin
       GetWindowText(Wnd, Buff, SizeOf(Buff));
-      Result := Result + #13#10 + StrPas(Buff);
+      Result := Result + #13#10 + StrPas(Buff) + 'Memória: ' + IntToStr(getMemoryUsed);
     end;
     Wnd:=GetWindow(Wnd, gw_hWndNext);
   end;
+end;
+
+function getMemoryUsed: Integer;
+var
+  pmc: PROCESS_MEMORY_COUNTERS;
+begin
+  pmc.cb := sizeof(pmc);
+
+  Result := 0;
+  if GetProcessMemoryInfo(GetCurrentProcess, @pmc, sizeof(pmc)) then
+    Result := pmc.WorkingSetSize;
 end;
 
 function GetUser: string;
