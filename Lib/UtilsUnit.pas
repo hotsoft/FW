@@ -1691,6 +1691,7 @@ end;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil) : Boolean;
 var
   _idHTTP: TIdHTTP;
+  LHandler: TIdSSLIOHandlerSocketOpenSSL;
   _resCode: Integer;
 
   function Fallback: Boolean;
@@ -1699,7 +1700,7 @@ var
   begin
     _FHttp := TIdHTTP.Create(AOwner);
     try
-      Result := False;
+      Result := TestConection(address);
       try
         if stream is TIdMultiPartFormDataStream  then
           _FHttp.Post(address, TIdMultiPartFormDataStream(stream))
@@ -1719,11 +1720,14 @@ var
 begin
   _resCode := -1;
   _idHTTP := TIdHTTP.Create(AOwner);
+  LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_idHTTP);
   try
     try
       _idHTTP.ReadTimeout := 30000;
       _idHTTP.ConnectTimeout := 30000;
       _idHTTP.AllowCookies := True;
+      _idHTTP.IOHandler := LHandler;
+      _idHTTP.HandleRedirects := True;
 
       _IdHTTP.Head(address);
       _resCode := _IdHTTP.Response.ResponseCode;
@@ -1739,6 +1743,7 @@ begin
     end;
   finally
     FreeAndNil(_idHTTP);
+    FreeAndNil(LHandler);
   end;
 end;
 
