@@ -89,7 +89,7 @@ function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFunca
 function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet; 
   const sCampoChave: String; const sCampoRetorno: String):String; 
 function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet;  cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
 function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
@@ -1184,7 +1184,7 @@ begin
   end;
 end;
 
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
 var
   field : TField;
   i: Integer;
@@ -1202,7 +1202,6 @@ begin
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
-      Field.Visible := cdsOrigem.Fields[i].Visible;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1706,6 +1705,7 @@ end;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil) : Boolean;
 var
   _idHTTP: TIdHTTP;
+  LHandler: TIdSSLIOHandlerSocketOpenSSL;
   _resCode: Integer;
 
   function Fallback: Boolean;
@@ -1714,7 +1714,7 @@ var
   begin
     _FHttp := TIdHTTP.Create(AOwner);
     try
-      Result := False;
+      Result := TestConection(address);
       try
         if stream is TIdMultiPartFormDataStream  then
           _FHttp.Post(address, TIdMultiPartFormDataStream(stream))
@@ -1734,11 +1734,14 @@ var
 begin
   _resCode := -1;
   _idHTTP := TIdHTTP.Create(AOwner);
+  LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_idHTTP);
   try
     try
       _idHTTP.ReadTimeout := 30000;
       _idHTTP.ConnectTimeout := 30000;
       _idHTTP.AllowCookies := True;
+      _idHTTP.IOHandler := LHandler;
+      _idHTTP.HandleRedirects := True;
 
       _IdHTTP.Head(address);
       _resCode := _IdHTTP.Response.ResponseCode;
@@ -1754,6 +1757,7 @@ begin
     end;
   finally
     FreeAndNil(_idHTTP);
+    FreeAndNil(LHandler);
   end;
 end;
 
