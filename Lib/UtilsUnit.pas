@@ -89,7 +89,7 @@ function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFunca
 function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet; 
   const sCampoChave: String; const sCampoRetorno: String):String; 
 function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
 function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
   const sCampoChave: String; aCampoDescricao: Array of String): String;
 function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
@@ -1184,14 +1184,11 @@ begin
   end;
 end;
 
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; var cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
 var
   field : TField;
   i: Integer;
 begin
-  if not Assigned(cdsDestino) then
-    cdsDestino := TClientDataSet.Create(nil);
-
   if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
   begin
     for i := 0 to cdsOrigem.FieldCount-1 do
@@ -1204,6 +1201,7 @@ begin
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
+      Field.Visible := cdsOrigem.Fields[i].Visible;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
