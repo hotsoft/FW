@@ -1189,6 +1189,8 @@ var
   field : TField;
   i: Integer;
 begin
+  if not Assigned(cdsDestino) then
+    cdsDestino := TClientDataSet.Create(nil);
 
   if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
   begin
