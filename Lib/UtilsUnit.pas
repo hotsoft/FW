@@ -102,6 +102,7 @@ function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function Base64FromBinary(const FileName: String): string;
+function Base64FromText(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
@@ -1451,6 +1452,11 @@ begin
   finally
     Input.Free;
   end;
+end;
+
+function Base64FromText(const text: String): string;
+begin
+  Result := EncodeString(text);
 end;
 
 function Base64FromStream(const input: TStream): string;
