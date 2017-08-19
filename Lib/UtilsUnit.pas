@@ -138,10 +138,14 @@ function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FP
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 function KillTask(const ExeFileName: string): Integer;
+function GetMD5FromString(const text: string): String;
+function GetPageAsstring(const url: string): String;
+function GetUrlWhitoutParams(const url: String): String;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1630,6 +1634,25 @@ begin
   end;
 end;
 
+function GetPageAsString(const url: String): String;
+var
+  lHTTP: TIdHTTP;
+  lUri: TIdURI;
+begin
+  Result := EmptyStr;
+
+  if TestConection(url) then
+  begin
+    lHTTP := TIdHTTP.Create(Application);
+    lUri := TIdUri.Create;
+    try
+      Result := lHTTP.Get(lUri.URLEncode(url));
+    finally
+      FreeAndNil(lHTTP);
+      FreeAndNil(lUri);
+    end;
+  end;
+end;
 
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
@@ -1750,6 +1773,20 @@ begin
   finally
     FreeAndNil(_idHTTP);
     FreeAndNil(LHandler);
+  end;
+end;
+
+function GetUrlWhitoutParams(const url: String): String;
+var
+  _uri: TIdURI;
+begin
+  Result := EmptyStr;
+
+  _uri := TIdURI.Create(url);
+  try
+    Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
+  finally
+    FreeAndNil(_uri);
   end;
 end;
 
@@ -2168,6 +2205,19 @@ begin
      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
   end;
   CloseHandle(FSnapshotHandle);
+end;
+
+function GetMD5FromString(const text: string): String;
+var
+  hashMessageDigest5 : TIdHashMessageDigest5;
+begin
+  Result := EmptyStr;
+  hashMessageDigest5 := TIdHashMessageDigest5.Create;
+  try
+    Result := IdGlobal.IndyLowerCase(hashMessageDigest5.HashStringAsHex(Trim(text)));
+  finally
+    FreeAndNil(hashMessageDigest5);
+  end;
 end;
 
 end.
