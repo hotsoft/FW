@@ -140,7 +140,7 @@ function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDW
 function KillTask(const ExeFileName: string): Integer;
 function GetMD5FromString(const text: string): String;
 function GetPageAsstring(const url: string): String;
-function GetUrlWhitoutParams(const url: String): String;
+function GetUrlWithoutParams(const url: String): String;
 
 implementation
 
@@ -1776,7 +1776,7 @@ begin
   end;
 end;
 
-function GetUrlWhitoutParams(const url: String): String;
+function GetUrlWithoutParams(const url: String): String;
 var
   _uri: TIdURI;
 begin
