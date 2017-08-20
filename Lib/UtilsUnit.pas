@@ -1798,11 +1798,14 @@ var
 begin
   Result := EmptyStr;
 
-  _uri := TIdURI.Create(url);
-  try
-    Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
-  finally
-    FreeAndNil(_uri);
+  if url <> EmptyStr then
+  begin
+   _uri := TIdURI.Create(url);
+   try
+     Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
+   finally
+     FreeAndNil(_uri);
+   end;
   end;
 end;
 
