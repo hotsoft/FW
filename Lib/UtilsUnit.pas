@@ -145,11 +145,12 @@ function GetUrlWithoutParams(const url: String): String;
 function GetDllName: string;
 function GetTempDirectory: string;
 function GetLastErrorMessage: string;
+function LocalIp: string;
 
 implementation
 
 uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1023,7 +1024,24 @@ begin
     tempAddress := longint(pointer(RemoteHost^.h_addr_list^)^);
     tempAddress := Winsock.ntohl(tempAddress);
   end;
-  Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+  Result := Format('%.3d.%.3d.%.3d.%.3d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+end;
+
+function LocalIp: string;
+var
+  IPW: TIdIPWatch;
+begin
+  Result := '127.0.0.1';
+
+  IpW := TIdIPWatch.Create(Application);
+  try
+    IpW.Active := True;
+    if IpW.LocalIP <> EmptyStr then
+      Result := IpW.LocalIP;
+  finally
+    if Assigned(IpW) then
+      FreeAndNil(IpW);
+  end;
 end;
 
 class function THSHash.CalculaHash(conteudo: string; pDig : Integer = 2): string;
