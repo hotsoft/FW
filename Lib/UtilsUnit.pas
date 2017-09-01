@@ -146,6 +146,7 @@ function GetDllName: string;
 function GetTempDirectory: string;
 function GetLastErrorMessage: string;
 function LocalIp: string;
+function FormatIP(const ip: string): String;
 
 implementation
 
@@ -1024,7 +1025,22 @@ begin
     tempAddress := longint(pointer(RemoteHost^.h_addr_list^)^);
     tempAddress := Winsock.ntohl(tempAddress);
   end;
-  Result := Format('%.3d.%.3d.%.3d.%.3d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+  Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+end;
+
+function FormatIP(const ip: string): String;
+var
+  _ip: TStringList;
+begin
+  Result := ip;
+  _ip := TStringList.Create;
+  _ip.Delimiter := '.';
+  _ip.DelimitedText := ip;
+  try
+    Result := Format('%.3d.%.3d.%.3d.%.3d', [StrToIntDef(_ip[0], 1), StrToIntDef(_ip[1], 1), StrToIntDef(_ip[2], 1), StrToIntDef(_ip[3], 1)]);
+  finally
+    FreeAndNil(_ip);
+  end;
 end;
 
 function LocalIp: string;
@@ -1037,7 +1053,7 @@ begin
   try
     IpW.Active := True;
     if IpW.LocalIP <> EmptyStr then
-      Result := IpW.LocalIP;
+      Result := FormatIP(IpW.LocalIP);
   finally
     if Assigned(IpW) then
       FreeAndNil(IpW);
