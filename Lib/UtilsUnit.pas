@@ -103,6 +103,7 @@ function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
+function Base64FromText(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
@@ -138,10 +139,18 @@ function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FP
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 function KillTask(const ExeFileName: string): Integer;
+function GetMD5FromString(const text: string): String;
+function GetPageAsstring(const url: string): String;
+function GetUrlWithoutParams(const url: String): String;
+function GetDllName: string;
+function GetTempDirectory: string;
+function GetLastErrorMessage: string;
+function LocalIp: string;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData;
+uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1015,7 +1024,24 @@ begin
     tempAddress := longint(pointer(RemoteHost^.h_addr_list^)^);
     tempAddress := Winsock.ntohl(tempAddress);
   end;
-  Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+  Result := Format('%.3d.%.3d.%.3d.%.3d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+end;
+
+function LocalIp: string;
+var
+  IPW: TIdIPWatch;
+begin
+  Result := '127.0.0.1';
+
+  IpW := TIdIPWatch.Create(Application);
+  try
+    IpW.Active := True;
+    if IpW.LocalIP <> EmptyStr then
+      Result := IpW.LocalIP;
+  finally
+    if Assigned(IpW) then
+      FreeAndNil(IpW);
+  end;
 end;
 
 class function THSHash.CalculaHash(conteudo: string; pDig : Integer = 2): string;
@@ -1467,6 +1493,11 @@ begin
   end;
 end;
 
+function Base64FromText(const text: String): string;
+begin
+  Result := EncodeString(text);
+end;
+
 function Base64FromStream(const input: TStream): string;
 var
   Output: TStringStream;
@@ -1638,6 +1669,25 @@ begin
   end;
 end;
 
+function GetPageAsString(const url: String): String;
+var
+  lHTTP: TIdHTTP;
+  lUri: TIdURI;
+begin
+  Result := EmptyStr;
+
+  if TestConection(url) then
+  begin
+    lHTTP := TIdHTTP.Create(Application);
+    lUri := TIdUri.Create;
+    try
+      Result := lHTTP.Get(lUri.URLEncode(url));
+    finally
+      FreeAndNil(lHTTP);
+      FreeAndNil(lUri);
+    end;
+  end;
+end;
 
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
@@ -1758,6 +1808,23 @@ begin
   finally
     FreeAndNil(_idHTTP);
     FreeAndNil(LHandler);
+  end;
+end;
+
+function GetUrlWithoutParams(const url: String): String;
+var
+  _uri: TIdURI;
+begin
+  Result := EmptyStr;
+
+  if url <> EmptyStr then
+  begin
+   _uri := TIdURI.Create(url);
+   try
+     Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
+   finally
+     FreeAndNil(_uri);
+   end;
   end;
 end;
 
@@ -2176,6 +2243,44 @@ begin
      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
   end;
   CloseHandle(FSnapshotHandle);
+end;
+
+function GetMD5FromString(const text: string): String;
+var
+  hashMessageDigest5 : TIdHashMessageDigest5;
+begin
+  Result := EmptyStr;
+  hashMessageDigest5 := TIdHashMessageDigest5.Create;
+  try
+    Result := IdGlobal.IndyLowerCase(hashMessageDigest5.HashStringAsHex(Trim(text)));
+  finally
+    FreeAndNil(hashMessageDigest5);
+  end;
+end;
+
+function GetDllName: string;
+var
+  szFileName: array[0..MAX_PATH] of Char;
+begin
+  Result := EmptyStr;
+  FillChar(szFileName, SizeOf(szFileName), #0);
+  if ( Winapi.Windows.GetModuleFileName(HInstance, szFileName, MAX_PATH) ) > 0 then
+    Result := string(szFileName);
+end;
+
+function GetTempDirectory: string;
+var
+  tempFolder: array[0..MAX_PATH] of Char;
+begin
+  Result := 'C:\Windows\Temp';
+  GetTempPath(MAX_PATH, @tempFolder);
+  Result := StrPas(tempFolder);
+end;
+
+function GetLastErrorMessage: string;
+begin
+  Result := EmptyStr;
+  Result := SysErrorMessage(Winapi.Windows.GetLastError);
 end;
 
 end.
