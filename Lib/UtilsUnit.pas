@@ -7,7 +7,8 @@ uses
   osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
-  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics;
+  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
+  IdHashSHA;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -142,6 +143,9 @@ function KillTask(const ExeFileName: string): Integer;
 function GetMD5FromString(const text: string): String;
 function GetPageAsstring(const url: string): String;
 function GetUrlWithoutParams(const url: String): String;
+function GetSHA1FromString(const text: string): string;
+function GetSHA1FromFile(const path: string): string;
+function getFileSizeInBytes(const fn: string): integer;
 
 implementation
 
@@ -2235,6 +2239,72 @@ begin
     FreeAndNil(hashMessageDigest5);
   end;
 end;
+
+function GetSHA1FromString(const text: string): string;
+var
+  _sha1: TIdHashSHA1;
+begin
+  Result := EmptyStr;
+  _sha1 := TIdHashSHA1.Create;
+  try
+    Result := _sha1.HashStringAsHex(text);
+  finally
+    FreeAndNil(_sha1);
+  end;
+end;
+
+function GetSHA1FromFile(const path: string): string;
+var
+  _sha1: TIdHashSHA1;
+  _file: TFileStream;
+  _reader: TBinaryReader;
+  _size: integer;
+begin
+  Result := EmptyStr;
+
+  _sha1 := TIdHashSHA1.Create;
+  _size := getFileSizeInBytes(path);
+  if FileExists(path) then
+  begin
+    _file := TFileStream.Create(path,fmOpenRead);
+    _reader := TBinaryReader.Create(_file);
+    try
+      if _size > 0 then
+        Result := _sha1.HashBytesAsHex(TIdBytes(_reader.ReadBytes(_size)));
+    finally
+      FreeAndNil(_sha1);
+      FreeAndNil(_file);
+      FreeAndNil(_reader);
+    end;
+  end;
+end;
+
+function getFileSizeInBytes(const fn: string): integer;
+var
+  f: File of byte;
+begin
+  Result := -1;
+  if (FileExists(fn)) then
+  begin
+    try
+      {$I-}
+      AssignFile(f, fn);
+      Reset(f);
+      {$I+}
+      if (IOResult = 0) then
+      begin
+        Result := FileSize(f);
+      end
+      else
+      begin
+        Result := 0;
+      end;
+    finally
+      {$I-}CloseFile(f);{$I+}
+    end;
+  end;
+end;
+
 
 end.
 
