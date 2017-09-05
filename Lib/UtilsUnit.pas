@@ -145,7 +145,7 @@ function GetPageAsstring(const url: string): String;
 function GetUrlWithoutParams(const url: String): String;
 function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
-function getFileSizeInBytes(const fn: string): integer;
+function GetFileSize(const filename: widestring): Int64;
 
 implementation
 
@@ -2247,7 +2247,8 @@ begin
   Result := EmptyStr;
   _sha1 := TIdHashSHA1.Create;
   try
-    Result := _sha1.HashStringAsHex(text);
+    Result := Trim(_sha1.HashStringAsHex(text));
+    Result := LeftStr(Result, 40);
   finally
     FreeAndNil(_sha1);
   end;
@@ -2263,14 +2264,15 @@ begin
   Result := EmptyStr;
 
   _sha1 := TIdHashSHA1.Create;
-  _size := getFileSizeInBytes(path);
+  _size := GetFileSize(path);
   if FileExists(path) then
   begin
     _file := TFileStream.Create(path,fmOpenRead);
     _reader := TBinaryReader.Create(_file);
     try
       if _size > 0 then
-        Result := _sha1.HashBytesAsHex(TIdBytes(_reader.ReadBytes(_size)));
+        Result := Trim(_sha1.HashBytesAsHex(TIdBytes(_reader.ReadBytes(_size))));
+        Result := LeftStr(Result, 40);
     finally
       FreeAndNil(_sha1);
       FreeAndNil(_file);
@@ -2279,32 +2281,19 @@ begin
   end;
 end;
 
-function getFileSizeInBytes(const fn: string): integer;
+function GetFileSize(const filename: widestring): Int64;
 var
-  f: File of byte;
+  sr: TSearchRec;
 begin
   Result := -1;
-  if (FileExists(fn)) then
-  begin
-    try
-      {$I-}
-      AssignFile(f, fn);
-      Reset(f);
-      {$I+}
-      if (IOResult = 0) then
-      begin
-        Result := FileSize(f);
-      end
-      else
-      begin
-        Result := 0;
-      end;
-    finally
-      {$I-}CloseFile(f);{$I+}
-    end;
+  try
+    if ((FileExists(filename)) and (FindFirst(filename, faAnyFile, sr) = 0)) then
+        Result := Int64(sr.FindData.nFileSizeHigh) shl Int64(32) +
+        Int64(sr.FindData.nFileSizeLow);
+  finally
+    FindClose(sr);
   end;
 end;
-
 
 end.
 
