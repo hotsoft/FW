@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Data.DBXFirebird, FMTBcd, SqlExpr, osSQLDataSet, DB,
   osSQLConnection, Provider, osCustomDataSetProvider, osSQLDataSetProvider,
-  DBTables, osClientDataSet, Contnrs, osSQLQuery, Forms, Types, Variants,
+  osClientDataSet, Contnrs, osSQLQuery, Forms, Types, Variants,
   Data.DBXInterBase, Data.DBXCommon;
 
 const
@@ -39,7 +39,6 @@ type
   end;
 
   TacCustomSQLMainData = class(TDataModule)
-    spGetNewSequence: TStoredProc;
     prvFilter: TosSQLDataSetProvider;
     SQLConnection: TosSQLConnection;
     FilterQuery: TosSQLDataSet;
@@ -77,7 +76,6 @@ type
     function GetQuery(meta: boolean = false): TosSQLQuery;
     procedure FreeQuery(Query: TosSQLQuery);
 
-    function GetNextSequence(Nome: string): integer;
     function GetServerDate: TDatetime;
     function GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
     function InTransaction: boolean;
@@ -450,16 +448,6 @@ begin
     finally
       FreeAndNil(qryAux);
     end;
-  end;
-end;
-
-function TacCustomSQLMainData.GetNextSequence(Nome: string): integer;
-begin
-  with spGetNewSequence do
-  begin
-    ParamByName('@Name').Value := Nome;
-    ExecProc;
-    Result := ParamByName('@Value').Value;
   end;
 end;
 

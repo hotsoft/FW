@@ -8,7 +8,8 @@ uses
   StdCtrls, Mask, DBCtrls, Grids, DBGrids, ComCtrls,
   wwdbedit, Wwdotdot, Wwdbcomb, Menus, ImgList,
   osActionList, ToolWin, Buttons, ExtCtrls, osComboSearch, osUtils,
-  Wwdbigrd, Wwdbgrid, DBTables, Wwdbspin, DBActns, acCustomSQLMainDataUn;
+  Wwdbigrd, Wwdbgrid, Wwdbspin, DBActns, acCustomSQLMainDataUn,
+  System.ImageList, System.Actions;
 
 type
   TRecursoEditForm = class(TosCustomEditForm)

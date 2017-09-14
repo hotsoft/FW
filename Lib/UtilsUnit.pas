@@ -3,7 +3,8 @@ unit UtilsUnit;
 interface
 
 uses
-  IBServices, INIFiles, Forms, AbZipper, StrUtils, Controls,
+  {$IFDEF VER250}IBServices,{$ENDIF}{$IFDEF VER320}IBX.IBServices,{$ENDIF}
+  INIFiles, Forms, AbZipper, StrUtils, Controls,
   osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,

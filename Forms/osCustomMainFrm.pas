@@ -11,7 +11,7 @@ uses
   ADODB, Provider, osFrm, osAppResources, ppViewr, ppClass,
   ppReport, ppComm, ppRelatv, ppDB, ppDBPipe, ppBands, ppCache, ppVar, ppCtrls,
   ppProd, ppPrnabl, osActionList, osClientDataset, osMD5,
-  osUtils, OleCtrls, SHDocVw, ppTmplat, osSQLDataSet, dbTables,
+  osUtils, OleCtrls, SHDocVw, ppTmplat, osSQLDataSet,
   SqlExpr, Data.DBXFirebird, daIDE, daDBExpress, ppCTDsgn, raIDE, myChkBox,
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,

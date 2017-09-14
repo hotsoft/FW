@@ -3,27 +3,6 @@ object acCustomSQLMainData: TacCustomSQLMainData
   OnCreate = DataModuleCreate
   Height = 365
   Width = 631
-  object spGetNewSequence: TStoredProc
-    StoredProcName = 'dbo.cc_GetNewSequence'
-    Left = 100
-    Top = 200
-    ParamData = <
-      item
-        DataType = ftInteger
-        Name = 'Result'
-        ParamType = ptResult
-      end
-      item
-        DataType = ftString
-        Name = '@Name'
-        ParamType = ptInput
-      end
-      item
-        DataType = ftInteger
-        Name = '@Value'
-        ParamType = ptOutput
-      end>
-  end
   object prvFilter: TosSQLDataSetProvider
     DataSet = FilterQuery
     Options = [poReadOnly, poNoReset, poAllowCommandText]
