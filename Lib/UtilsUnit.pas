@@ -8,7 +8,8 @@ uses
   osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
-  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics;
+  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
+  FolderDialog;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -148,6 +149,7 @@ function GetTempDirectory: string;
 function GetLastErrorMessage: string;
 function LocalIp: string;
 function FormatIP(const ip: string): String;
+function ExecuteOpenFolderDialog: string;
 
 implementation
 
@@ -2300,6 +2302,22 @@ function GetLastErrorMessage: string;
 begin
   Result := EmptyStr;
   Result := SysErrorMessage(Winapi.Windows.GetLastError);
+end;
+
+function ExecuteOpenFolderDialog: string;
+var
+  _FD: TFolderDialog;
+begin
+  _FD := TFolderDialog.Create(nil);
+  try
+    _FD.DialogX := 0;
+    _FD.DialogY := 0;
+    Result := EmptyStr;
+    if _FD.Execute then
+      Result := _FD.Directory;
+  finally
+    _FD.Free;
+  end;
 end;
 
 end.
