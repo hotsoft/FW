@@ -9,7 +9,7 @@ uses
   wwdbedit, Wwdotdot, Wwdbcomb, Menus, ImgList,
   osActionList, ToolWin, Buttons, ExtCtrls, osComboSearch, osUtils,
   Wwdbigrd, Wwdbgrid, Wwdbspin, DBActns, acCustomSQLMainDataUn,
-  System.ImageList, System.Actions;
+  System.Actions {$IFDEF VER320} , System.ImageList {$ENDIF};
 
 type
   TRecursoEditForm = class(TosCustomEditForm)
