@@ -8,7 +8,8 @@ uses
   osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
-  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics;
+  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
+  IdHashSHA;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -149,6 +150,10 @@ function GetLastErrorMessage: string;
 function LocalIp: string;
 function FormatIP(const ip: string): String;
 function TryForceDirectories(const aDir: string): string;
+function GetSHA1FromString(const text: string): string;
+function GetSHA1FromFile(const path: string): string;
+function GetFileSize(const filename: widestring): Int64;
+
 
 implementation
 
@@ -2308,6 +2313,61 @@ begin
   Result := EmptyStr;
   if not ForceDirectories(aDir) then
     Result := GetLastErrorMessage;
+end;
+
+function GetSHA1FromString(const text: string): string;
+var
+  _sha1: TIdHashSHA1;
+begin
+  Result := EmptyStr;
+  _sha1 := TIdHashSHA1.Create;
+  try
+    Result := Trim(_sha1.HashStringAsHex(text));
+    Result := LeftStr(Result, 40);
+  finally
+    FreeAndNil(_sha1);
+  end;
+end;
+
+function GetSHA1FromFile(const path: string): string;
+var
+  _sha1: TIdHashSHA1;
+  _file: TFileStream;
+  _reader: TBinaryReader;
+  _size: integer;
+begin
+  Result := EmptyStr;
+
+  _sha1 := TIdHashSHA1.Create;
+  _size := GetFileSize(path);
+  if FileExists(path) then
+  begin
+    _file := TFileStream.Create(path,fmOpenRead);
+    _reader := TBinaryReader.Create(_file);
+    try
+      if _size > 0 then
+        Result := Trim(_sha1.HashBytesAsHex(TIdBytes(_reader.ReadBytes(_size))));
+        Result := LeftStr(Result, 40);
+    finally
+      FreeAndNil(_sha1);
+      FreeAndNil(_file);
+      FreeAndNil(_reader);
+    end;
+  end;
+end;
+
+function GetFileSize(const filename: widestring): Int64;
+var
+  sr: TSearchRec;
+begin
+  Result := -1;
+  try
+    if ((FileExists(filename)) and (FindFirst(filename, faAnyFile, sr) = 0)) then
+        Result := Int64(sr.FindData.nFileSizeHigh) shl Int64(32) +
+        Int64(sr.FindData.nFileSizeLow);
+  finally
+    FindClose(sr);
+  end;
 end;
 
 end.
