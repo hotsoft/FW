@@ -148,6 +148,7 @@ function GetTempDirectory: string;
 function GetLastErrorMessage: string;
 function LocalIp: string;
 function FormatIP(const ip: string): String;
+function TryForceDirectories(const aDir: string): string;
 
 implementation
 
@@ -2300,6 +2301,13 @@ function GetLastErrorMessage: string;
 begin
   Result := EmptyStr;
   Result := SysErrorMessage(Winapi.Windows.GetLastError);
+end;
+
+function TryForceDirectories(const aDir: string): string;
+begin
+  Result := EmptyStr;
+  if not ForceDirectories(aDir) then
+    Result := GetLastErrorMessage;
 end;
 
 end.
