@@ -4,7 +4,7 @@ interface
 
 uses
   {$IFDEF VER250}IBServices,{$ENDIF}{$IFDEF VER320}IBX.IBServices,{$ENDIF}
-  INIFiles, Forms, AbZipper, StrUtils, Controls,
+  INIFiles, Forms, System.Zip, System.IOUtils, StrUtils, Controls,
   osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
@@ -249,10 +249,10 @@ end;
 procedure criarArquivoBackupIB(nomeArq: string);
 var
   IBBackup: TIBBackupService;
-  zipper: TABZipper;
+  zipper: TZipFile;
 begin
   IBBackup := TIBBackupService.Create(nil);
-  zipper := TAbZipper.Create(nil);
+  zipper := TZipFile.Create;
   try
     DeleteFile('tmp.gbk');
     IBBackup.Active := false;
@@ -268,9 +268,9 @@ begin
     while IBBackup.IsServiceRunning do Sleep(1);
     IBBackup.Active := false;
     DeleteFile(PCHAR(ExtractFilePath(Application.ExeName) + 'tmp.zip'));
-    Zipper.FileName := ExtractFilePath(Application.ExeName) + 'tmp.zip';
-    Zipper.AddFiles(ExtractFilePath(Application.ExeName) + 'tmp.gbk',0);
-    Zipper.CloseArchive;
+    Zipper.Open(ExtractFilePath(Application.ExeName) + 'tmp.zip', zmWrite);
+    Zipper.Add(ExtractFilePath(Application.ExeName) + 'tmp.gbk');
+    Zipper.Close;
     deleteFile(PCHAR(ExtractFilePath(Application.ExeName) + '..\backups\ultimoBackup.bkp'));
     CopyFile(PWideChar(ExtractFilePath(Application.ExeName) + 'tmp.zip'),
       PWideChar(ExtractFilePath(Application.ExeName) + '..\backups\ultimoBackup.bkp'),false);
