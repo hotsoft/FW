@@ -149,7 +149,8 @@ function GetTempDirectory: string;
 function GetLastErrorMessage: string;
 function LocalIp: string;
 function FormatIP(const ip: string): String;
-function TryForceDirectories(const aDir: string): string;
+function TryForceDirectories(const aDir: string): String; overload;
+function TryForceDirectories(const aDir: string; out aErrorMessage: string): boolean; overload;
 function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
@@ -2311,6 +2312,12 @@ begin
   Result := EmptyStr;
   if not ForceDirectories(aDir) then
     Result := GetLastErrorMessage;
+end;
+
+function TryForceDirectories(const aDir: string; out aErrorMessage: string): boolean;
+begin
+  aErrorMessage := TryForceDirectories(aDir);
+  Result := aErrorMessage = EmptyStr;
 end;
 
 function GetSHA1FromString(const text: string): string;
