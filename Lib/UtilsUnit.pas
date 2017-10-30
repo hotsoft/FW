@@ -154,6 +154,7 @@ function TryForceDirectories(const aDir: string; out aErrorMessage: string): boo
 function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
+function GetTelaAprovacao(conn: TosSQLConnection) : string;
 
 
 implementation
@@ -2373,6 +2374,25 @@ begin
   finally
     FindClose(sr);
   end;
+end;
+
+function GetTelaAprovacao(conn: TosSQLConnection) : string;
+var
+  qry: TosSQLQuery;
+begin
+  Result := '';
+  try
+    qry := TosSQLQuery.Create(nil);
+    qry.SQLConnection := conn;
+    qry.SQL.Text := 'select upper(r.resclassname) as resclassname from recurso r where r.nome = ''Aprovação Resultados'' or (r.filterdefname = ''fltAprovaResultado'')';
+    qry.Open;
+    if not qry.IsEmpty then
+      Result := qry.FieldByName('resclassname').AsString;
+  finally
+    qry.Close;
+    FreeAndNil(qry);
+  end;
+
 end;
 
 end.
