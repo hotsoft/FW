@@ -156,7 +156,6 @@ function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetTelaAprovacao(conn: TosSQLConnection) : string;
 
-
 implementation
 
 uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
@@ -2392,7 +2391,6 @@ begin
     qry.Close;
     FreeAndNil(qry);
   end;
-
 end;
 
 end.
