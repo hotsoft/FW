@@ -2374,30 +2374,6 @@ begin
   end;
 end;
 
-function GetDllName: string;
-var
-  szFileName: array[0..MAX_PATH] of Char;
-begin
-  Result := EmptyStr;
-  FillChar(szFileName, SizeOf(szFileName), #0);
-  if ( Winapi.Windows.GetModuleFileName(HInstance, szFileName, MAX_PATH) ) > 0 then
-    Result := string(szFileName);
-end;
-
-function GetTempDirectory: string;
-var
-  tempFolder: array[0..MAX_PATH] of Char;
-begin
-  Result := 'C:\Windows\Temp';
-  GetTempPath(MAX_PATH, @tempFolder);
-  Result := StrPas(tempFolder);
-end;
-
-function GetLastErrorMessage: string;
-begin
-  Result := EmptyStr;
-  Result := SysErrorMessage(Winapi.Windows.GetLastError);
-end;
 
 end.
 
