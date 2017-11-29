@@ -143,17 +143,22 @@ function KillTask(const ExeFileName: string): Integer;
 function GetMD5FromString(const text: string): String;
 function GetPageAsstring(const url: string): String;
 function GetUrlWithoutParams(const url: String): String;
-function GetSHA1FromString(const text: string): string;
-function GetSHA1FromFile(const path: string): string;
-function GetFileSize(const filename: widestring): Int64;
 function GetDllName: string;
 function GetTempDirectory: string;
 function GetLastErrorMessage: string;
+function LocalIp: string;
+function FormatIP(const ip: string): String;
+function TryForceDirectories(const aDir: string): String; overload;
+function TryForceDirectories(const aDir: string; out aErrorMessage: string): boolean; overload;
+function GetSHA1FromString(const text: string): string;
+function GetSHA1FromFile(const path: string): string;
+function GetFileSize(const filename: widestring): Int64;
+
 
 implementation
 
 uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1030,6 +1035,38 @@ begin
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
+function FormatIP(const ip: string): String;
+var
+  _ip: TStringList;
+begin
+  Result := ip;
+  _ip := TStringList.Create;
+  _ip.Delimiter := '.';
+  _ip.DelimitedText := ip;
+  try
+    Result := Format('%.3d.%.3d.%.3d.%.3d', [StrToIntDef(_ip[0], 1), StrToIntDef(_ip[1], 1), StrToIntDef(_ip[2], 1), StrToIntDef(_ip[3], 1)]);
+  finally
+    FreeAndNil(_ip);
+  end;
+end;
+
+function LocalIp: string;
+var
+  IPW: TIdIPWatch;
+begin
+  Result := '127.0.0.1';
+
+  IpW := TIdIPWatch.Create(Application);
+  try
+    IpW.Active := True;
+    if IpW.LocalIP <> EmptyStr then
+      Result := FormatIP(IpW.LocalIP);
+  finally
+    if Assigned(IpW) then
+      FreeAndNil(IpW);
+  end;
+end;
+
 class function THSHash.CalculaHash(conteudo: string; pDig : Integer = 2): string;
 var
   sum, i : Integer;
@@ -1803,11 +1840,14 @@ var
 begin
   Result := EmptyStr;
 
-  _uri := TIdURI.Create(url);
-  try
-    Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
-  finally
-    FreeAndNil(_uri);
+  if url <> EmptyStr then
+  begin
+   _uri := TIdURI.Create(url);
+   try
+     Result := _uri.Protocol + '://' + _uri.Host + ':' + _uri.Port + '/';
+   finally
+     FreeAndNil(_uri);
+   end;
   end;
 end;
 
@@ -2239,6 +2279,44 @@ begin
   finally
     FreeAndNil(hashMessageDigest5);
   end;
+end;
+
+function GetDllName: string;
+var
+  szFileName: array[0..MAX_PATH] of Char;
+begin
+  Result := EmptyStr;
+  FillChar(szFileName, SizeOf(szFileName), #0);
+  if ( Winapi.Windows.GetModuleFileName(HInstance, szFileName, MAX_PATH) ) > 0 then
+    Result := string(szFileName);
+end;
+
+function GetTempDirectory: string;
+var
+  tempFolder: array[0..MAX_PATH] of Char;
+begin
+  Result := 'C:\Windows\Temp';
+  GetTempPath(MAX_PATH, @tempFolder);
+  Result := StrPas(tempFolder);
+end;
+
+function GetLastErrorMessage: string;
+begin
+  Result := EmptyStr;
+  Result := SysErrorMessage(Winapi.Windows.GetLastError);
+end;
+
+function TryForceDirectories(const aDir: string): string;
+begin
+  Result := EmptyStr;
+  if not ForceDirectories(aDir) then
+    Result := GetLastErrorMessage;
+end;
+
+function TryForceDirectories(const aDir: string; out aErrorMessage: string): boolean;
+begin
+  aErrorMessage := TryForceDirectories(aDir);
+  Result := aErrorMessage = EmptyStr;
 end;
 
 function GetSHA1FromString(const text: string): string;
