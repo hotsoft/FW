@@ -155,6 +155,14 @@ function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetTelaAprovacao(conn: TosSQLConnection) : string;
+procedure ExecuteAndWait(const aCommando: string);
+
+function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+procedure WaitProcess(const aProcessInformation: TProcessInformation);
+procedure CloseProcess(const aProcessInformation: TProcessInformation);
+
+
+
 
 implementation
 
@@ -2392,6 +2400,77 @@ begin
     FreeAndNil(qry);
   end;
 end;
+
+procedure ExecuteAndWait(const aCommando: string);
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProcessInformation: TProcessInformation;
+  tmpProgram: String;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+    nil, nil, tmpStartupInfo, tmpProcessInformation) then
+  begin
+    // loop every 10 ms
+    while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
+    begin
+      Application.ProcessMessages;
+    end;
+    CloseHandle(tmpProcessInformation.hProcess);
+    CloseHandle(tmpProcessInformation.hThread);
+  end
+  else
+  begin
+    RaiseLastOSError;
+  end;
+end;
+
+function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProgram: String;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+    nil, nil, tmpStartupInfo, aProcessInformation) then
+    Result := True
+  else
+  begin
+    Result := False;
+    RaiseLastOSError;
+  end;
+end;
+
+procedure WaitProcess(const aProcessInformation: TProcessInformation);
+begin
+  // loop every 10 ms
+  while WaitForSingleObject(aProcessInformation.hProcess, 10) > 0 do
+  begin
+    Application.ProcessMessages;
+  end;
+  CloseProcess(aProcessInformation);
+end;
+
+procedure CloseProcess(const aProcessInformation: TProcessInformation);
+begin
+  CloseHandle(aProcessInformation.hProcess);
+  CloseHandle(aProcessInformation.hThread);
+end;
+
 
 end.
 
