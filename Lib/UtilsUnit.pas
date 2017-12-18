@@ -109,7 +109,7 @@ function Base64FromText(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
-procedure dgCreateProcess(const FileName: string);
+procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
 function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
@@ -1630,7 +1630,7 @@ begin
   end;
 end;
 
-procedure dgCreateProcess(const FileName: string);
+procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
 var ProcInfo: TProcessInformation;
     StartInfo: TStartupInfo;
     FrmMensagem : TFrmMensagemAguarde;
@@ -1662,7 +1662,7 @@ begin
     CloseHandle(ProcInfo.hProcess);
     CloseHandle(ProcInfo.hThread);
   finally
-    SleepEx(10000, False);
+    SleepEx(SleepInterval, False);
     FrmMensagem.Close;
     FrmMensagem.Release;
   end;
@@ -2445,7 +2445,7 @@ begin
     wShowWindow := SW_HIDE;
   end;
 
-  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE,
     nil, nil, tmpStartupInfo, aProcessInformation) then
     Result := True
   else
