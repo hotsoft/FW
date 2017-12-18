@@ -1,0 +1,730 @@
+unit UtilsUnitGUI;
+
+interface
+
+uses
+  Forms, Controls, ComCtrls, DBCtrls, wwdbdatetimepicker, Wwdbcomb, StdCtrls,  Buttons, Wwdbgrid,
+  wwdbedit, acSysUtils, Printers, osComboSearch, System.Classes, DB, DBClient,  Winapi.PsApi, Winapi.Windows,
+  Vcl.Graphics, ShellAPI, UMensagemAguarde, SysUtils, UtilsUnit, Variants, Winapi.Messages, Winapi.TlHelp32;
+
+type
+  varArrayOfcomps = array of TComponent;
+  TFuncaoParametroGetDesc = function(const vValor : Variant) : string;
+
+const
+  CSIDL_COMMON_APPDATA = $0023;
+
+procedure setHabilitaDBEdit(edt: TDBEdit; enabled: boolean);
+procedure setHabilitaButton(btn: TButton; enabled: boolean);
+procedure setHabilitaSpeedButton(btn: TSpeedButton; enabled: boolean);
+procedure setHabilitawwComboBox(comboBox: TwwDBComboBox; enabled: boolean);
+procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
+procedure setHabilitawwDateTimePicker(dateTimePicker: TwwDBDateTimePicker; enabled: boolean);
+procedure setHabilitaDBCheckBox(edtd: TDBCheckBox; enabled: boolean);
+procedure setHabilitaDBMemo(comp: TDBMemo; enabled: boolean);
+procedure setHabilitawwDBGrid(grd: TwwDBGrid; enabled: boolean);
+procedure setHabilitaEdit(edit: TEdit; enabled: boolean);
+procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
+procedure setHabilitaComponente(comp: TComponent; enabled: boolean);
+procedure habilitaComponentes(comps: varArrayOfcomps);
+procedure desHabilitaComponentes(comps: array of TComponent);
+procedure ImprimirImpressoraTermica(const comando, impressora: String);
+function ConverteRTF(rtf: string): string;
+function ConverteTextoToRTF(Texto: string): string;
+function getCampoSemRTF(const vValor : Variant):String;
+function CriarMsgLogAlteracaoField(aField : TField):String; overload;
+function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
+function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet;
+  const sCampoChave: String; const sCampoRetorno: String):String;
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
+function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
+  const sCampoChave: String; aCampoDescricao: Array of String): String;
+function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
+  const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
+function isRTFValue(vValor: Variant): Boolean; //{\rtf
+procedure TrimAppMemorySize;
+procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
+function GetPrinters: string;
+function GetProcessList: string;
+function GetSystemInfo: string;
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+procedure ExecuteAndWait(const aCommando: string);
+function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+procedure WaitProcess(const aProcessInformation: TProcessInformation);
+procedure CloseProcess(const aProcessInformation: TProcessInformation);
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+
+
+implementation
+
+procedure setHabilitaButton(btn: TButton; enabled: boolean);
+begin
+  btn.Enabled := enabled;
+end;
+
+procedure setHabilitaSpeedButton(btn: TSpeedButton; enabled: boolean);
+begin
+  btn.Enabled := enabled;
+end;
+
+procedure setHabilitaDBEdit(edt: TDBEdit; enabled: boolean);
+begin
+  if enabled then
+  begin
+    edt.ReadOnly := false;
+    edt.color := clWhite;
+  end
+  else
+  begin
+    edt.ReadOnly := true;
+    edt.color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitawwComboBox(comboBox: TwwDBComboBox; enabled: boolean);
+begin
+  if enabled then
+  begin
+    comboBox.ReadOnly := false;
+    comboBox.Color := clWhite;
+  end
+  else
+  begin
+    comboBox.ReadOnly := true;
+    comboBox.Color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
+begin
+  if enabled then
+  begin
+    comboBox.Enabled := True;
+    comboBox.Color := clWhite;
+  end
+  else
+  begin
+    comboBox.Enabled := False;
+    comboBox.Color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitawwDateTimePicker(dateTimePicker: TwwDBDateTimePicker; enabled: boolean);
+begin
+  if enabled then
+  begin
+    dateTimePicker.ReadOnly := false;
+    dateTimePicker.Color := clWhite;
+  end
+  else
+  begin
+    dateTimePicker.ReadOnly := true;
+    dateTimePicker.Color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitaDBCheckBox(edtd: TDBCheckBox; enabled: boolean);
+begin
+  if enabled then
+  begin
+    edtd.ReadOnly := false;
+  end
+  else
+  begin
+    edtd.ReadOnly := true;
+  end;
+end;
+
+procedure setHabilitawwDBGrid(grd: TwwDBGrid; enabled: boolean);
+begin
+  if enabled then
+  begin
+    grd.ReadOnly := false;
+  end
+  else
+  begin
+    grd.ReadOnly := true;
+  end;
+end;
+
+
+procedure setHabilitaDBMemo(comp: TDBMemo; enabled: boolean);
+begin
+  if enabled then
+  begin
+    comp.enabled := true;
+    comp.Color := clWhite;
+  end
+  else
+  begin
+    comp.enabled := false;
+    comp.Color := clBtnFace;
+  end;
+end;
+
+procedure setHabilitaComponente(comp: TComponent; enabled: boolean);
+begin
+  if comp is TosComboSearch then
+    setHabilitaComboSearch((comp as TosComboSearch), enabled);
+  if comp is TDBEdit then
+    setHabilitaDBEdit((comp as TDBEdit), enabled);
+  if comp is TwwDBComboBox then
+    setHabilitawwComboBox((comp as TwwDBComboBox), enabled);
+  if comp is TwwDBDateTimePicker then
+    setHabilitawwDateTimePicker((comp as TwwDBDateTimePicker), enabled);
+  if comp is TDBCheckBox then
+    setHabilitadbCheckBox((comp as TDBCheckBox), enabled);
+  if comp is TDBMemo then
+    setHabilitaDBMemo((comp as TDBMemo), enabled);
+  if comp is TwwDBGrid then
+    setHabilitawwDBGrid((comp as twwDBGrid), enabled);
+  if comp is TButton then
+    setHabilitaButton((comp as TButton), enabled);
+  if comp is TSpeedButton then
+    setHabilitaSpeedButton((comp as TSpeedButton), enabled);
+end;
+
+procedure habilitaComponentes(comps: varArrayOfcomps);
+var
+  i: integer;
+begin
+  for i := low(comps) to high(comps) do
+    setHabilitaComponente(comps[i], true);
+end;
+
+procedure desHabilitaComponentes(comps: array of TComponent);
+var
+  i: integer;
+begin
+  for i := low(comps) to high(comps) do
+    setHabilitaComponente(comps[i], false);
+end;
+
+procedure setHabilitaEdit(edit: TEdit; enabled: boolean);
+begin
+  if enabled then
+  begin
+    edit.ReadOnly := false;
+    edit.Color := clWhite;
+  end
+  else
+  begin
+    edit.ReadOnly := true;
+    edit.Color := clBtnFace;
+  end;
+end;
+
+procedure ImprimirImpressoraTermica(const comando, impressora: String);
+var
+  FBat, FComando: TextFile;
+  diretorio: string;
+begin
+  diretorio:= GetSpecialFolderLocation(Application.Handle, CSIDL_COMMON_APPDATA) + '\';
+
+  SysUtils.DeleteFile(diretorio + 'COMANDO.TXT');
+  SysUtils.DeleteFile(diretorio + 'PRINTLBL.BAT');
+
+  AssignFile(FComando, diretorio + 'COMANDO.TXT');
+  try
+    Rewrite(FComando);
+    Writeln(FComando, comando);
+  finally
+    CloseFile(FComando);
+  end;
+
+  AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
+  try
+    Rewrite(FBat);
+    Writeln(FBat, 'TYPE "' + diretorio + 'COMANDO.TXT" > "'+impressora+'"');
+  finally
+    CloseFile(FBat);
+  end;
+
+  ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
+end;
+
+function ConverteRTF(rtf: string): string;
+var
+  form: TForm;
+  richEdit: TRichEdit;
+  ss: TStringStream;
+begin
+  try
+    ss := TStringStream.Create(rtf);
+    form := TForm.Create(nil);
+    richEdit := TRichEdit.Create(form);
+    richEdit.Parent := form;
+    richEdit.Lines.LoadFromStream(ss);
+    richEdit.PlainText := True;
+    Result := richEdit.Text;
+  finally
+    FreeAndNil(ss);
+    FreeAndNil(richEdit);
+    FreeAndNil(form);
+  end;
+end;
+
+function ConverteTextoToRTF(Texto: string): string;
+var
+  form: TForm;
+  richEdit: TRichEdit;
+  ss: TStringStream;
+begin
+  if not isRTFValue(Texto) then
+  begin
+    try
+      ss := TStringStream.Create(Texto);
+      form := TForm.Create(nil);
+      richEdit := TRichEdit.Create(form);
+      richEdit.Parent := form;
+      richEdit.Text:= Texto;
+      richEdit.PlainText := False;
+      richEdit.Lines.SaveToStream(ss);
+      Result :=  ss.DataString;
+    finally
+      FreeAndNil(ss);
+      FreeAndNil(richEdit);
+      FreeAndNil(form);
+    end;
+  end;
+end;
+
+function getCampoSemRTF(const vValor : Variant):String;
+var
+  sValor : String;
+begin
+  result := EmptyStr;
+  if not ValueIsEmptyNull(vValor) then
+  begin
+    sValor := VarToStr(vValor);
+    if isRTFValue(sValor) then
+      result := ConverteRTF(sValor)
+    else
+      result := sValor;
+  end;
+end;
+
+function CriarMsgLogAlteracaoField(aField : TField):String; overload;
+begin
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, getCampoSemRTF(aField.OldValue),
+      getCampoSemRTF(aField.NewValue)]);
+
+end;
+
+function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
+begin
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, aFuncaoGetDescricao(aField.OldValue),
+      aFuncaoGetDescricao(aField.NewValue)]);
+end;
+
+function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet;const sCampoChave: String;
+  const sCampoRetorno: String):String;
+var
+  sDescOld, sDescNew : String;
+begin
+  sDescOld := EmptyStr;
+  sDescNew := EmptyStr;
+  Result := EmptyStr;
+  if FieldHasChanged(aField) then
+  begin
+    if not ValueIsEmptyNull(aField.OldValue) then
+      sDescOld := oCDSLookup.Lookup(sCampoChave, aField.OldValue, sCampoRetorno);
+    if not ValueIsEmptyNull(aField.NewValue) then
+      sDescNew := oCDSLookup.Lookup(sCampoChave, aField.NewValue, sCampoRetorno);
+
+    if (sDescOld <> EmptyStr) or (sDescNew <> EmptyStr) then
+      Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, sDescOld, sDescNew]);
+  end;
+end;
+
+function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
+var
+  i : Integer;
+  bm : TBookmark;
+  aMsgReg, aMsgAlt : String;
+begin
+  Result := EmptyStr;
+  if (oCDS = nil) or (not oCDS.Active) or (oCDS.RecordCount = 0)  then
+    Exit;
+  bm := oCDS.Bookmark;
+  oCDS.DisableControls;
+  try
+    oCDS.First;
+    while not oCDS.Eof do
+    begin
+      aMsgReg := EmptyStr;
+      aMsgAlt := EmptyStr;
+      // loga se não for inclusão
+      if not ValueIsEmptyNull(oCDS.FieldByName(key).OldValue) then
+      begin
+        // Todos os Campos
+        if Length(aCamposLOG)=0 then
+        begin
+          for i := 0 to oCDS.FieldCount-1 do
+          begin
+            if oCDS.FieldByName(oCDS.Fields[i].FieldName).FieldKind <> fkLookup then
+              aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField(
+                oCDS.FieldByName(oCDS.Fields[i].FieldName) );
+          end;
+        end
+        // campos do Array
+        else
+        begin
+          for i := 0 to Length(aCamposLOG)-1 do
+          begin
+            aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( oCDS.FieldByName(aCamposLOG[i]) );
+          end;
+        end;
+
+        if (Length(aCamposDescricao) > 0) and (aMsgAlt <> EmptyStr) then
+        begin
+          aMsgReg := EmptyStr;
+          for i := 0 to Length(aCamposDescricao)-1 do
+          begin
+            if aMsgReg <> EmptyStr then
+              aMsgReg := aMsgReg + ', ';
+            aMsgReg := aMsgReg + getCampoSemRTF(oCDS.FieldByName(aCamposDescricao[i]).AsString);
+          end;
+          aMsgReg := #13 + #13 + 'Alterado ' + aMsgReg;
+        end;
+
+        // Copy retira uma linha no começo da mensagem dos campos
+        if aMsgAlt <> EmptyStr then
+          Result := Result + aMsgReg + Copy(aMsgAlt, 2, length(aMsgAlt));
+      end;
+      oCDS.Next;
+    end;
+  finally
+    oCDS.GotoBookmark(bm);
+    oCDS.EnableControls;
+  end;
+end;
+
+function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
+  const sCampoChave: String; aCampoDescricao: Array of String): String;
+begin
+  Result := EmptyStr;
+  AlteradoCDS.DisableControls;
+  try
+    // Verifica Registros Excluidos
+    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
+      'Exclusão: ');
+
+    // Verifica Registros Incluídos
+    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
+      'Inclusão: ');
+  finally
+    AlteradoCDS.EnableControls;
+  end;
+end;
+
+function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
+  const sCampoChave: String; aCampoDescricao: Array of String; const sDescricao : String ): String;
+var
+  nRegCol : Integer;
+  aMsgReg : String;
+  _Str: TStringList;
+  _Valor: string;
+begin
+  Result := EmptyStr;
+  _Str := TStringList.Create;
+  try
+    OriginalCDS.First;
+    while not OriginalCDS.Eof do
+    begin
+      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+      begin
+        if Length(aCampoDescricao) > 0 then
+        begin
+          aMsgReg := EmptyStr;
+          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          begin
+            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+            if _valor <> EmptyStr then
+              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+          end;
+        end;
+        Result := Result + #13 + sDescricao + _Str.CommaText;
+      end;
+      OriginalCDS.Next;
+    end;
+  finally
+    FreeAndNil(_Str);
+  end;
+end;
+
+function isRTFValue(vValor: Variant): Boolean;
+begin
+  Result := False;
+  if not ValueIsEmptyNull(vValor) then
+    Result :=  Copy(vValor, 1, 5) = '{\rtf';
+end;
+
+procedure TrimAppMemorySize;
+var
+  MainHandle : THandle;
+begin
+  try
+    MainHandle := OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessID) ;
+    SetProcessWorkingSetSize(MainHandle, $FFFFFFFF, $FFFFFFFF) ;
+    CloseHandle(MainHandle) ;
+  except
+  end;
+  Application.ProcessMessages;
+end;
+
+procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
+var ProcInfo: TProcessInformation;
+    StartInfo: TStartupInfo;
+    FrmMensagem : TFrmMensagemAguarde;
+begin
+  FrmMensagem := TFrmMensagemAguarde.Create(Application);
+  try
+    FrmMensagem.Show;
+    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
+    FrmMensagem.Update;
+
+    {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
+    FillMemory(@StartInfo, SizeOf(StartInfo), 0);
+    StartInfo.cb := SizeOf(StartInfo);
+    StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
+    StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
+    StartInfo.dwXSize := Screen.Width;
+    StartInfo.dwYSize := Screen.Height;
+    StartInfo.dwX := 0;
+    StartInfo.dwY := 0;
+
+    CreateProcess(
+      nil,
+      PChar(FileName),
+      nil, Nil, False,
+      DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
+      nil, nil,
+      StartInfo,
+      ProcInfo);
+    CloseHandle(ProcInfo.hProcess);
+    CloseHandle(ProcInfo.hThread);
+  finally
+    SleepEx(SleepInterval, False);
+    FrmMensagem.Close;
+    FrmMensagem.Release;
+  end;
+end;
+
+function GetPrinters: string;
+begin
+  Result := Printer.Printers.Text;
+end;
+
+function GetProcessList: string;
+var
+  Wnd: hWnd;
+  Buff: array [0..127] of Char;
+begin
+  Result := EmptyStr;
+
+  Wnd:=GetWindow(Application.Handle, gw_HWndFirst);
+  while Wnd<>0 do
+  begin
+    if (Wnd<>Application.Handle) and
+      IsWindowVisible(Wnd) and
+      (GetWindow(Wnd, gw_Owner)=0) and
+      (GetWindowText(Wnd, Buff, sizeof(buff))<>0) then
+    begin
+      GetWindowText(Wnd, Buff, SizeOf(Buff));
+      Result := Result + #13#10 + StrPas(Buff) + 'Memória: ' + IntToStr(getMemoryUsed);
+    end;
+    Wnd:=GetWindow(Wnd, gw_hWndNext);
+  end;
+end;
+
+function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
+begin
+  Result := FHWND;
+
+  if Trim(ATaskName) <> EmptyStr then
+  begin
+    FTaskName := ATaskName;
+    FPid := PDWORD_PTR(GetWindowPID(ATaskName));
+    FProcessa := True;
+    if not EnumWindows(@EnumProcess, iListOfProcess) then
+      Exit
+    else
+      Application.ProcessMessages;
+
+    Result := FHWND;
+  end;
+end;
+
+procedure ExecuteAndWait(const aCommando: string);
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProcessInformation: TProcessInformation;
+  tmpProgram: String;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+    nil, nil, tmpStartupInfo, tmpProcessInformation) then
+  begin
+    // loop every 10 ms
+    while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
+    begin
+      Application.ProcessMessages;
+    end;
+    CloseHandle(tmpProcessInformation.hProcess);
+    CloseHandle(tmpProcessInformation.hThread);
+  end
+  else
+  begin
+    RaiseLastOSError;
+  end;
+end;
+
+function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProgram: String;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE,
+    nil, nil, tmpStartupInfo, aProcessInformation) then
+    Result := True
+  else
+  begin
+    Result := False;
+    RaiseLastOSError;
+  end;
+end;
+
+procedure WaitProcess(const aProcessInformation: TProcessInformation);
+begin
+  // loop every 10 ms
+  while WaitForSingleObject(aProcessInformation.hProcess, 10) > 0 do
+  begin
+    Application.ProcessMessages;
+  end;
+  CloseProcess(aProcessInformation);
+end;
+
+procedure CloseProcess(const aProcessInformation: TProcessInformation);
+begin
+  CloseHandle(aProcessInformation.hProcess);
+  CloseHandle(aProcessInformation.hThread);
+end;
+
+function GetSystemInfo: string;
+begin
+  Result := 'INFORMAÇÕES DO SISTEMA:';
+  Result := Result + #13#10 + '---------------------------------------------------------------------------';
+  Result := Result + #13#10 + 'Mac Address: '          + GetMacAddress;
+  Result := Result + #13#10 + 'Diretório do Windows: ' + GetWindowsDir;
+  Result := Result + #13#10 + 'Nome do Computador: '   + GetPcName;
+  Result := Result + #13#10 + 'Impressoras: ' + #13#10 + GetPrinters;
+  Result := Result + #13#10 + 'Versão do Windows: '    + GetWindowsVersion;
+  Result := Result + #13#10 + 'Idioma: '               + GetLanguage;
+  Result := Result + #13#10 + 'Estado do Scroll: '     + GetScrollState;
+  Result := Result + #13#10 + 'Resolução da Tela: '    + ScreenResolution;
+  Result := Result + #13#10 + 'Espaço Livre no C: '    + FreeDiskSpace('C');
+  Result := Result + #13#10 + 'Horário do Windows: '   + TimeInWindows;
+  Result := Result + #13#10 + 'Estado de Energia: '    + GetPowerStatus;
+  Result := Result + #13#10 + 'Usuário: '              + GetUser;
+  Result := Result + #13#10 + 'Lista de Processos: '   + GetProcessList;
+  Result := Result + #13#10 + '---------------------------------------------------------------------------';
+  //Result := GetSystemDecimal;
+end;
+
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+var
+ dwResult: PDWORD_PTR;
+ ValorRetorno: Longint;
+ AppHandle : THandle;
+begin
+  Result := False;
+
+  try
+    AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+    if AppHandle <> 0 then
+    begin
+      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+      if ValorRetorno > 0 then
+        Result := True
+      else
+        Result := False;
+    end;
+  except
+  end;
+end;
+
+procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
+begin
+  if enabled then
+  begin
+    cbo.ReadOnly := false;
+    cbo.color := clWhite;
+    cbo.showButton := true;
+  end
+  else
+  begin
+    cbo.ReadOnly := true;
+    cbo.color := clBtnFace;
+    cbo.showButton := false;
+  end;
+  cbo.invalidate;
+end;
+
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  try
+    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+    Result := False;
+    while Integer(ContinueLoop) <> 0 do
+    begin
+      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+        UpperCase(ExeFileName))) then
+      begin
+        Result := True;
+        ValidaTravamento(UpperCase(ExeFileName), FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+      end;
+      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+    end;
+  finally
+    CloseHandle(FSnapshotHandle);
+  end;
+end;
+
+
+end.
+
