@@ -52,7 +52,7 @@ function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid
 function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 procedure ExecuteAndWait(const aCommando: string);
-function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
 procedure WaitProcess(const aProcessInformation: TProcessInformation);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
@@ -596,10 +596,11 @@ begin
   end;
 end;
 
-function Execute(const aCommando: string; var aProcessInformation: TProcessInformation): boolean;
+function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
 var
   tmpStartupInfo: TStartupInfo;
   tmpProgram: String;
+  CreationFlags: Cardinal;
 begin
   tmpProgram := trim(aCommando);
   FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
@@ -608,8 +609,11 @@ begin
     cb := SizeOf(TStartupInfo);
     wShowWindow := SW_HIDE;
   end;
-
-  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE,
+  if ShowWindow then
+    CreationFlags := NORMAL_PRIORITY_CLASS
+  else
+    CreationFlags := CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE;
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CreationFlags,
     nil, nil, tmpStartupInfo, aProcessInformation) then
     Result := True
   else
