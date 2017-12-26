@@ -57,9 +57,11 @@ procedure WaitProcess(const aProcessInformation: TProcessInformation);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
-
+function LocalIp: string;
 
 implementation
+
+uses IdIPWatch;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
@@ -726,6 +728,23 @@ begin
     end;
   finally
     CloseHandle(FSnapshotHandle);
+  end;
+end;
+
+function LocalIp: string;
+var
+  IPW: TIdIPWatch;
+begin
+  Result := '127.0.0.1';
+
+  IpW := TIdIPWatch.Create(Application);
+  try
+    IpW.Active := True;
+    if IpW.LocalIP <> EmptyStr then
+      Result := FormatIP(IpW.LocalIP);
+  finally
+    if Assigned(IpW) then
+      FreeAndNil(IpW);
   end;
 end;
 

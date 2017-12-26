@@ -99,6 +99,7 @@ function EnumProcess(hHwnd: HWND; lParam : integer; var FProcessa: Boolean;
 function EnumWindowsProc(Wnd: HWND; List: TStringList): BOOL; stdcall;
 function KillTask(const ExeFileName: string): Integer;
 function GetMD5FromString(const text: string): String;
+function GetPageAsstring(const url: string): String;
 function GetUrlWithoutParams(const url: String): String;
 function GetDllName: string;
 function GetTempDirectory: string;
@@ -110,13 +111,11 @@ function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetTelaAprovacao(conn: TosSQLConnection) : string;
-function LocalIp: string;
-function GetPageAsstring(const url: string): String;
 
 implementation
 
 uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch;
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
 
 function ApenasLetrasNumeros(nStr:String): String;
 Var
@@ -1714,23 +1713,6 @@ begin
   finally
     qry.Close;
     FreeAndNil(qry);
-  end;
-end;
-
-function LocalIp: string;
-var
-  IPW: TIdIPWatch;
-begin
-  Result := '127.0.0.1';
-
-  IpW := TIdIPWatch.Create(nil);
-  try
-    IpW.Active := True;
-    if IpW.LocalIP <> EmptyStr then
-      Result := FormatIP(IpW.LocalIP);
-  finally
-    if Assigned(IpW) then
-      FreeAndNil(IpW);
   end;
 end;
 
