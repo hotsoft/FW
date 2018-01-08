@@ -8,7 +8,7 @@ uses
   Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
-  Vcl.Graphics, Winapi.Messages;
+  Vcl.Graphics, Winapi.Messages, SHFolder;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -111,6 +111,8 @@ function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetTelaAprovacao(conn: TosSQLConnection) : string;
+function GetSpecialFolderPath(const folder : integer) : string;
+function GetLocalAppDataFolder: string;
 
 implementation
 
@@ -1734,6 +1736,23 @@ begin
       FreeAndNil(lUri);
     end;
   end;
+end;
+
+function GetSpecialFolderPath(const folder : integer) : string;
+ const
+   SHGFP_TYPE_CURRENT = 0;
+ var
+   path: array [0..MAX_PATH] of char;
+ begin
+   if SUCCEEDED(SHGetFolderPath(0,folder,0,SHGFP_TYPE_CURRENT,@path[0])) then
+     Result := path
+   else
+     Result := '';
+ end;
+
+function GetLocalAppDataFolder: string;
+begin
+  Result := GetSpecialFolderPath(CSIDL_LOCAL_APPDATA);
 end;
 
 end.
