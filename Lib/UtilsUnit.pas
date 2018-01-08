@@ -8,7 +8,7 @@ uses
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
-  IdHashSHA, IdCoderMIME;
+  IdHashSHA, IdCoderMIME, SHFolder;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -153,6 +153,8 @@ function TryForceDirectories(const aDir: string; out aErrorMessage: string): boo
 function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
+function GetSpecialFolderPath(const folder : integer) : string;
+function GetLocalAppDataFolder: string;
 
 
 implementation
@@ -2379,6 +2381,23 @@ begin
   end;
 end;
 
+
+function GetSpecialFolderPath(const folder : integer) : string;
+ const
+   SHGFP_TYPE_CURRENT = 0;
+ var
+   path: array [0..MAX_PATH] of char;
+ begin
+   if SUCCEEDED(SHGetFolderPath(0,folder,0,SHGFP_TYPE_CURRENT,@path[0])) then
+     Result := path
+   else
+     Result := '';
+ end;
+
+function GetLocalAppDataFolder: string;
+begin
+  Result := GetSpecialFolderPath(CSIDL_LOCAL_APPDATA);
+end;
 
 end.
 
