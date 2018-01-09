@@ -1128,7 +1128,7 @@ var
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
-  Stream := TStringStream.Create('');
+  Stream := TStringStream.Create('', TEncoding.UTF8);
 
   HTTPClient := TidHTTP.Create(nil);
   LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
