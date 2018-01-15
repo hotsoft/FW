@@ -5,7 +5,8 @@ interface
 uses
   Forms, Controls, ComCtrls, DBCtrls, wwdbdatetimepicker, Wwdbcomb, StdCtrls,  Buttons, Wwdbgrid,
   wwdbedit, acSysUtils, Printers, osComboSearch, System.Classes, DB, DBClient,  Winapi.PsApi, Winapi.Windows,
-  Vcl.Graphics, ShellAPI, UMensagemAguarde, SysUtils, UtilsUnit, Variants, Winapi.Messages, Winapi.TlHelp32;
+  Vcl.Graphics, ShellAPI, UMensagemAguarde, SysUtils, UtilsUnit, Variants, Winapi.Messages, Winapi.TlHelp32,
+  Winsock;
 
 type
   varArrayOfcomps = array of TComponent;
@@ -53,7 +54,7 @@ function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FP
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 procedure ExecuteAndWait(const aCommando: string);
 function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
-procedure WaitProcess(const aProcessInformation: TProcessInformation);
+procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
@@ -61,7 +62,7 @@ function LocalIp: string;
 
 implementation
 
-uses IdIPWatch;
+uses IdIPWatch, IdTCPClient;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
@@ -625,12 +626,75 @@ begin
   end;
 end;
 
-procedure WaitProcess(const aProcessInformation: TProcessInformation);
+function PortTCP_IsOpen(dwPort : Word; ipAddressStr:AnsiString) : boolean;
+var
+  client : sockaddr_in;
+  sock   : Integer;
+
+  ret    : Integer;
+  wsdata : WSAData;
+begin
+ Result:=False;
+ ret := WSAStartup($0002, wsdata); //initiates use of the Winsock DLL
+  if ret<>0 then exit;
+  try
+    client.sin_family      := AF_INET;  //Set the protocol to use , in this case (IPv4)
+    client.sin_port        := htons(dwPort); //convert to TCP/IP network byte order (big-endian)
+    client.sin_addr.s_addr := inet_addr(PAnsiChar(ipAddressStr));  //convert to IN_ADDR  structure
+    sock  :=socket(AF_INET, SOCK_STREAM, 0);    //creates a socket
+    Result:=connect(sock,client,SizeOf(client))=0;  //establishes a connection to a specified socket
+  finally
+    WSACleanup;
+  end;
+end;
+
+function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
+var
+  IdTCP: TIdTCPClient;
+  msg: string;
+begin
+  Result := False;
+  try
+    IdTCP := TIdTCPClient.Create(nil);
+    try
+      IdTCP.Host := '127.0.0.1';
+      IdTCP.Port := aPort;
+      IdTCP.ConnectTimeout := 3000;
+      IdTCP.Connect;
+
+      if IdTCP.Connected then
+      begin
+        IdTCP.IOHandler.WriteLn(aMessage);
+        IdTCP.IOHandler.ReadTimeout := 500;
+        msg := IdTCP.IOHandler.Readln;
+      end;
+
+    finally
+      IdTCP.Disconnect;
+      FreeAndNil(IdTCP);
+    end;
+    Result := True;
+  except
+
+  end;
+end;
+
+procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
+var
+  copyDataStruct : TCopyDataStruct;
+  StringToSend: string;
+  handle: THandle;
 begin
   // loop every 10 ms
   while WaitForSingleObject(aProcessInformation.hProcess, 10) > 0 do
   begin
     Application.ProcessMessages;
+    if aCheckIsAlive then
+    begin
+      StringToSend := Format('{"ThreadId":%d,"ProcessId":%d}', [aThreadId, aProcessInformation.dwProcessId]);
+      if not SendMessageToTCPServer(StringToSend, aPort) then
+        TerminateProcess(aProcessInformation.hProcess , 0);
+    end;
   end;
   CloseProcess(aProcessInformation);
 end;
