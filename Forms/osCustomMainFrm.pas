@@ -423,9 +423,12 @@ var
 begin
   inherited;
   Form := FCurrentEditForm;
-  Form.VisibleButtons := [vbExcluir, vbFechar];
-  if Form.Delete('ID', FIdField.AsInteger) then
-    ExecLastFilter;
+  if Form <> nil then
+  begin
+    Form.VisibleButtons := [vbExcluir, vbFechar];
+    if Form.Delete('ID', FIdField.AsInteger) then
+      ExecLastFilter;
+  end;
 end;
 
 procedure TosCustomMainForm.FilterDatasetAfterOpen(DataSet: TDataSet);
