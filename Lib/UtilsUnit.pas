@@ -8,7 +8,7 @@ uses
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
-  IdHashSHA;
+  IdHashSHA, IdCoderMIME;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -158,7 +158,7 @@ function GetFileSize(const filename: widestring): Int64;
 implementation
 
 uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch;
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch, IdCoder;
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -1495,24 +1495,29 @@ begin
   end;
 end;
 
+
 function Base64FromBinary(const FileName: String): string;
 var
-  Input: TBytesStream;
-  Output: TStringStream;
+  Input: TFileStream;
+  InputMemoryStream: TMemoryStream;
+  Output: UTF8String;
+  Encoder: TIdEncoderMIME;
 begin
-  Input := TBytesStream.Create;
+  Result := EmptyStr;
+  Output := EmptyStr;
+
+  Input := TFileStream.Create(FileName, fmOpenRead);
+  InputMemoryStream := TMemoryStream.Create();
+  Encoder := TIdEncoderMIME.Create();
   try
-    Input.LoadFromFile(FileName);
-    Input.Position := 0;
-    Output := TStringStream.Create('', TEncoding.ASCII);
-    try
-      Soap.EncdDecd.EncodeStream(Input, Output);
-      Result := Output.DataString;
-    finally
-      Output.Free;
-    end;
+    //Soap.EncdDecd.EncodeStream(Input, Output);
+    InputMemoryStream.LoadFromStream(Input);
+    Output := Encoder.EncodeStream(InputMemoryStream, InputMemoryStream.Size);
+    Result := Output;
   finally
-    Input.Free;
+    FreeAndNil(Input);
+    FreeAndNil(InputMemoryStream);
+    FreeAndNil(Encoder);
   end;
 end;
 
