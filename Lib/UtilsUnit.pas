@@ -154,7 +154,7 @@ function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetSpecialFolderPath(const folder : integer) : string;
-function GetLocalAppDataFolder: string;
+function GetProgramDataAppDataFolder: string;
 
 
 implementation
@@ -2394,9 +2394,9 @@ function GetSpecialFolderPath(const folder : integer) : string;
      Result := '';
  end;
 
-function GetLocalAppDataFolder: string;
+function GetProgramDataAppDataFolder: string;
 begin
-  Result := GetSpecialFolderPath(CSIDL_LOCAL_APPDATA);
+  Result := GetSpecialFolderPath(CSIDL_COMMON_APPDATA); //C:\ProgramData
 end;
 
 end.
