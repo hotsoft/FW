@@ -681,9 +681,7 @@ end;
 
 procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 var
-  copyDataStruct : TCopyDataStruct;
   StringToSend: string;
-  handle: THandle;
 begin
   // loop every 10 ms
   while WaitForSingleObject(aProcessInformation.hProcess, 10) > 0 do
