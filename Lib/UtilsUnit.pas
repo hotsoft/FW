@@ -8,7 +8,7 @@ uses
   Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
-  Vcl.Graphics, Winapi.Messages, SHFolder;
+  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -114,10 +114,16 @@ function GetTelaAprovacao(conn: TosSQLConnection) : string;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 
+
 implementation
 
 uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
   IdHash, IdHashMessageDigest, IdGlobal, IdURI;
+
+
+const
+  CSIDL_COMMON_APPDATA = $0023;
+
 
 function ApenasLetrasNumeros(nStr:String): String;
 Var
@@ -996,24 +1002,29 @@ begin
   end;
 end;
 
+
 function Base64FromBinary(const FileName: String): string;
 var
-  Input: TBytesStream;
-  Output: TStringStream;
+  Input: TFileStream;
+  InputMemoryStream: TMemoryStream;
+  Output: UTF8String;
+  Encoder: TIdEncoderMIME;
 begin
-  Input := TBytesStream.Create;
+  Result := EmptyStr;
+  Output := EmptyStr;
+
+  Input := TFileStream.Create(FileName, fmOpenRead);
+  InputMemoryStream := TMemoryStream.Create();
+  Encoder := TIdEncoderMIME.Create();
   try
-    Input.LoadFromFile(FileName);
-    Input.Position := 0;
-    Output := TStringStream.Create('', TEncoding.ASCII);
-    try
-      Soap.EncdDecd.EncodeStream(Input, Output);
-      Result := Output.DataString;
-    finally
-      Output.Free;
-    end;
+    //Soap.EncdDecd.EncodeStream(Input, Output);
+    InputMemoryStream.LoadFromStream(Input);
+    Output := Encoder.EncodeStream(InputMemoryStream, InputMemoryStream.Size);
+    Result := Output;
   finally
-    Input.Free;
+    FreeAndNil(Input);
+    FreeAndNil(InputMemoryStream);
+    FreeAndNil(Encoder);
   end;
 end;
 
