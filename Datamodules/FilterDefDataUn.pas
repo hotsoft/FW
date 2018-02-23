@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Provider, Db, DBTables, FMTBcd, SqlExpr,
+  Provider, Db, FMTBcd, SqlExpr,
   osSQLDataSetProvider, osCustomDataSetProvider, osUtils, osSQLDataSet;
 
 type

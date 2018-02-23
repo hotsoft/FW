@@ -3,18 +3,15 @@ unit UtilsUnit;
 interface
 
 uses
-  IBServices, INIFiles, Forms, AbZipper, StrUtils, Controls,
-  osComboSearch, Classes, DBCtrls, wwdbdatetimepicker, Wwdbcomb, ComCtrls,
-  Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
+  {$IFDEF VER250}IBServices,{$ENDIF}{$IFDEF VER320}IBX.IBServices,{$ENDIF}
+  INIFiles, System.Zip, System.IOUtils, StrUtils,
+  Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
-  Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
-  IdHashSHA, IdCoderMIME, SHFolder;
+  Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
+  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
-  varArrayOfcomps = array of TComponent;
-
-  TFuncaoParametroGetDesc = function(const vValor : Variant) : string;
 
   THSHash = class
     class function CalculaHash(conteudo: string; pDig : Integer = 2): string;
@@ -30,26 +27,12 @@ procedure criarArquivoBackupIB(nomeArq: string);
 function getSombraValue(Str:String): String;
 function TiraSimbolos(Str: String): String;
 function LastDayOfMonth(dia: TDate = 0): TDate;
-procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
-procedure setHabilitaComponente(comp: TComponent; enabled: boolean);
-procedure habilitaComponentes(comps: varArrayOfcomps);
-procedure desHabilitaComponentes(comps: array of TComponent);
-procedure setHabilitaDBEdit(edt: TDBEdit; enabled: boolean);
-procedure setHabilitaButton(btn: TButton; enabled: boolean);
-procedure setHabilitaSpeedButton(btn: TSpeedButton; enabled: boolean);
-procedure setHabilitawwComboBox(comboBox: TwwDBComboBox; enabled: boolean);
-procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
-procedure setHabilitawwDateTimePicker(dateTimePicker: TwwDBDateTimePicker; enabled: boolean);
 function roundToCurr(val: double): double;
-procedure setHabilitaDBCheckBox(edtd: TDBCheckBox; enabled: boolean);
-procedure setHabilitaDBMemo(comp: TDBMemo; enabled: boolean);
-procedure setHabilitawwDBGrid(grd: TwwDBGrid; enabled: boolean);
 procedure ListFileDir(Path: string; FileList: TStrings);
 function isNumeric(valor: string; acceptThousandSeparator: Boolean = False): boolean;
 function isIP(valor: string): boolean;
 function isConvert(Str: string): boolean;
 function extractPhoneNumber(Str: String; defaultDDD: string = '041'): string;
-procedure setHabilitaEdit(edit: TEdit; enabled: boolean);
 function InvertIntOn(const ANumberL, ANumberH: Integer): Int64;
 function InvertIntOff(const ANumberL, ANumberH: Integer): Int64;
 function ConvertIntToBase(ANumber: Int64): string;
@@ -64,7 +47,6 @@ function GetHora(tempo: string): Integer;
 function GetMinuto(tempo: string): Integer;
 function ConverteData(data: string): TDateTime;
 function ConverteDataHora(data: string): TDateTime;
-procedure ImprimirImpressoraTermica(const comando, impressora: String);
 function NomeDaTecla(Key: Word): string;
 function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange = -2): Currency;
 function ConverteTecladoNumerico(Key: Word): Word;
@@ -77,28 +59,14 @@ function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
-function ConverteRTF(rtf: string): string;
-function ConverteTextoToRTF(Texto: string): string;
 function FieldHasChanged(aField : TField):Boolean;
 procedure CheckChangedFields(aDataSet: TClientDataSet; aChangedFields: TStringList);
 function ValueIsEmptyNull(aValue : Variant):Boolean;
 function getDescricaoSexo(const vValor : Variant):String;
 function getDescricaoSimNao(const vValor : Variant):String;
 function getDescricaoTipoResultado(const vValor : Variant):String;
-function CriarMsgLogAlteracaoField(aField : TField):String; overload;
-function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
-function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet; 
-  const sCampoChave: String; const sCampoRetorno: String):String; 
-function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
 procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
-function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
-  const sCampoChave: String; aCampoDescricao: Array of String): String;
-function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
-  const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
-function isRTFValue(vValor: Variant): Boolean; //{\rtf
-function getCampoSemRTF(const vValor : Variant):String;     
 function FormataStringList(texto, delimitador: string): string;
-procedure TrimAppMemorySize;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
@@ -108,7 +76,6 @@ function Base64FromText(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
-procedure dgCreateProcess(const FileName: string);
 function TestConection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
@@ -116,7 +83,6 @@ function getUriUrlStatus(const address: String; stream: TStream; AOwner: TCompon
 function GetMacAddress: string;
 function GetWindowsDir: string;
 function GetPcName: string;
-function GetPrinters: string;
 function GetWindowsVersion: string;
 function GetLanguage: string;
 function GetScrollState: string;
@@ -125,20 +91,12 @@ function FreeDiskSpace(strDisk: string): string;
 function TimeInWindows: string;
 function GetPowerStatus: string;
 function GetUser: string;
-function GetProcessList: string;
 function getMemoryUsed: Integer;
 function GetSystemDecimal: string;
-function GetSystemInfo: string;
 function GetWindowPID(sFile: String): Cardinal;
 function EnumProcess(hHwnd: HWND; lParam : integer; var FProcessa: Boolean;
  var FHWND: HWND; var FPid: DWORD; var iListOfProcess: Integer): boolean; stdcall;
-function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
 function EnumWindowsProc(Wnd: HWND; List: TStringList): BOOL; stdcall;
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
-function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 function KillTask(const ExeFileName: string): Integer;
 function GetMD5FromString(const text: string): String;
 function GetPageAsstring(const url: string): String;
@@ -146,21 +104,22 @@ function GetUrlWithoutParams(const url: String): String;
 function GetDllName: string;
 function GetTempDirectory: string;
 function GetLastErrorMessage: string;
-function LocalIp: string;
 function FormatIP(const ip: string): String;
 function TryForceDirectories(const aDir: string): String; overload;
 function TryForceDirectories(const aDir: string; out aErrorMessage: string): boolean; overload;
 function GetSHA1FromString(const text: string): string;
 function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
+function GetTelaAprovacao(conn: TosSQLConnection) : string;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, UMensagemAguarde, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI, IdIPWatch, IdCoder;
+uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
+
 
 const
   CSIDL_COMMON_APPDATA = $0023;
@@ -211,17 +170,6 @@ begin
   end;
 end;
 
-procedure setHabilitaButton(btn: TButton; enabled: boolean);
-begin
-  btn.Enabled := enabled;
-end;
-
-procedure setHabilitaSpeedButton(btn: TSpeedButton; enabled: boolean);
-begin
-  btn.Enabled := enabled;
-end;
-
-
 function isDigitOrControl(Key: char): boolean;
 var
   um, dois, tres, quatro, cinco: boolean;
@@ -251,34 +199,34 @@ end;
 procedure criarArquivoBackupIB(nomeArq: string);
 var
   IBBackup: TIBBackupService;
-  zipper: TABZipper;
+  zipper: TZipFile;
 begin
   IBBackup := TIBBackupService.Create(nil);
-  zipper := TAbZipper.Create(nil);
+  zipper := TZipFile.Create;
   try
     DeleteFile('tmp.gbk');
     IBBackup.Active := false;
-    IBBackup.DatabaseName := ExtractFilePath(Application.ExeName) + '..\DB\' +
-      copy(ExtractFileName(Application.ExeName),1,pos('.',ExtractFileName(Application.ExeName))-1) + '.gdb';
+    IBBackup.DatabaseName := ExtractFilePath(ParamStr(0)) + '..\DB\' +
+      copy(ExtractFileName(ParamStr(0)),1,pos('.',ExtractFileName(ParamStr(0)))-1) + '.gdb';
     IBBackup.LoginPrompt := false;
     IBBackup.Params.Clear;
     IBBackup.Params.Add('user_name=sysdba');
     IBBackup.Params.Add('password=masterkey');
-    IBBackup.BackupFile.Add(ExtractFilePath(Application.ExeName) + 'tmp.gbk');
+    IBBackup.BackupFile.Add(ExtractFilePath(ParamStr(0)) + 'tmp.gbk');
     IBBackup.Active := true;
     IBBackup.ServiceStart;
     while IBBackup.IsServiceRunning do Sleep(1);
     IBBackup.Active := false;
-    DeleteFile(PCHAR(ExtractFilePath(Application.ExeName) + 'tmp.zip'));
-    Zipper.FileName := ExtractFilePath(Application.ExeName) + 'tmp.zip';
-    Zipper.AddFiles(ExtractFilePath(Application.ExeName) + 'tmp.gbk',0);
-    Zipper.CloseArchive;
-    deleteFile(PCHAR(ExtractFilePath(Application.ExeName) + '..\backups\ultimoBackup.bkp'));
-    CopyFile(PWideChar(ExtractFilePath(Application.ExeName) + 'tmp.zip'),
-      PWideChar(ExtractFilePath(Application.ExeName) + '..\backups\ultimoBackup.bkp'),false);
-    RenameFile(ExtractFilePath(Application.ExeName) + 'tmp.zip', nomeArq);
-    DeleteFile(PCHAR(ExtractFilePath(Application.ExeName) + 'tmp.gbk'));
-    DeleteFile(PCHAR(ExtractFilePath(Application.ExeName) + 'tmp.zip'))
+    DeleteFile(PCHAR(ExtractFilePath(ParamStr(0)) + 'tmp.zip'));
+    Zipper.Open(ExtractFilePath(ParamStr(0)) + 'tmp.zip', zmWrite);
+    Zipper.Add(ExtractFilePath(ParamStr(0)) + 'tmp.gbk');
+    Zipper.Close;
+    deleteFile(PCHAR(ExtractFilePath(ParamStr(0)) + '..\backups\ultimoBackup.bkp'));
+    CopyFile(PWideChar(ExtractFilePath(ParamStr(0)) + 'tmp.zip'),
+      PWideChar(ExtractFilePath(ParamStr(0)) + '..\backups\ultimoBackup.bkp'),false);
+    RenameFile(ExtractFilePath(ParamStr(0)) + 'tmp.zip', nomeArq);
+    DeleteFile(PCHAR(ExtractFilePath(ParamStr(0)) + 'tmp.gbk'));
+    DeleteFile(PCHAR(ExtractFilePath(ParamStr(0)) + 'tmp.zip'))
   finally
     FreeAndNil(zipper);
     FreeAndNil(IBBackup);
@@ -342,156 +290,6 @@ begin
     m := 1;
   end;
   result := encodedate(y, m, 1) - 1;
-end;
-
-procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
-begin
-  if enabled then
-  begin
-    cbo.ReadOnly := false;
-    cbo.color := clWhite;
-    cbo.showButton := true;
-  end
-  else
-  begin
-    cbo.ReadOnly := true;
-    cbo.color := clBtnFace;
-    cbo.showButton := false;
-  end;
-  cbo.invalidate;
-end;
-
-procedure setHabilitaDBEdit(edt: TDBEdit; enabled: boolean);
-begin
-  if enabled then
-  begin
-    edt.ReadOnly := false;
-    edt.color := clWhite;
-  end
-  else
-  begin
-    edt.ReadOnly := true;
-    edt.color := clBtnFace;
-  end;
-end;
-
-procedure setHabilitawwComboBox(comboBox: TwwDBComboBox; enabled: boolean);
-begin
-  if enabled then
-  begin
-    comboBox.ReadOnly := false;
-    comboBox.Color := clWhite;
-  end
-  else
-  begin
-    comboBox.ReadOnly := true;
-    comboBox.Color := clBtnFace;
-  end;
-end;
-
-procedure setHabilitaComboBox(comboBox: TComboBox; enabled: boolean);
-begin
-  if enabled then
-  begin
-    comboBox.Enabled := True;
-    comboBox.Color := clWhite;
-  end
-  else
-  begin
-    comboBox.Enabled := False;
-    comboBox.Color := clBtnFace;
-  end;
-end;
-
-procedure setHabilitawwDateTimePicker(dateTimePicker: TwwDBDateTimePicker; enabled: boolean);
-begin
-  if enabled then
-  begin
-    dateTimePicker.ReadOnly := false;
-    dateTimePicker.Color := clWhite;
-  end
-  else
-  begin
-    dateTimePicker.ReadOnly := true;
-    dateTimePicker.Color := clBtnFace;
-  end;
-end;
-
-procedure setHabilitaDBCheckBox(edtd: TDBCheckBox; enabled: boolean);
-begin
-  if enabled then
-  begin
-    edtd.ReadOnly := false;
-  end
-  else
-  begin
-    edtd.ReadOnly := true;
-  end;
-end;
-
-procedure setHabilitawwDBGrid(grd: TwwDBGrid; enabled: boolean);
-begin
-  if enabled then
-  begin
-    grd.ReadOnly := false;
-  end
-  else
-  begin
-    grd.ReadOnly := true;
-  end;
-end;
-
-
-procedure setHabilitaDBMemo(comp: TDBMemo; enabled: boolean);
-begin
-  if enabled then
-  begin
-    comp.enabled := true;
-    comp.Color := clWhite;
-  end
-  else
-  begin
-    comp.enabled := false;
-    comp.Color := clBtnFace;
-  end;
-end;
-
-procedure setHabilitaComponente(comp: TComponent; enabled: boolean);
-begin
-  if comp is TosComboSearch then
-    setHabilitaComboSearch((comp as TosComboSearch), enabled);
-  if comp is TDBEdit then
-    setHabilitaDBEdit((comp as TDBEdit), enabled);
-  if comp is TwwDBComboBox then
-    setHabilitawwComboBox((comp as TwwDBComboBox), enabled);
-  if comp is TwwDBDateTimePicker then
-    setHabilitawwDateTimePicker((comp as TwwDBDateTimePicker), enabled);
-  if comp is TDBCheckBox then
-    setHabilitadbCheckBox((comp as TDBCheckBox), enabled);
-  if comp is TDBMemo then
-    setHabilitaDBMemo((comp as TDBMemo), enabled);
-  if comp is TwwDBGrid then
-    setHabilitawwDBGrid((comp as twwDBGrid), enabled);
-  if comp is TButton then
-    setHabilitaButton((comp as TButton), enabled);
-  if comp is TSpeedButton then
-    setHabilitaSpeedButton((comp as TSpeedButton), enabled);
-end;
-
-procedure habilitaComponentes(comps: varArrayOfcomps);
-var
-  i: integer;
-begin
-  for i := low(comps) to high(comps) do
-    setHabilitaComponente(comps[i], true);
-end;
-
-procedure desHabilitaComponentes(comps: array of TComponent);
-var
-  i: integer;
-begin
-  for i := low(comps) to high(comps) do
-    setHabilitaComponente(comps[i], false);
 end;
 
 function roundToCurr(val: double): double;
@@ -580,20 +378,6 @@ begin
     result := '0' + res
   else
     result := '00000000000';
-end;
-
-procedure setHabilitaEdit(edit: TEdit; enabled: boolean);
-begin
-  if enabled then
-  begin
-    edit.ReadOnly := false;
-    edit.Color := clWhite;
-  end
-  else
-  begin
-    edit.ReadOnly := true;
-    edit.Color := clBtnFace;
-  end;
 end;
 
 function InvertIntOn(const ANumberL, ANumberH: Integer): Int64;
@@ -773,34 +557,6 @@ begin
   Result := StrToIntDef(Trim(Copy(tempo,tam-1,2)),0);
 end;
 
-procedure ImprimirImpressoraTermica(const comando, impressora: String);
-var
-  FBat, FComando: TextFile;
-  diretorio: string;
-begin
-  diretorio:= GetSpecialFolderLocation(Application.Handle, CSIDL_COMMON_APPDATA) + '\';
-
-  DeleteFile(diretorio + 'COMANDO.TXT');
-  DeleteFile(diretorio + 'PRINTLBL.BAT');
-
-  AssignFile(FComando, diretorio + 'COMANDO.TXT');
-  try
-    Rewrite(FComando);
-    Writeln(FComando, comando);
-  finally
-    CloseFile(FComando);
-  end;
-
-  AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
-  try
-    Rewrite(FBat);
-    Writeln(FBat, 'TYPE "' + diretorio + 'COMANDO.TXT" > "'+impressora+'"');
-  finally
-    CloseFile(FBat);
-  end;
-
-  ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
-end;
 
 function NomeDaTecla(Key: Word): string;
 var
@@ -1052,23 +808,6 @@ begin
   end;
 end;
 
-function LocalIp: string;
-var
-  IPW: TIdIPWatch;
-begin
-  Result := '127.0.0.1';
-
-  IpW := TIdIPWatch.Create(Application);
-  try
-    IpW.Active := True;
-    if IpW.LocalIP <> EmptyStr then
-      Result := FormatIP(IpW.LocalIP);
-  finally
-    if Assigned(IpW) then
-      FreeAndNil(IpW);
-  end;
-end;
-
 class function THSHash.CalculaHash(conteudo: string; pDig : Integer = 2): string;
 var
   sum, i : Integer;
@@ -1102,52 +841,6 @@ begin
   valor := valor mod 256;
   hexa := IntToHex(valor,0);
   Result :=  hexa;
-end;
-
-function ConverteRTF(rtf: string): string;
-var
-  form: TForm;
-  richEdit: TRichEdit;
-  ss: TStringStream;
-begin
-  try
-    ss := TStringStream.Create(rtf);
-    form := TForm.Create(nil);
-    richEdit := TRichEdit.Create(form);
-    richEdit.Parent := form;
-    richEdit.Lines.LoadFromStream(ss);
-    richEdit.PlainText := True;
-    Result := richEdit.Text;
-  finally
-    FreeAndNil(ss);
-    FreeAndNil(richEdit);
-    FreeAndNil(form);
-  end;
-end;
-
-function ConverteTextoToRTF(Texto: string): string;
-var
-  form: TForm;
-  richEdit: TRichEdit;
-  ss: TStringStream;
-begin
-  if not isRTFValue(Texto) then
-  begin 
-    try
-      ss := TStringStream.Create(Texto);
-      form := TForm.Create(nil);
-      richEdit := TRichEdit.Create(form);
-      richEdit.Parent := form;
-      richEdit.Text:= Texto;
-      richEdit.PlainText := False;
-      richEdit.Lines.SaveToStream(ss);
-      Result :=  ss.DataString;
-    finally
-      FreeAndNil(ss);
-      FreeAndNil(richEdit);
-      FreeAndNil(form);
-    end;
-  end;
 end;
 
 function FieldHasChanged(aField : TField):Boolean;
@@ -1275,194 +968,6 @@ begin
     cdsDestino.Post;
     cdsOrigem.Next;
   end;
-end;
-
-function CriarMsgLogAlteracaoField(aField : TField):String; overload;
-begin
-  Result := EmptyStr;
-  if FieldHasChanged(aField) then
-    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, getCampoSemRTF(aField.OldValue),
-      getCampoSemRTF(aField.NewValue)]);
-
-end;
-
-function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
-begin
-  Result := EmptyStr;
-  if FieldHasChanged(aField) then
-    Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, aFuncaoGetDescricao(aField.OldValue),
-      aFuncaoGetDescricao(aField.NewValue)]);
-end;
-
-function CriarMsgLogAlteracaoFieldLookup(aField : TField; oCDSLookup: TClientDataSet;const sCampoChave: String;
-  const sCampoRetorno: String):String;
-var
-  sDescOld, sDescNew : String;
-begin
-  sDescOld := EmptyStr;
-  sDescNew := EmptyStr;
-  Result := EmptyStr;
-  if FieldHasChanged(aField) then
-  begin
-    if not ValueIsEmptyNull(aField.OldValue) then
-      sDescOld := oCDSLookup.Lookup(sCampoChave, aField.OldValue, sCampoRetorno);
-    if not ValueIsEmptyNull(aField.NewValue) then
-      sDescNew := oCDSLookup.Lookup(sCampoChave, aField.NewValue, sCampoRetorno);
-
-    if (sDescOld <> EmptyStr) or (sDescNew <> EmptyStr) then
-      Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, sDescOld, sDescNew]);
-  end;
-end;
-
-function CriarMsgLogAlteracaoCDS(oCDS: TClientDataSet; key: string; aCamposDescricao, aCamposLOG: Array of String): String;
-var
-  i : Integer;
-  bm : TBookmark;
-  aMsgReg, aMsgAlt : String;
-begin
-  Result := EmptyStr;
-  if (oCDS = nil) or (not oCDS.Active) or (oCDS.RecordCount = 0)  then
-    Exit;
-  bm := oCDS.Bookmark;
-  oCDS.DisableControls;
-  try
-    oCDS.First;
-    while not oCDS.Eof do
-    begin
-      aMsgReg := EmptyStr;
-      aMsgAlt := EmptyStr;
-      // loga se não for inclusão
-      if not ValueIsEmptyNull(oCDS.FieldByName(key).OldValue) then
-      begin
-        // Todos os Campos
-        if Length(aCamposLOG)=0 then
-        begin
-          for i := 0 to oCDS.FieldCount-1 do
-          begin
-            if oCDS.FieldByName(oCDS.Fields[i].FieldName).FieldKind <> fkLookup then
-              aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField(
-                oCDS.FieldByName(oCDS.Fields[i].FieldName) );
-          end;
-        end
-        // campos do Array
-        else
-        begin
-          for i := 0 to Length(aCamposLOG)-1 do
-          begin
-            aMsgAlt := aMsgAlt + CriarMsgLogAlteracaoField( oCDS.FieldByName(aCamposLOG[i]) );
-          end;
-        end;
-
-        if (Length(aCamposDescricao) > 0) and (aMsgAlt <> EmptyStr) then
-        begin
-          aMsgReg := EmptyStr;
-          for i := 0 to Length(aCamposDescricao)-1 do
-          begin
-            if aMsgReg <> EmptyStr then
-              aMsgReg := aMsgReg + ', ';
-            aMsgReg := aMsgReg + getCampoSemRTF(oCDS.FieldByName(aCamposDescricao[i]).AsString);
-          end;
-          aMsgReg := #13 + #13 + 'Alterado ' + aMsgReg;
-        end;
-
-        // Copy retira uma linha no começo da mensagem dos campos
-        if aMsgAlt <> EmptyStr then
-          Result := Result + aMsgReg + Copy(aMsgAlt, 2, length(aMsgAlt));
-      end;
-      oCDS.Next;
-    end;
-  finally
-    oCDS.GotoBookmark(bm);
-    oCDS.EnableControls;
-  end;
-end;
-
-function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS: TClientDataSet;
-  const sCampoChave: String; aCampoDescricao: Array of String): String;
-begin
-  Result := EmptyStr;
-  AlteradoCDS.DisableControls;
-  try
-    // Verifica Registros Excluidos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
-      'Exclusão: ');
-
-    // Verifica Registros Incluídos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
-      'Inclusão: ');
-  finally
-    AlteradoCDS.EnableControls;
-  end;
-end;
-
-function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
-  const sCampoChave: String; aCampoDescricao: Array of String; const sDescricao : String ): String;
-var
-  nRegCol : Integer;
-  aMsgReg : String;
-  _Str: TStringList;
-  _Valor: string;
-begin
-  Result := EmptyStr;
-  _Str := TStringList.Create;
-  try
-    OriginalCDS.First;
-    while not OriginalCDS.Eof do
-    begin
-      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
-      begin
-        if Length(aCampoDescricao) > 0 then
-        begin
-          aMsgReg := EmptyStr;
-          for nRegCol := 0 to Length(aCampoDescricao)-1 do
-          begin
-            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
-            if _valor <> EmptyStr then
-              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
-          end;
-        end;
-        Result := Result + #13 + sDescricao + _Str.CommaText;
-      end;
-      OriginalCDS.Next;
-    end;
-  finally
-    FreeAndNil(_Str);
-  end;
-end;
-
-function isRTFValue(vValor: Variant): Boolean;
-begin
-  Result := False;
-  if not ValueIsEmptyNull(vValor) then
-    Result :=  Copy(vValor, 1, 5) = '{\rtf';
-end;
-
-function getCampoSemRTF(const vValor : Variant):String;
-var
-  sValor : String;
-begin
-  result := EmptyStr;
-  if not ValueIsEmptyNull(vValor) then
-  begin
-    sValor := VarToStr(vValor);
-    if isRTFValue(sValor) then
-      result := ConverteRTF(sValor)
-    else
-      result := sValor;
-  end;
-end;
-
-procedure TrimAppMemorySize;
-var
-  MainHandle : THandle;
-begin
-  try
-    MainHandle := OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessID) ;
-    SetProcessWorkingSetSize(MainHandle, $FFFFFFFF, $FFFFFFFF) ;
-    CloseHandle(MainHandle) ;
-  except
-  end;
-  Application.ProcessMessages;
 end;
 
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
@@ -1628,51 +1133,13 @@ begin
   end;
 end;
 
-procedure dgCreateProcess(const FileName: string);
-var ProcInfo: TProcessInformation;
-    StartInfo: TStartupInfo;
-    FrmMensagem : TFrmMensagemAguarde;
-begin
-  FrmMensagem := TFrmMensagemAguarde.Create(Application);
-  try
-    FrmMensagem.Show;
-    FrmMensagem.setMensagem('Aguarde, Carregando... ', True);
-    FrmMensagem.Update;
-
-    {https://msdn.microsoft.com/en-us/library/ms686331.aspx}
-    FillMemory(@StartInfo, SizeOf(StartInfo), 0);
-    StartInfo.cb := SizeOf(StartInfo);
-    StartInfo.dwFlags := STARTF_RUNFULLSCREEN;
-    StartInfo.wShowWindow := SW_SHOWMAXIMIZED;
-    StartInfo.dwXSize := Screen.Width;
-    StartInfo.dwYSize := Screen.Height;
-    StartInfo.dwX := 0;
-    StartInfo.dwY := 0;
-
-    CreateProcess(
-      nil,
-      PChar(FileName),
-      nil, Nil, False,
-      DEBUG_PROCESS and CREATE_NEW_CONSOLE and CREATE_NEW_PROCESS_GROUP and BELOW_NORMAL_PRIORITY_CLASS,
-      nil, nil,
-      StartInfo,
-      ProcInfo);
-    CloseHandle(ProcInfo.hProcess);
-    CloseHandle(ProcInfo.hThread);
-  finally
-    SleepEx(10000, False);
-    FrmMensagem.Close;
-    FrmMensagem.Release;
-  end;
-end;
-
 function TestConection(const url: String): boolean;
 var
   HTTPClient: TidHTTP;
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
-  Stream := TStringStream.Create('');
+  Stream := TStringStream.Create('', TEncoding.UTF8);
 
   HTTPClient := TidHTTP.Create(nil);
   LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
@@ -1696,26 +1163,6 @@ begin
     Stream.Free;
     LHandler.Free;
     HTTPClient.Free;
-  end;
-end;
-
-function GetPageAsString(const url: String): String;
-var
-  lHTTP: TIdHTTP;
-  lUri: TIdURI;
-begin
-  Result := EmptyStr;
-
-  if TestConection(url) then
-  begin
-    lHTTP := TIdHTTP.Create(Application);
-    lUri := TIdUri.Create;
-    try
-      Result := lHTTP.Get(lUri.URLEncode(url));
-    finally
-      FreeAndNil(lHTTP);
-      FreeAndNil(lUri);
-    end;
   end;
 end;
 
@@ -1917,11 +1364,6 @@ begin
     Result := 'AC power offline';
 end;
 
-function GetPrinters: string;
-begin
-  Result := Printer.Printers.Text;
-end;
-
 function GetSystemDecimal: string;
 var
   MyDecimal: PChar;
@@ -1950,28 +1392,6 @@ begin
   i:=256;
   GetComputerName(CompName, i);
   Result := StrPas(CompName);
-end;
-
-function GetProcessList: string;
-var
-  Wnd: hWnd;
-  Buff: array [0..127] of Char;
-begin
-  Result := EmptyStr;
-
-  Wnd:=GetWindow(Application.Handle, gw_HWndFirst);
-  while Wnd<>0 do
-  begin
-    if (Wnd<>Application.Handle) and
-      IsWindowVisible(Wnd) and
-      (GetWindow(Wnd, gw_Owner)=0) and
-      (GetWindowText(Wnd, Buff, sizeof(buff))<>0) then
-    begin
-      GetWindowText(Wnd, Buff, SizeOf(Buff));
-      Result := Result + #13#10 + StrPas(Buff) + 'Memória: ' + IntToStr(getMemoryUsed);
-    end;
-    Wnd:=GetWindow(Wnd, gw_hWndNext);
-  end;
 end;
 
 function getMemoryUsed: Integer;
@@ -2054,45 +1474,6 @@ begin
   Result := string(Lang);
 end;
 
-function GetSystemInfo: string;
-begin
-  Result := 'INFORMAÇÕES DO SISTEMA:';
-  Result := Result + #13#10 + '---------------------------------------------------------------------------';
-  Result := Result + #13#10 + 'Mac Address: '          + GetMacAddress;
-  Result := Result + #13#10 + 'Diretório do Windows: ' + GetWindowsDir;
-  Result := Result + #13#10 + 'Nome do Computador: '   + GetPcName;
-  Result := Result + #13#10 + 'Impressoras: ' + #13#10 + GetPrinters;
-  Result := Result + #13#10 + 'Versão do Windows: '    + GetWindowsVersion;
-  Result := Result + #13#10 + 'Idioma: '               + GetLanguage;
-  Result := Result + #13#10 + 'Estado do Scroll: '     + GetScrollState;
-  Result := Result + #13#10 + 'Resolução da Tela: '    + ScreenResolution;
-  Result := Result + #13#10 + 'Espaço Livre no C: '    + FreeDiskSpace('C');
-  Result := Result + #13#10 + 'Horário do Windows: '   + TimeInWindows;
-  Result := Result + #13#10 + 'Estado de Energia: '    + GetPowerStatus;
-  Result := Result + #13#10 + 'Usuário: '              + GetUser;
-  Result := Result + #13#10 + 'Lista de Processos: '   + GetProcessList;
-  Result := Result + #13#10 + '---------------------------------------------------------------------------';
-  //Result := GetSystemDecimal;
-end;
-
-function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
-begin
-  Result := FHWND;
-
-  if Trim(ATaskName) <> EmptyStr then
-  begin
-    FTaskName := ATaskName;
-    FPid := PDWORD_PTR(GetWindowPID(ATaskName));
-    FProcessa := True;
-    if not EnumWindows(@EnumProcess, iListOfProcess) then
-      Exit
-    else
-      Application.ProcessMessages;
-
-    Result := FHWND;
-  end;
-end;
 
 function GetWindowPID(sFile: String): Cardinal;
 var
@@ -2196,57 +1577,6 @@ begin
   List.AddObject(Caption, TObject(Wnd));
 end;
 
-function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
-var
-  ContinueLoop: BOOL;
-  FSnapshotHandle: THandle;
-  FProcessEntry32: TProcessEntry32;
-begin
-  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  try
-    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
-    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-    Result := False;
-    while Integer(ContinueLoop) <> 0 do
-    begin
-      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
-        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
-        UpperCase(ExeFileName))) then
-      begin
-        Result := True;
-        ValidaTravamento(UpperCase(ExeFileName), FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
-      end;
-      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
-    end;
-  finally
-    CloseHandle(FSnapshotHandle);
-  end;
-end;
-
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
-var
- dwResult: PDWORD_PTR;
- ValorRetorno: Longint;
- AppHandle : THandle;
-begin
-  Result := False;
-
-  try
-    AppHandle:= UtilsUnit.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
-    if AppHandle <> 0 then
-    begin
-      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
-       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
-      if ValorRetorno > 0 then
-        Result := True
-      else
-        Result := False;
-    end;
-  except
-  end;
-end;
 
 function KillTask(const ExeFileName: string): Integer;
 const
@@ -2381,6 +1711,43 @@ begin
   end;
 end;
 
+function GetTelaAprovacao(conn: TosSQLConnection) : string;
+var
+  qry: TosSQLQuery;
+begin
+  Result := '';
+  try
+    qry := TosSQLQuery.Create(nil);
+    qry.SQLConnection := conn;
+    qry.SQL.Text := 'select upper(r.resclassname) as resclassname from recurso r where r.nome = ''Aprovação Resultados'' or (r.filterdefname = ''fltAprovaResultado'')';
+    qry.Open;
+    if not qry.IsEmpty then
+      Result := qry.FieldByName('resclassname').AsString;
+  finally
+    qry.Close;
+    FreeAndNil(qry);
+  end;
+end;
+
+function GetPageAsString(const url: String): String;
+var
+  lHTTP: TIdHTTP;
+  lUri: TIdURI;
+begin
+  Result := EmptyStr;
+
+  if TestConection(url) then
+  begin
+    lHTTP := TIdHTTP.Create(nil);
+    lUri := TIdUri.Create;
+    try
+      Result := lHTTP.Get(lUri.URLEncode(url));
+    finally
+      FreeAndNil(lHTTP);
+      FreeAndNil(lUri);
+    end;
+  end;
+end;
 
 function GetSpecialFolderPath(const folder : integer) : string;
  const
