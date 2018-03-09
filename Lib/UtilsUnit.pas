@@ -113,7 +113,7 @@ function GetFileSize(const filename: widestring): Int64;
 function GetTelaAprovacao(conn: TosSQLConnection) : string;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
-
+function MD5File(const FileName: string): string;
 
 implementation
 
@@ -1616,6 +1616,21 @@ begin
   finally
     FreeAndNil(hashMessageDigest5);
   end;
+end;
+
+function MD5File(const FileName: string): string;
+var
+  IdMD5: TIdHashMessageDigest5;
+  FS: TFileStream;
+begin
+ IdMD5 := TIdHashMessageDigest5.Create;
+ FS := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
+ try
+   Result := IdMD5.HashStreamAsHex(FS)
+ finally
+   FS.Free;
+   IdMD5.Free;
+ end;
 end;
 
 function GetDllName: string;
