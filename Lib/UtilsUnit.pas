@@ -67,6 +67,7 @@ function getDescricaoSimNao(const vValor : Variant):String;
 function getDescricaoTipoResultado(const vValor : Variant):String;
 procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
 function FormataStringList(texto, delimitador: string): string;
+function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
@@ -124,6 +125,15 @@ uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
 const
   CSIDL_COMMON_APPDATA = $0023;
 
+function ApenasNumeros(const valor : String) : String;
+var
+  i : byte;
+begin
+  Result := EmptyStr;
+  for i := 1 to length(valor) do
+    if valor[i] in ['0'..'9'] then
+      Result := result + valor[i];
+end;
 
 function ApenasLetrasNumeros(nStr:String): String;
 Var
