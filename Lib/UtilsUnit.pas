@@ -1758,16 +1758,20 @@ function GetPageAsString(const url: String): String;
 var
   lHTTP: TIdHTTP;
   lUri: TIdURI;
+  IOHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   Result := EmptyStr;
 
   if TestConection(url) then
   begin
     lHTTP := TIdHTTP.Create(nil);
+    IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(lHTTP);
     lUri := TIdUri.Create;
     try
+      lHTTP.IOHandler := IOHandler;
       Result := lHTTP.Get(lUri.URLEncode(url));
     finally
+      FreeAndNil(IOHandler);
       FreeAndNil(lHTTP);
       FreeAndNil(lUri);
     end;
