@@ -8,7 +8,7 @@ uses
   Math, Wwdbgrid, RegExpr,StdCtrls, DB, DBClient, wwdbedit, Buttons, ShellAPI, acSysUtils, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Printers, Winapi.Messages, Winapi.Windows, System.SysUtils, Vcl.Graphics,
-  IdHashSHA, IdCoderMIME, SHFolder;
+  IdHashSHA, IdCoderMIME, SHFolder, Data.SqlExpr;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -69,9 +69,9 @@ function NomeDaTecla(Key: Word): string;
 function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange = -2): Currency;
 function ConverteTecladoNumerico(Key: Word): Word;
 function ConverteMinutos(minutos: Integer): string;
-function GetDateTime(conn: TosSQLConnection): TDateTime;
-function GetNewID(conn: TosSQLConnection): Integer;
-function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
+function GetDateTime(conn: TSQLConnection): TDateTime;
+function GetNewID(conn: TSQLConnection): Integer;
+function GetGenerator(conn: TSQLConnection; generator: string): Integer;
 function ConverteStrToDate(data: string): TDateTime;
 function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
@@ -155,7 +155,8 @@ function GetSHA1FromFile(const path: string): string;
 function GetFileSize(const filename: widestring): Int64;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
-
+function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
+procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 
 implementation
 
@@ -942,7 +943,7 @@ begin
   Result := Result+h+':'+m;
 end;
 
-function GetDateTime(conn: TosSQLConnection): TDateTime;
+function GetDateTime(conn: TSQLConnection): TDateTime;
 var
   qry: TosSQLQuery;
 begin
@@ -958,7 +959,7 @@ begin
   end;
 end;
 
-function GetNewID(conn: TosSQLConnection): Integer;
+function GetNewID(conn: TSQLConnection): Integer;
 var
   qry: TosSQLQuery;
 begin
@@ -974,7 +975,7 @@ begin
   end;
 end;
 
-function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
+function GetGenerator(conn: TSQLConnection; generator: string): Integer;
 var
   qry: TosSQLQuery;
 begin
@@ -2401,6 +2402,51 @@ function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 begin
   Result := GetSpecialFolderPath(CSIDL_COMMON_APPDATA); //C:\ProgramData
+end;
+
+procedure CloseProcess(const aProcessInformation: TProcessInformation);
+begin
+  CloseHandle(aProcessInformation.hProcess);
+  CloseHandle(aProcessInformation.hThread);
+end;
+
+procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
+var
+  StringToSend: string;
+begin
+  // loop every 10 ms
+  while WaitForSingleObject(aProcessInformation.hProcess, 10) > 0 do
+  begin
+    Application.ProcessMessages;
+  end;
+  CloseProcess(aProcessInformation);
+end;
+
+function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProgram: String;
+  CreationFlags: Cardinal;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+  if ShowWindow then
+    CreationFlags := NORMAL_PRIORITY_CLASS
+  else
+    CreationFlags := CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE;
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CreationFlags,
+    nil, nil, tmpStartupInfo, aProcessInformation) then
+    Result := True
+  else
+  begin
+    Result := False;
+    RaiseLastOSError;
+  end;
 end;
 
 end.
