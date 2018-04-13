@@ -8,7 +8,7 @@ uses
   Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
-  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME;
+  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME, Data.SqlExpr;
 
 type
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
@@ -51,9 +51,9 @@ function NomeDaTecla(Key: Word): string;
 function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange = -2): Currency;
 function ConverteTecladoNumerico(Key: Word): Word;
 function ConverteMinutos(minutos: Integer): string;
-function GetDateTime(conn: TosSQLConnection): TDateTime;
-function GetNewID(conn: TosSQLConnection): Integer;
-function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
+function GetDateTime(conn: TSQLConnection): TDateTime;
+function GetNewID(conn: TSQLConnection): Integer;
+function GetGenerator(conn: TSQLConnection; generator: string): Integer;
 function ConverteStrToDate(data: string): TDateTime;
 function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
@@ -708,7 +708,7 @@ begin
   Result := Result+h+':'+m;
 end;
 
-function GetDateTime(conn: TosSQLConnection): TDateTime;
+function GetDateTime(conn: TSQLConnection): TDateTime;
 var
   qry: TosSQLQuery;
 begin
@@ -724,7 +724,7 @@ begin
   end;
 end;
 
-function GetNewID(conn: TosSQLConnection): Integer;
+function GetNewID(conn: TSQLConnection): Integer;
 var
   qry: TosSQLQuery;
 begin
@@ -740,7 +740,7 @@ begin
   end;
 end;
 
-function GetGenerator(conn: TosSQLConnection; generator: string): Integer;
+function GetGenerator(conn: TSQLConnection; generator: string): Integer;
 var
   qry: TosSQLQuery;
 begin
