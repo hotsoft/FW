@@ -22,6 +22,7 @@ type
   TDatamoduleClass = class of TDatamodule;
   TTipoExibicao = (teGrid, teRelat);
 
+  TOnEditForm = procedure (AForm: TosCustomEditForm) of object;
 
   TosCustomMainForm = class(TosForm)
     MainMenu: TMainMenu;
@@ -226,6 +227,7 @@ type
     FSuperUserLogged: boolean;
     FIndiceMenu : Integer;
     FUltimoIndiceMenu : Integer;
+    FOnEditForm: TOnEditForm;
     procedure SetEditForm(const Value: TosCustomEditForm);
     procedure SetActionDblClick(const Value: TAction);
     function GetSelectedList: TStringList;
@@ -238,6 +240,7 @@ type
     procedure checkOperations;
 
     procedure adjustReportZoom;
+    procedure SetOnEditForm(const Value: TOnEditForm);
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -272,6 +275,7 @@ type
     property EditForm: TosCustomEditForm read FEditForm write SetEditForm;
     property SelectedList: TStringList read GetSelectedList;
     property CurrentResource: TosAppResource read FCurrentResource;
+    property OnEditForm : TOnEditForm read FOnEditForm write SetOnEditForm;
   end;
 
 var
@@ -373,6 +377,8 @@ begin
       Form.VisibleButtons := [vbSalvarFechar, vbFechar];
       if PrintAction.Enabled then
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
+      if assigned(Self.FOnEditForm) then
+        Self.FOnEditForm(Form);
       Form.Edit('ID', iID);
       if Form.IsModified then
       begin
@@ -788,6 +794,11 @@ end;
 procedure TosCustomMainForm.SetEditForm(const Value: TosCustomEditForm);
 begin
 
+end;
+
+procedure TosCustomMainForm.SetOnEditForm(const Value: TOnEditForm);
+begin
+  FOnEditForm := Value;
 end;
 
 function TosCustomMainForm.CreateCurrentEditForm: TosCustomEditForm;
@@ -1584,6 +1595,8 @@ begin
       Form.VisibleButtons := [vbSalvarFechar, vbParar];
       if PrintAction.Enabled then
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
+      if assigned(Self.FOnEditForm) then
+        Self.FOnEditForm(Form);
       Form.Edit('ID', iID);
       if Form.IsModified then
       begin
