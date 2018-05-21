@@ -180,6 +180,7 @@ begin
   FFuncoes.Add(TFuncaoMaquina.Create('MAIUSCULO', 1, maiusculo));
   FFuncoes.Add(TFuncaoMaquina.Create('MINUSCULO', 1, minusculo));
   FFuncoes.Add(TFuncaoMaquina.Create('INICIAL', 1, inicial));
+  FFuncoes.Add(TFuncaoMaquina.Create('LOGN', 2, logaritmo));
 end;
 
 destructor TosMaquina.Destroy;

@@ -23,6 +23,7 @@ function trimstr(Parametros: TList): string; forward;
 function maiusculo(Parametros: TList): string; forward;
 function minusculo(Parametros: TList): string; forward;
 function inicial(Parametros: TList): string; forward;
+function logaritmo(Parametros: TList): double; forward;
 
 
 implementation
@@ -169,6 +170,11 @@ var
 begin
   texto := AnsiUpperCase(PChar(Parametros.Items[0]));
   Result := AnsiUpperCase(Copy(texto,1,1))+AnsiLowerCase(Copy(texto,2, Length(texto)));
+end;
+
+function logaritmo(Parametros: TList): double;
+begin
+  Result := Math.LogN(double(Parametros.Items[0]^), double(Parametros.Items[1]^));
 end;
 
 end.
