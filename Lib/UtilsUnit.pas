@@ -115,10 +115,11 @@ function GetTelaAprovacao(conn: TosSQLConnection) : string;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 function MD5File(const FileName: string): string;
+function HandleException(const aURL: string): string;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
+uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData, IdExceptionCore, IdStack,
   IdHash, IdHashMessageDigest, IdGlobal, IdURI;
 
 
@@ -1793,6 +1794,29 @@ function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 begin
   Result := GetSpecialFolderPath(CSIDL_COMMON_APPDATA); //C:\ProgramData
+end;
+
+function HandleException(const aURL: string): string;
+var
+  _Exception: Exception;
+begin
+  _Exception := Exception(ExceptObject);
+  Result := _Exception.Message;
+  if _Exception is EIdIOHandlerPropInvalid then
+    Result := 'Protocolo inválido, tente alternar entre http:// e https://. URL: ' + aURL
+  else if _Exception is EIdConnectTimeout then
+    Result := 'Servidor indisponível (Connect time out):' + aURL
+  else if _Exception is EIdReadTimeOut then
+    Result := 'Servidor indisponível (Read time out):' + aURL
+  else if _Exception is EIdSocketError then
+    Result := 'Verifique se o servidor está respondendo ou se a URL/Porta está(ão) correta(s): ' + aURL
+  else if _Exception is EIdHTTPProtocolException then
+  begin
+    if EIdHTTPProtocolException(_Exception).ErrorCode = 500 then
+      Result := Format('Erro ao conectar-se ao servidor. Código de erro: %d. Erro interno no servidor. ',[EIdHTTPProtocolException(_Exception).ErrorCode])
+    else
+      Result := Format('Erro ao conectar-se ao servidor. Código de erro: %d. Erro: %s.',[EIdHTTPProtocolException(_Exception).ErrorCode, EIdHTTPProtocolException(_Exception).ErrorMessage]);
+  end;
 end;
 
 end.
