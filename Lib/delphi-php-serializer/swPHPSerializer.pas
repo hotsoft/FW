@@ -21,7 +21,7 @@ type
     procedure CloseClass;
     procedure ArrayStart(array_len: integer);
     procedure AddBoolean(b: boolean);
-    procedure AddInt(int: integer);
+    procedure AddInt(int: int64);
     procedure AddFloat(f: double);
     procedure AddString(str: string);
 
@@ -83,7 +83,7 @@ begin
   self._result_string := self._result_string + 'd:' + floattostr(RoundTo(f, -4)) + self._DATA_DELIMITER;
 end;
 
-procedure TPHPSerializer.AddInt(int: integer);
+procedure TPHPSerializer.AddInt(int: int64);
 begin
   self._result_string := self._result_string + 'i:' + inttostr(int) + self._DATA_DELIMITER;
 end;
