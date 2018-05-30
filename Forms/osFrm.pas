@@ -86,7 +86,7 @@ begin
     else
     begin
       if (not self.GetWhiteList.Contains(aWinControl.Components[i])) and
-         ((aWinControl.Components[i] is TMenuItem) or (aWinControl.Components[i] is TWinControl)) then
+        ((aWinControl.Components[i] is TPopupMenu) or (aWinControl.Components[i] is TMenuItem) or (aWinControl.Components[i] is TWinControl)) then
       begin
         infoEnabled := TypInfo.GetPropInfo(aWinControl.Components[i], 'Enabled');
         if assigned(infoEnabled) then
@@ -123,14 +123,13 @@ end;
 procedure TosForm.AddControlsToWhiteListByContainer(aContainer: TWinControl);
 var
   i: integer;
-  infoEnabled: PPropInfo;
 begin
   Self.GetWhiteList.Add(aContainer);
-  for i:= 0 to aContainer.ControlCount - 1 do
+  for i:= 0 to aContainer.ComponentCount - 1 do
   begin
-    Self.GetWhiteList.Add(aContainer.Controls[i]);
-    if aContainer.Controls[i] is TWinControl then
-      AddControlsToWhiteListByContainer(TWinControl(aContainer.Controls[i]));
+    Self.GetWhiteList.Add(aContainer.Components[i]);
+    if (aContainer.Components[i] is TWinControl) then
+      AddControlsToWhiteListByContainer(TWinControl(aContainer.Components[i]));
   end;
 end;
 
