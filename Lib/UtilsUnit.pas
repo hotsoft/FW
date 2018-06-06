@@ -949,6 +949,8 @@ begin
     begin
       if (cdsOrigem.Fields[i]) is TMemoField then
         field := TMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TIntegerField then
+        field := TIntegerField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
@@ -972,8 +974,8 @@ begin
     cdsDestino.Append;
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString :=
-        cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
+      if not cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).IsNull then
+        cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
     end;
     cdsDestino.Post;
     cdsOrigem.Next;
