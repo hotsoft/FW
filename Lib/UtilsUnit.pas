@@ -8,9 +8,12 @@ uses
   Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
-  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME, Data.SqlExpr;
+  Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME, Data.SqlExpr, System.Generics.Collections,
+  Data.DBXJSON, IdHTTP, acNetUtils;
 
 type
+  TKeyValue = class(TDictionary<string, string>);
+
   TFormOrigem  = (TabEditConvenio, TabEditLaudo, TabEditExame);
 
   THSHash = class
@@ -115,10 +118,19 @@ function GetTelaAprovacao(conn: TosSQLConnection) : string;
 function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 function MD5File(const FileName: string): string;
+function HandleException(const aURL: string): string;
+procedure ParseJSONObject(aDict: TKeyValue; aJsonValue: TJSONValue;
+  aJsonString: TJSONString; aJsonPairEnum: TJSONPairEnumerator;
+  aJsonArrayEnum: TJSONArrayEnumerator);
+
+function GetIdHttp: TIdHTTP;
+function getJsonStringFromServer(const aURL: string; var aException: string): string;
+function MappJsonToDict(const aJsonString: string) : TJsonArray;
+
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, IdHTTP, IdSSLOpenSSL, IdMultipartFormData,
+uses DateUtils, Variants, StatusUnit, IdSSLOpenSSL, IdMultipartFormData, IdExceptionCore, IdStack,
   IdHash, IdHashMessageDigest, IdGlobal, IdURI;
 
 
@@ -1795,6 +1807,149 @@ function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 begin
   Result := GetSpecialFolderPath(CSIDL_COMMON_APPDATA); //C:\ProgramData
+end;
+
+function HandleException(const aURL: string): string;
+var
+  _Exception: Exception;
+begin
+  _Exception := Exception(ExceptObject);
+  Result := _Exception.Message;
+  if _Exception is EIdIOHandlerPropInvalid then
+    Result := 'Protocolo inválido, tente alternar entre http:// e https://. URL: ' + aURL
+  else if _Exception is EIdConnectTimeout then
+    Result := 'Servidor indisponível (Connect time out):' + aURL
+  else if _Exception is EIdReadTimeOut then
+    Result := 'Servidor indisponível (Read time out):' + aURL
+  else if _Exception is EIdSocketError then
+    Result := 'Verifique se o servidor está respondendo ou se a URL/Porta está(ão) correta(s): ' + aURL
+  else if _Exception is EIdHTTPProtocolException then
+  begin
+    if EIdHTTPProtocolException(_Exception).ErrorCode = 500 then
+      Result := Format('Erro ao conectar-se ao servidor. Código de erro: %d. Erro interno no servidor. ',[EIdHTTPProtocolException(_Exception).ErrorCode])
+    else
+      Result := Format('Erro ao conectar-se ao servidor. Código de erro: %d. Erro: %s.',[EIdHTTPProtocolException(_Exception).ErrorCode, EIdHTTPProtocolException(_Exception).ErrorMessage]);
+  end;
+end;
+
+procedure ParseJSONObject(aDict: TKeyValue; aJsonValue: TJSONValue;
+  aJsonString: TJSONString; aJsonPairEnum: TJSONPairEnumerator;
+  aJsonArrayEnum: TJSONArrayEnumerator);
+var
+  _jsonPairEnum: TJSONPairEnumerator;
+  _jsonArrayEnum: TJSONArrayEnumerator;
+  _jsonPair: TJSONPair;
+  _jsonString: TJSONString;
+  _jsonValue: TJSONValue;
+begin
+  // ... IS A JSONObject?
+  if (aJsonValue is TJSONObject) then
+  begin
+    _jsonPairEnum := (aJsonValue as TJSONObject).GetEnumerator;
+    if (_jsonPairEnum.MoveNext) then
+    begin
+      _jsonPair := _jsonPairEnum.Current;
+      _jsonString := _jsonPair.JSONString;
+      _jsonValue := _jsonPair.JSONValue;
+      parseJSONObject(aDict, _jsonValue, _jsonString, _jsonPairEnum,
+        aJsonArrayEnum);
+    end;
+  end
+  // ... IS A JSON ARRAY?
+  else if (aJsonValue is TJsonArray) then
+  begin
+    _jsonArrayEnum := (aJsonValue as TJsonArray).GetEnumerator;
+    if (_jsonArrayEnum.MoveNext) then
+    begin
+      _jsonValue := _jsonArrayEnum.Current;
+      parseJSONObject(aDict, _jsonValue, nil, aJsonPairEnum, _jsonArrayEnum);
+    end;
+  end
+  // ... IS A JSON STRING?
+  else if (aJsonValue is TJSONString) then
+  begin
+    if (aJsonString <> nil) then
+      aDict.Add(aJsonString.Value, aJsonValue.Value);
+  end
+  // ... IS A JSONNull?
+  else if (aJsonValue is TJSONNull) then
+  begin
+    if (aJsonString <> nil) then
+      aDict.Add(aJsonString.Value, aJsonValue.Value);
+  end;
+  // ... to complete
+  // ... IS A JSONNumber?
+  // ... IS A JSONBool?
+
+  // ... MOVE NEXT PROPERTY OF OBJECT
+  if (aJsonPairEnum <> nil) then
+  begin
+    if (aJsonPairEnum.MoveNext) then
+    begin
+      _jsonPair := aJsonPairEnum.Current;
+      _jsonString := _jsonPair.JSONString;
+      _jsonValue := _jsonPair.JSONValue;
+      // ... CALL RECURSIVE
+      parseJSONObject(aDict, _jsonValue, _jsonString, aJsonPairEnum,
+        aJsonArrayEnum);
+    end;
+  end;
+  // ... MOVE NEXT ITEM OF ARRAY
+  if (aJsonArrayEnum <> nil) then
+  begin
+    if (aJsonArrayEnum.MoveNext) then
+    begin
+      _jsonValue := aJsonArrayEnum.Current;
+      // ... CALL RECURSIVE
+      parseJSONObject(aDict, _jsonValue, _jsonString, aJsonPairEnum, aJsonArrayEnum);
+    end;
+  end;
+end;
+
+function GetIdHttp: TIdHTTP;
+begin
+  Result := acNetUtils.getHTTPInstance;
+  // verificar se o servidor está ativo.
+  Result.ConnectTimeout := 30000;
+  Result.ReadTimeout := 30000;
+  Result.Request.Clear;
+  Result.Request.Connection := 'keep-alive';
+  Result.HandleRedirects := True;
+end;
+
+function getJsonStringFromServer(const aURL: string; var aException: string): string;
+var
+  _http: TIdHTTP;
+  _Response: TStringStream;
+begin
+  aException := EmptyStr;
+  _Response := TStringStream.Create(EmptyStr, TEncoding.UTF8);
+  _http := GetIdHttp;
+  try
+    try
+      _http.Get(aURL, _Response);
+      if _http.ResponseCode = 204 then
+        Result := EmptyStr
+      else
+        Result := _Response.DataString;
+
+      _http.Disconnect;
+    except
+      aException := UtilsUnit.HandleException(aURL);
+    end;
+  finally
+    FreeAndNil(_http);
+    FreeAndNil(_Response);
+  end;
+end;
+
+function MappJsonToDict(const aJsonString: string) : TJsonArray;
+begin
+  Result := nil;
+  if aJsonString <> EmptyStr then
+  begin
+    Result := TJSONObject.ParseJSONValue(TEncoding.ASCII.getBytes(aJsonString), 0) as TJsonArray;
+  end;
 end;
 
 end.
