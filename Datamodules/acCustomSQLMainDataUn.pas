@@ -525,7 +525,7 @@ end;
 
 procedure TacCustomSQLMainData.RollBack(var Transaction: TDBXTransaction);
 begin
-  SQLConnection.RollbackFreeAndNil(Transaction);
+  SQLConnection.RollbackIncompleteFreeAndNil(Transaction);
 end;
 
 function TacCustomSQLMainData.StartTransaction: TDBXTransaction;
