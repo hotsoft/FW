@@ -126,6 +126,7 @@ procedure ParseJSONObject(aDict: TKeyValue; aJsonValue: TJSONValue;
 function GetIdHttp: TIdHTTP;
 function getJsonStringFromServer(const aURL: string; var aException: string): string;
 function MappJsonToDict(const aJsonString: string) : TJsonArray;
+function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringList;
 
 
 implementation
@@ -961,6 +962,8 @@ begin
     begin
       if (cdsOrigem.Fields[i]) is TMemoField then
         field := TMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TIntegerField then
+        field := TIntegerField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
@@ -984,8 +987,8 @@ begin
     cdsDestino.Append;
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString :=
-        cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
+      if not cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).IsNull then
+        cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
     end;
     cdsDestino.Post;
     cdsOrigem.Next;
@@ -1947,6 +1950,29 @@ begin
   if aJsonString <> EmptyStr then
   begin
     Result := TJSONObject.ParseJSONValue(TEncoding.ASCII.getBytes(aJsonString), 0) as TJsonArray;
+  end;
+end;
+
+function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringList;
+var
+  qry: TosSQLQuery;
+begin
+  Result := TStringList.Create;
+  try
+    qry := TosSQLQuery.Create(nil);
+    qry.SQLConnection := conn;
+    qry.SQL.Text := 'select rdb$field_name AS CAMPOS from rdb$relation_fields rf where rf.rdb$relation_name = :nomeTabela ';
+    qry.ParamByName('nomeTabela').AsString := UPPERCASE(pTabela);
+    qry.Open;
+    qry.First;
+    while not qry.Eof do
+    begin
+      Result.Add(qry.FieldByName('CAMPOS').AsString);
+      qry.Next;
+    end;
+  finally
+    qry.Close;
+    FreeAndNil(qry);
   end;
 end;
 
