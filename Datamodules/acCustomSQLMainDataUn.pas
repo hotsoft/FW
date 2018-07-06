@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Data.DBXFirebird, FMTBcd, SqlExpr, osSQLDataSet, DB,
   osSQLConnection, Provider, osCustomDataSetProvider, osSQLDataSetProvider,
   osClientDataSet, Contnrs, osSQLQuery, Forms, Types, Variants,
-  Data.DBXInterBase, Data.DBXCommon;
+  Data.DBXInterBase, Data.DBXCommon, System.Generics.Collections;
 
 const
 
@@ -38,6 +38,9 @@ type
     procedure RefreshData(NewVersion: integer);
   end;
 
+  TRefreshTableList = class(TList<TRefreshTable>)
+  end;
+
   TacCustomSQLMainData = class(TDataModule)
     prvFilter: TosSQLDataSetProvider;
     SQLConnection: TosSQLConnection;
@@ -56,7 +59,7 @@ type
     FIDUsuario: Integer;
     FNomeUsuario: String;
     FApelidoUsuario: String;
-    FRefreshTableList: TObjectList;
+    FRefreshTableList: TRefreshTableList;
     FProfile: string;
     function selectParamsFileName: string;
 
@@ -130,38 +133,31 @@ var
 begin
   Query := GetQuery;
   try
-    with Query, Query.SQL do
+    Query.SQL.Text :=
+    'SELECT ' +
+      'NomeTabela, ' +
+      'Versao ' +
+    'FROM ' +
+      'VersaoTabela ' + PTableFilter;
+    Query.Open;
+    if not Query.Eof then
     begin
-      Text :=
-      'SELECT ' +
-        'NomeTabela, ' +
-        'Versao ' +
-      'FROM ' +
-        'VersaoTabela ' + PTableFilter;
-      Open;
-      if not Eof then
+      NomeTabelaField := TStringField(Query.Fields[0]);
+      VersaoField := TIntegerField(Query.Fields[1]);
+      while not Query.Eof do
       begin
-        NomeTabelaField := TStringField(Fields[0]);
-        VersaoField := TIntegerField(Fields[1]);
-        while not Eof do
+        Application.ProcessMessages;
+
+        RefreshTable := FindRefreshTable(Trim(NomeTabelaField.Value));
+        if (RefreshTable <> nil) then
         begin
+          if RefreshTable.FVersion < VersaoField.Value then
+             RefreshTable.RefreshData(VersaoField.Value);
+        end;
 
-          Application.ProcessMessages;
-
-          RefreshTable := FindRefreshTable(Trim(NomeTabelaField.Value));
-          if Assigned(RefreshTable) then
-          begin
-            with RefreshTable do
-            begin
-              if FVersion < VersaoField.Value then
-                  RefreshData(VersaoField.Value);
-            end;
-          end;
-
-          Next;
-        end; // while
-      end; // if
-    end;
+        Query.Next;
+      end; // while
+    end; // if
   finally
     FreeQuery(Query);
   end;
@@ -179,8 +175,8 @@ constructor TacCustomSQLMainData.Create(AOwner: TComponent);
 begin
   FQueryList := TObjectList.Create(True); // OwnsObjects = True
   FIDHighValue := -1;
-  FRefreshTableList := TObjectList.Create(True); // OwnsObjects = True
-  inherited;
+  FRefreshTableList := TRefreshTableList.Create; // OwnsObjects = True
+  inherited Create(AOwner);
 end;
 
 {-------------------------------------------------------------------------
@@ -193,11 +189,8 @@ end;
  ------------------------------------------------------------------------}
 constructor TacCustomSQLMainData.Create(AOwner: TComponent; bd: string);
 begin
-  inherited Create(AOwner);
+  Self.Create(AOwner);
   self.BD := bd;
-  FQueryList := TObjectList.Create(True); // OwnsObjects = True
-  FIDHighValue := -1;
-  FRefreshTableList := TObjectList.Create(True); // OwnsObjects = True
 end;
 
 {-------------------------------------------------------------------------
@@ -210,7 +203,11 @@ end;
  Atualização>
  ------------------------------------------------------------------------}
 destructor TacCustomSQLMainData.Destroy;
+var
+  _RefreshTable: TRefreshTable;
 begin
+  for _RefreshTable in Self.FRefreshTableList do
+   _RefreshTable.Free;
   FQueryList.Free;
   FRefreshTableList.Free;
   inherited;
@@ -219,17 +216,15 @@ end;
 function TacCustomSQLMainData.FindRefreshTable(
   PTableName: string): TRefreshTable;
 var
-  i: integer;
-  n : integer;
+  _RefreshTable: TRefreshTable;
 begin
-  n := FRefreshTableList.Count - 1;
-  i := 0;
-  while (i <= n) and (TRefreshTable(FRefreshTableList.Items[i]).TableName <> PTableName) do
-    inc(i);
-  if i <= n then
-    Result := TRefreshTable(FRefreshTableList.Items[i])
-  else
-    Result := nil;
+  Result := nil;
+  for _RefreshTable in Self.FRefreshTableList do
+    if _RefreshTable.TableName.Trim = PTableName.Trim then
+    begin
+      Result := _RefreshTable;
+      break;
+    end;
 end;
 
 {-------------------------------------------------------------------------
@@ -267,36 +262,30 @@ var
 begin
   Query := GetQuery;
   try
-    with Query, Query.SQL do
-    begin
-      Text :=
+     Query.SQL.Text :=
       'SELECT ' +
         'NomeTabela, ' +
         'Versao ' +
       'FROM ' +
         'VersaoTabela ';
-      Open;
-      if not Eof then
+      Query.Open;
+      if not Query.Eof then
       begin
-        NomeTabelaField := TStringField(Fields[0]);
-        VersaoField := TIntegerField(Fields[1]);
+        NomeTabelaField := TStringField(Query.Fields[0]);
+        VersaoField := TIntegerField(Query.Fields[1]);
         FRefreshTableList.Clear;
-        while not Eof do
+        while not Query.Eof do
         begin
           RefreshTable := TRefreshTable.Create;
-          with RefreshTable do
-          begin
-            FTableName := Trim(NomeTabelaField.Value);
-            FVersion := VersaoField.Value;
-            FDataSet := nil;
-          end;
+          RefreshTable.FTableName := Trim(NomeTabelaField.Value);
+          RefreshTable.FVersion := VersaoField.Value;
+          RefreshTable.FDataSet := nil;
 
           FRefreshTableList.Add(RefreshTable);
 
-          Next;
+          Query.Next;
         end; // while
       end; // if
-    end;
   finally
     FreeQuery(Query);
   end;
@@ -465,13 +454,10 @@ begin
     Query.SQLConnection := aConnection;
   
   try
-    with Query, Query.SQL do
-    begin
-      Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
-      Open;
-      Result := Fields[0].AsDatetime;
-      Close;
-    end;
+    Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
+    Query.Open;
+    Result := Query.Fields[0].AsDatetime;
+    Query.Close;
   finally
     FreeQuery(Query);
   end;
@@ -483,9 +469,7 @@ var
 begin
   Query := GetQuery;
   try
-    with Query, Query.SQL do
-    begin
-      Text :=
+    Query.SQL.Text :=
         'SELECT ' +
         'Nome, ' +
         'IdUsuario, ' +
@@ -494,13 +478,12 @@ begin
         'Usuario ' +
         'WHERE ' +
         'upper(Apelido) = upper(:Apelido)';
-      ParamByName('Apelido').AsString := apelido;
-      Open;
-      FNomeUsuario := Fields[0].AsString;
-      FIDUsuario := Fields[1].AsInteger;
-      FApelidoUsuario := Fields[2].AsString;
-      Close;
-    end;
+    Query.ParamByName('Apelido').AsString := apelido;
+    Query.Open;
+    FNomeUsuario := Query.FieldbyName('Nome').AsString;
+    FIDUsuario := Query.FieldByName('IdUsuario').AsInteger;
+    FApelidoUsuario := Query.FieldByName('Apelido').AsString;
+    Query.Close;
   finally
     FreeQuery(Query);
   end;
@@ -544,7 +527,15 @@ var
   RefreshTable: TRefreshTable;
 begin
   RefreshTable := FindRefreshTable(PTableName);
-  if Assigned(RefreshTable) then
+  if (RefreshTable = nil) then
+  begin
+    RefreshTable := TRefreshTable.Create;
+    RefreshTable.FTableName := PTableName;
+    RefreshTable.FVersion := 0;
+    RefreshTable.FDataSet := PDataSet;
+    Self.FRefreshTableList.Add(RefreshTable)
+  end
+  else
     RefreshTable.FDataset := PDataSet;
 
   PDataSet.Open;
@@ -582,7 +573,6 @@ begin
   finally
     FreeQuery(Query);
   end;
-
   CheckVersion('WHERE NomeTabela = ' + QuotedStr(PTableName));
 end;
 
@@ -636,12 +626,11 @@ end;
 procedure TRefreshTable.RefreshData(NewVersion: integer);
 begin
   FVersion := NewVersion;
-  if Assigned(FDataSet) then
-    with FDataSet do
-    begin
-      Close;
-      Open;
-    end;
+  if (FDataSet <> nil) then
+  begin
+    FDataSet.Close;
+    FDataSet.Open;
+  end;
 end;
 
 function TacCustomSQLMainData.getSQLResult(sqlText: string;
