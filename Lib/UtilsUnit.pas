@@ -1816,7 +1816,9 @@ var
 begin
   _Exception := Exception(ExceptObject);
   Result := _Exception.Message;
-  if _Exception is EIdIOHandlerPropInvalid then
+  if _Exception is EIdOSSLCouldNotLoadSSLLibrary then
+     Result := 'DLLs libeay32.dll e ssleay32.dll não encontradas: '
+  else if _Exception is EIdIOHandlerPropInvalid then
     Result := 'Protocolo inválido, tente alternar entre http:// e https://. URL: ' + aURL
   else if _Exception is EIdConnectTimeout then
     Result := 'Servidor indisponível (Connect time out):' + aURL
