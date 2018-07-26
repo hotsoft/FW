@@ -23,7 +23,8 @@ type
 
 const 
   sMODELOMSGLOG = #13+#13+'Campo %s alterado.'+#13+'De: %s'+#13+'Para: %s';  
-  
+  szChar = SizeOf(Char);
+
 function isDigitOrControl(Key: char): boolean;
 function RemoveAcento(Str:String): String;
 procedure criarArquivoBackupIB(nomeArq: string);
@@ -127,6 +128,7 @@ function GetIdHttp: TIdHTTP;
 function getJsonStringFromServer(const aURL: string; var aException: string): string;
 function MappJsonToDict(const aJsonString: string) : TJsonArray;
 function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringList;
+procedure SaveToFile(const aFilename, aContent: string);
 
 
 implementation
@@ -1975,6 +1977,25 @@ begin
   finally
     qry.Close;
     FreeAndNil(qry);
+  end;
+end;
+
+procedure SaveToFile(const aFilename, aContent: string);
+var
+  FileStream: TFileStream;
+  _FH: NativeUInt;
+begin
+  if not FileExists(aFilename) then
+    _FH := fmCreate
+  else
+    _FH := fmOpenReadWrite;
+
+  FileStream := TFileStream.Create(aFileName, _FH, fmShareDenyNone);
+  try
+    FileStream.Seek(0, soFromEnd);
+    FileStream.WriteBuffer(Pointer(aContent)^, (Length(aContent) * szChar));
+  finally
+    FileStream.Free;
   end;
 end;
 
