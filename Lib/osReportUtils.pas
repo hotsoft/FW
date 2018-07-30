@@ -32,6 +32,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
   function getTemplateByName(name: string; stream: TMemoryStream): boolean;
   function getTemplateByID(id: integer; stream: TMemoryStream): boolean;
   function getTemplateIDByName(name: string): integer;
+  function getTemplateLaudoRascunho(name: string; stream: TMemoryStream): boolean;
 
   procedure replaceReportSQL(report: TppReport; template: TMemoryStream; strSQL: String);
   procedure replaceReportSQLAddParam(report: TppReport; template: TMemoryStream;
@@ -88,6 +89,39 @@ begin
     finally
       FreeAndNil(query);
     end;
+  end;
+end;
+
+
+function getTemplateLaudoRascunho(name: string; stream: TMemoryStream): boolean;
+var
+  query: TosSQLQuery;
+  report: string;
+  ss: TStringStream;
+begin
+  name := UpperCase(Name);
+  Result := false;
+  query := TosSQLQuery.Create(nil);
+  try
+    query.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
+    query.CommandText := ' SELECT ' +
+                         '   I.template, '+
+                         '   I.ITEM_ID '+
+                         ' FROM ' +
+                         '   RB_ITEM I '+
+                         ' join relatorio r on r.item_id = I.item_id '+
+                         ' join tipolaudo tp on tp.idrelatoriolaudo = r.idrelatorio '+
+                         ' WHERE tp.rascunho = ''S'' ';
+    query.open;
+    if query.fields[0].AsString <> '' then
+    begin
+      TBLOBField(query.fields[0]).SaveToStream(stream);
+      TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).
+        addReport(query.fields[1].AsInteger, name, TBLOBField(query.fields[0]).AsString);
+      Result := true;
+    end;
+  finally
+    FreeAndNil(query);
   end;
 end;
 
