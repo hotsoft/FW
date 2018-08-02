@@ -16,7 +16,7 @@ uses
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
-  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin;
+  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -47,7 +47,6 @@ type
     ViewAction: TAction;
     DeleteAction: TAction;
     PrintFilterAction: TAction;
-    ToolButton11: TToolButton;
     PopupMenu: TPopupMenu;
     Novo1: TMenuItem;
     Alterar1: TMenuItem;
@@ -78,14 +77,12 @@ type
     Panel2: TPanel;
     Grid: TwwDBGrid;
     ResourcePanel: TPanel;
-    ToolButton1: TToolButton;
     AdvanceAction: TAction;
     RetrocedeAction: TAction;
     ActionDataSet: TosClientDataset;
     OnSelectResourceAction: TAction;
     ActionDataSetNOMECOMPONENTE: TStringField;
     WebBrowser: TWebBrowser;
-    ToolButton4: TToolButton;
     PaginaInicialToolButton: TToolButton;
     Exibir: TMenuItem;
     ExibirPaginaInicial: TMenuItem;
@@ -144,6 +141,7 @@ type
     TreeView1: TTreeView;
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
+    PrintAllToolButton: TW7ToolButton;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -284,7 +282,7 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde;
 
 {$R *.DFM}
 
@@ -835,19 +833,55 @@ end;
 procedure TosCustomMainForm.PrintActionExecute(Sender: TObject);
 var
   Report : TacCustomReport;
+  FrmMensagem : TFrmMensagemAguarde;
 begin
   inherited;
   // Because the report is not often printed, the object can be created on the
   // fly
-  Report := CreateCurrentReport;
-  if Assigned (Report) then
+  if TAction(Sender).ActionComponent = PrintAllToolButton then
+  begin
+    FrmMensagem := TFrmMensagemAguarde.Create(Application);
     try
-      Report.Print (FIDField.AsInteger);
+      FrmMensagem.Show;
+      FilterDataset.First;
+      while not FilterDataset.Eof do
+      begin
+        FrmMensagem.setMensagem('Imprimindo... ' + IntToStr(FilterDataset.RecNo) + ' / ' + IntToStr(FilterDataset.RecordCount), True);
+        FrmMensagem.Update;
+        Report := CreateCurrentReport;
+        if Assigned (Report) then
+          try
+            Report.RecursoOrigem := CurrentResource.Name;
+            Report.forcePrintWithoutDialog := True;
+            Report.Print (FIDField.AsInteger);
+          finally
+            Report.Free;
+          end
+        else
+        begin
+          Assert(False, 'The report wasn''t created');
+          break;
+        end;
+
+        FilterDataset.Next;
+      end;
     finally
-      Report.Free;
-    end
+      FreeAndNil(FrmMensagem);
+    end;
+  end
   else
-    Assert(False, 'The report wasn''t created');
+  begin
+    Report := CreateCurrentReport;
+    if Assigned (Report) then
+      try
+        Report.RecursoOrigem := CurrentResource.Name;
+        Report.Print (FIDField.AsInteger);
+      finally
+        Report.Free;
+      end
+    else
+      Assert(False, 'The report wasn''t created');
+  end;
 end;
 
 function TosCustomMainForm.CreateCurrentReport: TacCustomReport;

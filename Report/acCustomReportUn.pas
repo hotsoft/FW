@@ -83,6 +83,7 @@ type
     procedure ajustarAdendos; virtual;
     function replaceParamId(str: string; id: integer): string; virtual;
   public
+    RecursoOrigem: String;
     procedure replaceReportSQLAddWhere(report: TppReport;
       template: TMemoryStream; id:integer);
     property forcePrintWithoutDialog: Boolean read FForcePrintWithoutDialog
@@ -163,6 +164,12 @@ begin
       end;
     end;
     //chance da classe buscar seu template
+    if (not encontrou) and (self.RecursoOrigem = 'Aprovação Resultados') then
+    begin
+      encontrou := getTemplateLaudoRascunho(ClassName, stream);
+      if acCustomParametroSistemaData <> nil then
+        config.nomeImpressora := acCustomParametroSistemaData.getNomeImpressoraClasse('LASER');
+    end;
     if not(encontrou) then
     begin
       encontrou := getTemplate(PID, stream, config);
