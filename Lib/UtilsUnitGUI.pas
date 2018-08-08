@@ -277,7 +277,9 @@ var
   richEdit: TRichEdit;
   ss: TStringStream;
 begin
-  if not isRTFValue(Texto) then
+  if isRTFValue(Texto) then
+    Result := Texto
+  else
   begin
     try
       ss := TStringStream.Create(Texto);
