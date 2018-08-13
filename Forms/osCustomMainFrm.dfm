@@ -8,16 +8,15 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
-  ExplicitTop = -128
-  ExplicitWidth = 1016
-  ExplicitHeight = 699
+  ExplicitWidth = 1024
+  ExplicitHeight = 704
   PixelsPerInch = 96
   TextHeight = 13
   object ControlBar: TControlBar [0]
     Left = 0
     Top = 0
     Width = 1008
-    Height = 37
+    Height = 39
     Align = alTop
     AutoDrag = False
     DragKind = dkDock
@@ -25,11 +24,10 @@ inherited osCustomMainForm: TosCustomMainForm
     object MainToolbar: TToolBar
       Left = 11
       Top = 2
-      Width = 262
-      Height = 22
+      Width = 268
       AutoSize = True
-      ButtonHeight = 29
-      ButtonWidth = 29
+      ButtonHeight = 32
+      ButtonWidth = 32
       EdgeInner = esNone
       EdgeOuter = esNone
       Images = MainImageList
@@ -42,59 +40,55 @@ inherited osCustomMainForm: TosCustomMainForm
         ShowHint = True
       end
       object EditToolButton: TToolButton
-        Left = 29
+        Left = 32
         Top = 0
         Action = EditAction
         ParentShowHint = False
         ShowHint = True
       end
       object DeleteToolButton: TToolButton
-        Left = 58
+        Left = 64
         Top = 0
         Action = DeleteAction
         ParentShowHint = False
         ShowHint = True
       end
-      object ToolButton11: TToolButton
-        Left = 87
-        Top = 0
-        Width = 8
-        Caption = 'ToolButton11'
-        ImageIndex = 1
-        Style = tbsSeparator
-      end
       object ViewToolButton: TToolButton
-        Left = 95
+        Left = 96
         Top = 0
         Action = ViewAction
         ParentShowHint = False
         ShowHint = True
       end
       object PrintToolButton: TToolButton
-        Left = 124
+        Left = 128
         Top = 0
         Action = PrintAction
         ParentShowHint = False
         ShowHint = True
       end
-      object ToolButton1: TToolButton
-        Left = 153
+      object PrintAllToolButton: TW7ToolButton
+        Left = 160
         Top = 0
-        Width = 8
-        Caption = 'ToolButton1'
-        ImageIndex = 5
-        Style = tbsSeparator
-      end
-      object ToolButton4: TToolButton
-        Left = 161
-        Top = 0
-        Width = 8
-        Caption = 'ToolButton4'
-        ImageIndex = 9
-        Style = tbsSeparator
+        Width = 72
+        Height = 32
+        Hint = 'Imprimir Todos'
+        Version = '1.0.2.0'
+        Caption = 'Todos'
+        Images = MainImageList
+        ImageIndex = 4
+        IconSize = is24px
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 5978398
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Action = PrintAction
+        ParentFont = False
+        TabOrder = 0
       end
       object PaginaInicialToolButton: TToolButton
-        Left = 169
+        Left = 232
         Top = 0
         Caption = 'P'#225'gina Inicial'
         ImageIndex = 9
@@ -102,7 +96,7 @@ inherited osCustomMainForm: TosCustomMainForm
       end
     end
     object ConsultaPanel: TPanel
-      Left = 286
+      Left = 292
       Top = 2
       Width = 656
       Height = 48
@@ -197,29 +191,33 @@ inherited osCustomMainForm: TosCustomMainForm
   end
   object Panel2: TPanel [2]
     Left = 0
-    Top = 37
+    Top = 39
     Width = 1008
-    Height = 589
+    Height = 587
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitTop = 41
+    ExplicitHeight = 585
     object Splitter1: TSplitter
       Left = 165
       Top = 33
       Width = 4
-      Height = 556
+      Height = 554
+      ExplicitHeight = 556
     end
     object WebBrowser: TWebBrowser
       Left = 169
       Top = 33
       Width = 839
-      Height = 556
+      Height = 554
       Align = alClient
       TabOrder = 2
       ExplicitLeft = 185
       ExplicitWidth = 823
+      ExplicitHeight = 556
       ControlData = {
-        4C000000B7560000773900000000000000000000000000000000000000000000
+        4C000000B7560000423900000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
         2B2E12620A000000000000004C0000000114020000000000C000000000000046
         8000000000000000000000000000000000000000000000000000000000000000
@@ -279,14 +277,15 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 0
       Top = 33
       Width = 165
-      Height = 556
+      Height = 554
       Align = alLeft
       TabOrder = 3
+      ExplicitHeight = 552
       object TreeView1: TTreeView
         Left = 1
         Top = 1
         Width = 163
-        Height = 533
+        Height = 531
         Align = alClient
         Color = clBtnFace
         HotTrack = True
@@ -299,10 +298,11 @@ inherited osCustomMainForm: TosCustomMainForm
         TabOrder = 0
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
+        ExplicitHeight = 529
       end
       object EdtPesquisa: TEdit
         Left = 1
-        Top = 534
+        Top = 532
         Width = 163
         Height = 21
         Align = alBottom
@@ -311,6 +311,7 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
+        ExplicitTop = 530
       end
     end
   end
@@ -425,8 +426,8 @@ inherited osCustomMainForm: TosCustomMainForm
         OnClick = spbPreviewPrintClick
       end
       object spbPreviewWhole: TSpeedButton
-        Left = 38
-        Top = 4
+        Left = 39
+        Top = 3
         Width = 22
         Height = 24
         Hint = 'Whole Page'
@@ -1007,7 +1008,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 4
     Top = 96
     Bitmap = {
-      494C0101010003003C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000500040020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000CECEBD00C6C6BD00C6BDB500C6BDB500C6BD
@@ -1546,7 +1547,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 36
     Top = 96
     Bitmap = {
-      494C0101010003003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000500040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1717,7 +1718,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 144
     Top = 240
     Bitmap = {
-      494C0101020004003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000500040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1867,7 +1868,7 @@ inherited osCustomMainForm: TosCustomMainForm
     DataPipeline = ppDBPipeline
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'A4'
+    PrinterSetup.PaperName = 'Custom'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -1876,7 +1877,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 297000
     PrinterSetup.mmPaperWidth = 210000
-    PrinterSetup.PaperSize = 9
+    PrinterSetup.PaperSize = 256
     Template.Format = ftASCII
     Units = utMillimeters
     ArchiveFileName = '($MyDocuments)\ReportArchive.raf'
@@ -2041,7 +2042,7 @@ inherited osCustomMainForm: TosCustomMainForm
     AutoStop = False
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Carta'
+    PrinterSetup.PaperName = 'Custom'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -2050,7 +2051,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 279401
     PrinterSetup.mmPaperWidth = 215900
-    PrinterSetup.PaperSize = 1
+    PrinterSetup.PaperSize = 256
     Template.DatabaseSettings.DataPipeline = plItem
     Template.DatabaseSettings.NameField = 'Name'
     Template.DatabaseSettings.TemplateField = 'Template'
@@ -2123,7 +2124,7 @@ inherited osCustomMainForm: TosCustomMainForm
     Left = 674
     Top = 52
     Bitmap = {
-      494C01010B000C003C0016001600FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C01010B000D00040016001600FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000058000000420000000100200000000000C05A
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2878,7 +2879,7 @@ inherited osCustomMainForm: TosCustomMainForm
       00080003C0003F0080003C0000080003C0003F0080003C0000080003C0007F00
       80003C0000080003C0007F0080007C0000080007C0007F008000FC000008000F
       C000FF008001FC000008001FE000FF008003FC000008003FF001FF008007FC00
-      0008007FF807FF00}
+      0008007FF807FF0000000000000000000000000000000000000000000000}
   end
   object SQLConnection: TSQLConnection
     ConnectionName = 'IBLocal'
