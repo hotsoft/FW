@@ -364,8 +364,11 @@ end;
 
 procedure TosErrorHandlerForm.FormShow(Sender: TObject);
 begin
-  Self.Left := Application.MainForm.ClientOrigin.X + Application.MainForm.ClientWidth - Self.Width - 18;
-  Self.Top := Application.MainForm.ClientOrigin.Y + 54;
+  if Application.MainForm <> nil then
+  begin
+    Self.Left := Application.MainForm.ClientOrigin.X + Application.MainForm.ClientWidth - Self.Width - 18;
+    Self.Top := Application.MainForm.ClientOrigin.Y + 54;
+  end;
 end;
 
 
