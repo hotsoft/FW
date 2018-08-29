@@ -6,7 +6,7 @@ uses
   Vcl.Forms, Controls, ComCtrls, DBCtrls, wwdbdatetimepicker, Wwdbcomb, StdCtrls,  Buttons, Wwdbgrid,
   wwdbedit, acSysUtils, Printers, osComboSearch, System.Classes, DB, DBClient,  Winapi.PsApi, Winapi.Windows,
   Vcl.Graphics, ShellAPI, UMensagemAguarde, SysUtils, UtilsUnit, Variants, Winapi.Messages, Winapi.TlHelp32,
-  Winsock;
+  Winsock, StrUtils;
 
 type
   varArrayOfcomps = array of TComponent;
@@ -29,7 +29,7 @@ procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
 procedure setHabilitaComponente(comp: TComponent; enabled: boolean);
 procedure habilitaComponentes(comps: varArrayOfcomps);
 procedure desHabilitaComponentes(comps: array of TComponent);
-procedure ImprimirImpressoraTermica(const comando, impressora: String);
+procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro: string);
 function ConverteRTF(rtf: string): string;
 function ConverteTextoToRTF(Texto: string): string;
 function getCampoSemRTF(const vValor : Variant):String;
@@ -44,7 +44,7 @@ function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; Alter
   const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
 function isRTFValue(vValor: Variant): Boolean; //{\rtf
 procedure TrimAppMemorySize;
-procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
+function dgCreateProcess(const FileName: string; SleepInterval: integer = 10000): boolean;
 function GetPrinters: string;
 function GetProcessList: string;
 function GetSystemInfo: string;
@@ -221,10 +221,11 @@ begin
   end;
 end;
 
-procedure ImprimirImpressoraTermica(const comando, impressora: String);
+procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro: string);
 var
   FBat, FComando: TextFile;
   diretorio: string;
+  _erroType, _erroPrint: string;
 begin
   diretorio:= GetSpecialFolderLocation(Application.Handle, CSIDL_COMMON_APPDATA) + '\';
 
@@ -239,15 +240,24 @@ begin
     CloseFile(FComando);
   end;
 
+  _erroType := diretorio + '\errotype.txt';
+  _erroPrint := diretorio + '\erroprint.txt';
+
   AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
   try
     Rewrite(FBat);
-    Writeln(FBat, 'TYPE "' + diretorio + 'COMANDO.TXT" > "'+impressora+'"');
+    Writeln(FBat, Format('(TYPE "%s\COMANDO.TXT" >"%s" 2>%s ) 2>%s',[diretorio, impressora, _erroType, _erroPrint]));
   finally
     CloseFile(FBat);
   end;
 
+  SysUtils.DeleteFile(_erroType);
+  SysUtils.DeleteFile(_erroPrint);
+
   ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
+
+  erro := UtilsUnit.LoadFromFile(_erroType);
+  erro := erro + StrUtils.IfThen(erro.IsEmpty, #13#10) + UtilsUnit.LoadFromFile(_erroPrint);
 end;
 
 function ConverteRTF(rtf: string): string;
@@ -484,7 +494,7 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure dgCreateProcess(const FileName: string; SleepInterval: integer = 10000);
+function dgCreateProcess(const FileName: string; SleepInterval: integer = 10000): boolean;
 var ProcInfo: TProcessInformation;
     StartInfo: TStartupInfo;
     FrmMensagem : TFrmMensagemAguarde;
@@ -505,7 +515,7 @@ begin
     StartInfo.dwX := 0;
     StartInfo.dwY := 0;
 
-    CreateProcess(
+    Result := CreateProcess(
       nil,
       PChar(FileName),
       nil, Nil, False,

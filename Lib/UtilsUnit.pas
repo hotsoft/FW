@@ -129,6 +129,7 @@ function getJsonStringFromServer(const aURL: string; var aException: string): st
 function MappJsonToDict(const aJsonString: string) : TJsonArray;
 function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringList;
 procedure SaveToFile(const aFilename, aContent: string);
+function LoadFromFile(const aFileName: string): string;
 
 
 implementation
@@ -1996,6 +1997,23 @@ begin
     FileStream.WriteBuffer(Pointer(aContent)^, (Length(aContent) * szChar));
   finally
     FileStream.Free;
+  end;
+end;
+
+function LoadFromFile(const aFileName: string): string;
+var
+  _SStream: TStringStream;
+begin
+  Result := EmptyStr;
+  if FileExists(aFileName) then
+  begin
+    _SStream := TStringStream.Create(aFileName, TEncoding.ANSI);
+    try
+      _SStream.LoadFromFile(aFileName);
+      Result := _SStream.DataString;
+    finally
+      _SStream.Free;
+    end;
   end;
 end;
 
