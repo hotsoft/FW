@@ -1927,10 +1927,16 @@ function getJsonStringFromServer(const aURL: string; var aException: string): st
 var
   _http: TIdHTTP;
   _Response: TStringStream;
+  IOHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   aException := EmptyStr;
   _Response := TStringStream.Create(EmptyStr, TEncoding.UTF8);
   _http := GetIdHttp;
+  if aURL.ToLower.Contains('https') then
+  begin
+    IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_http);
+    _http.IOHandler := IOHandler;
+  end;
   try
     try
       _http.Get(aURL, _Response);
@@ -1944,6 +1950,8 @@ begin
       aException := UtilsUnit.HandleException(aURL);
     end;
   finally
+    if aURL.ToLower.Contains('https') then
+      FreeAndNil(IOHandler);
     FreeAndNil(_http);
     FreeAndNil(_Response);
   end;

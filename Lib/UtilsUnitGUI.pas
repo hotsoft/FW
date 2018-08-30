@@ -3,7 +3,7 @@ unit UtilsUnitGUI;
 interface
 
 uses
-  Vcl.Forms, Controls, ComCtrls, DBCtrls, wwdbdatetimepicker, Wwdbcomb, StdCtrls,  Buttons, Wwdbgrid,
+  Vcl.Forms, Vcl.Controls, ComCtrls, DBCtrls, wwdbdatetimepicker, Wwdbcomb, StdCtrls,  Buttons, Wwdbgrid,
   wwdbedit, acSysUtils, Printers, osComboSearch, System.Classes, DB, DBClient,  Winapi.PsApi, Winapi.Windows,
   Vcl.Graphics, ShellAPI, UMensagemAguarde, SysUtils, UtilsUnit, Variants, Winapi.Messages, Winapi.TlHelp32,
   Winsock, StrUtils;
@@ -31,7 +31,7 @@ procedure habilitaComponentes(comps: varArrayOfcomps);
 procedure desHabilitaComponentes(comps: array of TComponent);
 procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro: string);
 function ConverteRTF(rtf: string): string;
-function ConverteTextoToRTF(Texto: string): string;
+function ConverteTextoToRTF(const Texto: string; FontSize: integer = 0; FontName: string= ''): string;
 function getCampoSemRTF(const vValor : Variant):String;
 function CriarMsgLogAlteracaoField(aField : TField):String; overload;
 function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
@@ -281,19 +281,25 @@ begin
   end;
 end;
 
-function ConverteTextoToRTF(Texto: string): string;
+function ConverteTextoToRTF(const Texto: string; FontSize: integer = 0; FontName: string= ''): string;
 var
   form: TForm;
   richEdit: TRichEdit;
   ss: TStringStream;
 begin
-  if not isRTFValue(Texto) then
+  if isRTFValue(Texto) then
+    Result := Texto
+  else
   begin
     try
       ss := TStringStream.Create(Texto);
       form := TForm.Create(nil);
       richEdit := TRichEdit.Create(form);
       richEdit.Parent := form;
+      if FontSize > 0 then
+        richEdit.Font.Size := FontSize;
+      if not FontName.IsEmpty then
+        richEdit.Font.Name := FontName;
       richEdit.Text:= Texto;
       richEdit.PlainText := False;
       richEdit.Lines.SaveToStream(ss);
