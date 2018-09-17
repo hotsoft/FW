@@ -929,12 +929,16 @@ function getDescricaoSimNao(const vValor : Variant):String;
 var
   cValor : Char;
 begin
-  cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
-  case cValor of
-    'S' : Result := 'Sim';
-    'N' : Result := 'Não';
-  else
-    result := '';
+  try
+    cValor := Char(AnsiString(VarToStrDef(vValor, ' '))[1]);
+    case cValor of
+      'S' : Result := 'Sim';
+      'N' : Result := 'Não';
+    else
+      result := '';
+    end;
+  except
+    result := 'Indefinido'
   end;
 end;
 
