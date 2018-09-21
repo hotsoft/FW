@@ -78,6 +78,7 @@ function EspacoDireita(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
 function Base64FromText(const text: String): string;
+function TextFromBase64(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
@@ -1058,7 +1059,12 @@ end;
 
 function Base64FromText(const text: String): string;
 begin
-  Result := EncodeString(text);
+  Result := Soap.EncdDecd.EncodeString(text);
+end;
+
+function TextFromBase64(const text: String): string;
+begin
+  Result := Soap.EncdDecd.DecodeString(text);
 end;
 
 function Base64FromStream(const input: TStream): string;
