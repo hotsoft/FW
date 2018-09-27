@@ -172,6 +172,7 @@ begin
 
     FMasterDataset.ReadOnly := True;
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
+    FMasterDataset.Close;
     FMasterDataset.Open;
 
     OnCheckActionsAction.Execute;
