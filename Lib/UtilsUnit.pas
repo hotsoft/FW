@@ -9,7 +9,7 @@ uses
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
   Vcl.Graphics, Winapi.Messages, SHFolder, IdCoderMIME, Data.SqlExpr, System.Generics.Collections,
-  Data.DBXJSON, IdHTTP, acNetUtils;
+  Data.DBXJSON, IdHTTP, acNetUtils, Data.DBXPlatform;
 
 type
   TKeyValue = class(TDictionary<string, string>);
