@@ -82,7 +82,7 @@ function TextFromBase64(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
-function TestConection(const url: String): boolean;
+function TestConnection(const url: String): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil): Boolean;
@@ -136,7 +136,7 @@ function LoadFromFile(const aFileName: string): string;
 implementation
 
 uses DateUtils, Variants, StatusUnit, IdSSLOpenSSL, IdMultipartFormData, IdExceptionCore, IdStack,
-  IdHash, IdHashMessageDigest, IdGlobal, IdURI;
+  IdHash, IdHashMessageDigest, IdGlobal, IdURI, ParametroSistemaDataUn;
 
 
 const
@@ -1171,11 +1171,12 @@ begin
   end;
 end;
 
-function TestConection(const url: String): boolean;
+function TestConnection(const url: String): boolean;
 var
   HTTPClient: TidHTTP;
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
+  ParametroSistema: TParametroSistemaData;
 begin
   Stream := TStringStream.Create('', TEncoding.UTF8);
 
@@ -1187,6 +1188,17 @@ begin
   HTTPClient.Request.ContentType := 'utf-8';
   HTTPClient.ReadTimeout := 30000;
   HTTPClient.ConnectTimeout := 30000;
+
+  ParametroSistema := TParametroSistemaData.Create(self);
+  ParametroSistema.MasterDataSet.Open;
+  if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
+    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
+  if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
+    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetPORTAPROXY.AsString;
+  if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
+    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+  if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
+    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
 
   try
     try
@@ -1201,6 +1213,7 @@ begin
     Stream.Free;
     LHandler.Free;
     HTTPClient.Free;
+    FreeAndNil(ParametroSistema);
   end;
 end;
 
@@ -1279,7 +1292,7 @@ var
   begin
     _FHttp := TIdHTTP.Create(AOwner);
     try
-      Result := TestConection(address);
+      Result := TestConnection(address);
       try
         if stream is TIdMultiPartFormDataStream  then
           _FHttp.Post(address, TIdMultiPartFormDataStream(stream))
@@ -1790,7 +1803,7 @@ var
 begin
   Result := EmptyStr;
 
-  if TestConection(url) then
+  if TestConnection(url) then
   begin
     lHTTP := TIdHTTP.Create(nil);
     IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(lHTTP);
