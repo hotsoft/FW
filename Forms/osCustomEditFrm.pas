@@ -123,6 +123,7 @@ begin
     CheckMasterDataset;
 
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
+    FMasterDataset.close;
     FMasterDataset.Open;
 
     OnCheckActionsAction.Execute;
@@ -171,6 +172,7 @@ begin
 
     FMasterDataset.ReadOnly := True;
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
+    FMasterDataset.Close;
     FMasterDataset.Open;
 
     OnCheckActionsAction.Execute;

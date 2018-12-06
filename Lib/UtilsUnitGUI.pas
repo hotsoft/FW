@@ -330,16 +330,15 @@ end;
 function CriarMsgLogAlteracaoField(aField : TField):String; overload;
 begin
   Result := EmptyStr;
-  if FieldHasChanged(aField) then
+  if (aField.FieldKind <> fkLookup) and (FieldHasChanged(aField)) then
     Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, getCampoSemRTF(aField.OldValue),
       getCampoSemRTF(aField.NewValue)]);
-
 end;
 
 function CriarMsgLogAlteracaoField(aField : TField; aFuncaoGetDescricao : TFuncaoParametroGetDesc):String; overload;
 begin
   Result := EmptyStr;
-  if FieldHasChanged(aField) then
+  if (aField.FieldKind <> fkLookup) and (FieldHasChanged(aField)) then
     Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, aFuncaoGetDescricao(aField.OldValue),
       aFuncaoGetDescricao(aField.NewValue)]);
 end;
