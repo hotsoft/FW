@@ -1189,7 +1189,7 @@ begin
   HTTPClient.ReadTimeout := 30000;
   HTTPClient.ConnectTimeout := 30000;
 
-  ParametroSistema := TParametroSistemaData.Create(self);
+  ParametroSistema := TParametroSistemaData.Create(nil);
   ParametroSistema.MasterDataSet.Open;
   if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
     HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
