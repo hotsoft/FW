@@ -1194,12 +1194,13 @@ begin
   if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
     HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
   if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetPORTAPROXY.AsString;
+    HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
   if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+    HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
   if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+    HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
 
+  HTTPClient.ProxyParams.BasicAuthentication := HTTPClient.ProxyParams.ProxyUsername <> '';
   try
     try
       HTTPClient.Get(url, Stream);
