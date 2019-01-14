@@ -449,17 +449,21 @@ function TacCustomSQLMainData.GetServerDatetime(aConnection: TSQLConnection=nil)
 var
   Query: TosSQLQuery;
 begin
-  Query := GetQuery;
-  if (aConnection <> nil) then
-    Query.SQLConnection := aConnection;
-  
   try
-    Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
-    Query.Open;
-    Result := Query.Fields[0].AsDatetime;
-    Query.Close;
-  finally
-    FreeQuery(Query);
+    Query := GetQuery;
+    if (aConnection <> nil) then
+      Query.SQLConnection := aConnection;
+
+    try
+      Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
+      Query.Open;
+      Result := Query.Fields[0].AsDatetime;
+      Query.Close;
+    finally
+      FreeQuery(Query);
+    end;
+  except
+    Result :=  now();
   end;
 end;
 
