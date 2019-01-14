@@ -828,7 +828,7 @@ type
 var
   phe : PHostEnt;
   pptr : PaPInAddr;
-  Buffer : array [0..63] of char;
+  Buffer : array [0..63] of Ansichar;
   I : Integer;
   GInitData : TWSADATA;
 begin
