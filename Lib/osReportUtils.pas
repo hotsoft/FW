@@ -7,7 +7,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
   daQueryDataView, ppTypes,daIDE, daDBExpress, ppCTDsgn, raIDE, myChkBox,
   ppModule, FMTBcd, osCustomDataSetProvider, SqlExpr,
   osSQLDataSetProvider, daSQl, osSQLQuery, osComboFilter, ppDBPipe, osClientDataSet,
-  acReportContainer, Forms, osCustomMainFrm;
+  acReportContainer, Forms, osCustomMainFrm, acCustomReportUn;
 
   type TIdade = class
   private
@@ -32,7 +32,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
   function getTemplateByName(name: string; stream: TMemoryStream): boolean;
   function getTemplateByID(id: integer; stream: TMemoryStream): boolean;
   function getTemplateIDByName(name: string): integer;
-  function getTemplateLaudoRascunho(name: string; stream: TMemoryStream): boolean;
+  function getTemplateLaudoRascunho(name: string; stream: TMemoryStream; var config: TConfigImpressao): boolean;
 
   procedure replaceReportSQL(report: TppReport; template: TMemoryStream; strSQL: String);
   procedure replaceReportSQLAddParam(report: TppReport; template: TMemoryStream;
@@ -93,11 +93,12 @@ begin
 end;
 
 
-function getTemplateLaudoRascunho(name: string; stream: TMemoryStream): boolean;
+function getTemplateLaudoRascunho(name: string; stream: TMemoryStream; var config: TConfigImpressao): boolean;
 var
   query: TosSQLQuery;
   report: string;
   ss: TStringStream;
+  vIdRelatorio: Integer;
 begin
   name := UpperCase(Name);
   Result := false;
@@ -106,7 +107,8 @@ begin
     query.SQLConnection := acCustomSQLMainData.SQLConnectionMeta;
     query.CommandText := ' SELECT ' +
                          '   I.template, '+
-                         '   I.ITEM_ID '+
+                         '   I.ITEM_ID, '+
+                         '   r.IdRelatorio '+
                          ' FROM ' +
                          '   RB_ITEM I '+
                          ' join relatorio r on r.item_id = I.item_id '+
@@ -119,6 +121,44 @@ begin
       TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).
         addReport(query.fields[1].AsInteger, name, TBLOBField(query.fields[0]).AsString);
       Result := true;
+    end;
+
+    if Result then
+    begin
+      vIdRelatorio := query.FieldByName('IdRelatorio').AsInteger;
+      query.Close;
+      query.SQL.Text := ' select r.margemsuperior, ' +
+                      ' r.margeminferior, ' +
+                      ' r.margemesquerda, ' +
+                      ' r.margemdireita, ' +
+                      ' r.alturapapel, ' +
+                      ' r.largurapapel, ' +
+                      ' r.orientation, ' +
+                      ' r.classeimpressora, ' +
+                      ' r.tiposaida, ' +
+                      ' rb.item_id from relatorio r'+
+                      ' join rb_item rb on r.item_id = rb.item_id'+
+                      ' where r.idrelatorio = '+IntToStr(vIdRelatorio);
+      query.Open;
+      if not query.IsEmpty then
+      begin
+        if not query.fieldByName('orientation').IsNull then
+          config.orientation := query.fieldByName('orientation').AsInteger;
+        if not query.fieldByName('larguraPapel').IsNull then
+          config.larguraPapel := query.fieldByName('larguraPapel').AsInteger;
+        if not query.fieldByName('alturaPapel').IsNull then
+          config.alturaPapel := query.fieldByName('alturaPapel').AsInteger;
+        if not query.fieldByName('margemSuperior').IsNull then
+          config.margemSuperior := query.fieldByName('margemSuperior').AsInteger;
+        if not query.fieldByName('margemInferior').IsNull then
+          config.margemInferior := query.fieldByName('margemInferior').AsInteger;
+        if not query.fieldByName('margemEsquerda').IsNull then
+          config.margemEsquerda := query.fieldByName('margemEsquerda').AsInteger;
+        if not query.fieldByName('margemDireita').IsNull then
+          config.margemDireita := query.fieldByName('margemDireita').AsInteger;
+       // if not query.fieldByName('tipoSaida').IsNull then
+       //   config.tipoSaida := query.fieldByName('tipoSaida').AsString;
+      end;
     end;
   finally
     FreeAndNil(query);

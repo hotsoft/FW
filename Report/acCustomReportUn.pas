@@ -166,7 +166,7 @@ begin
     //chance da classe buscar seu template
     if (not encontrou) and (self.RecursoOrigem = 'Aprovação Resultados') then
     begin
-      encontrou := getTemplateLaudoRascunho(ClassName, stream);
+      encontrou := getTemplateLaudoRascunho(ClassName, stream, config);
       if acCustomParametroSistemaData <> nil then
         config.nomeImpressora := acCustomParametroSistemaData.getNomeImpressoraClasse('LASER');
     end;
