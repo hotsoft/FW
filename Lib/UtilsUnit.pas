@@ -63,6 +63,7 @@ function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
+function GetCurrentIpList:TSTringList;
 function FieldHasChanged(aField : TField):Boolean;
 procedure CheckChangedFields(aDataSet: TClientDataSet; aChangedFields: TStringList);
 function ValueIsEmptyNull(aValue : Variant):Boolean;
@@ -818,6 +819,33 @@ begin
     tempAddress := Winsock.ntohl(tempAddress);
   end;
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
+end;
+
+Function GetCurrentIpList:TSTringList;
+type
+  TaPInAddr = array [0..10] of PInAddr;
+  PaPInAddr = ^TaPInAddr;
+var
+  phe : PHostEnt;
+  pptr : PaPInAddr;
+  Buffer : array [0..63] of Ansichar;
+  I : Integer;
+  GInitData : TWSADATA;
+begin
+  Result:=TStringList.Create;
+  WSAStartup($101, GInitData);
+  GetHostName(Buffer, SizeOf(Buffer));
+  phe :=GetHostByName(buffer);
+  if phe = nil then
+    Exit;
+  pptr := PaPInAddr(Phe^.h_addr_list);
+  I := 0;
+  while pptr^[I] <> nil do
+  begin
+    result.add(StrPas(inet_ntoa(pptr^[I]^)));
+    Inc(I);
+  end;
+  WSACleanup;
 end;
 
 function FormatIP(const ip: string): String;
