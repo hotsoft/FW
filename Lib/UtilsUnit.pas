@@ -83,7 +83,7 @@ function TextFromBase64(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
-function TestConnection(const url: String): boolean;
+function TestConnection(const url: String; conn: TosSQLConnection = nil): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil): Boolean;
@@ -1199,12 +1199,13 @@ begin
   end;
 end;
 
-function TestConnection(const url: String): boolean;
+function TestConnection(const url: String; conn: TosSQLConnection = nil): boolean;
 var
   HTTPClient: TidHTTP;
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
   ParametroSistema: TParametroSistemaData;
+  qryProxy: TosSQLQuery;
 begin
   Stream := TStringStream.Create('', TEncoding.UTF8);
 
@@ -1217,16 +1218,39 @@ begin
   HTTPClient.ReadTimeout := 30000;
   HTTPClient.ConnectTimeout := 30000;
 
-  ParametroSistema := TParametroSistemaData.Create(nil);
-  ParametroSistema.MasterDataSet.Open;
-  if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
-  if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
-  if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
-  if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+  if conn = nil then
+  begin
+    ParametroSistema := TParametroSistemaData.Create(nil);
+    ParametroSistema.MasterDataSet.Open;
+    if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
+    if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
+    if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+    if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+  end
+  else
+  begin
+    try
+      qryProxy := TosSQLQuery.Create(nil);
+      qryProxy.SQLConnection := conn;
+      qryProxy.CommandText := 'select ENDERECOPROXY, PORTAPROXY, USUARIOPROXY, SENHAPROXY from PARAMETROSISTEMA';
+      qryProxy.Open;
+
+      if not ValueIsEmptyNull(qryProxy.FieldByName('ENDERECOPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('PORTAPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('USUARIOPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('SENHAPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+    finally
+      FreeAndNil(qryProxy);
+    end;
+  end;
 
   HTTPClient.ProxyParams.BasicAuthentication := HTTPClient.ProxyParams.ProxyUsername <> '';
   try
