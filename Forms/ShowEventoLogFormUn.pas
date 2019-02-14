@@ -38,8 +38,6 @@ implementation
 
 class procedure TShowEventoLogForm.execute(Usuario: string;
   datahora: TDateTime; Evento, detalhes: string);
-var
-  frm: TShowEventoLogForm;
 begin
   with TShowEventoLogForm.create(nil) do
   begin

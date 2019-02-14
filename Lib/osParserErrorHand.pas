@@ -37,7 +37,7 @@ constructor TNodoErro.Create(pClasse: TClasseErr; pIDErro: Integer;
 begin
   FClasse := pClasse;
   FIDErro := pIDErro;
-  FTexto := Format(pTexto, ListaDeComplementos);
+  FTexto := AnsiString(Format(String(pTexto), ListaDeComplementos));
 end;
 
 { TListErro }

@@ -149,7 +149,7 @@ var
 begin
   Result := EmptyStr;
   for i := 1 to length(valor) do
-    if valor[i] in ['0'..'9'] then
+    if CharInSet(valor[i], ['0'..'9']) then
       Result := result + valor[i];
 end;
 
@@ -842,7 +842,7 @@ begin
   I := 0;
   while pptr^[I] <> nil do
   begin
-    result.add(StrPas(inet_ntoa(pptr^[I]^)));
+    result.add(String(inet_ntoa(pptr^[I]^)));
     Inc(I);
   end;
   WSACleanup;
@@ -1072,7 +1072,7 @@ var
   Encoder: TIdEncoderMIME;
 begin
   Result := EmptyStr;
-  Output := EmptyStr;
+  Output := UTF8Encode(EmptyStr);
 
   Input := TFileStream.Create(FileName, fmOpenRead);
   InputMemoryStream := TMemoryStream.Create();
@@ -1080,8 +1080,8 @@ begin
   try
     //Soap.EncdDecd.EncodeStream(Input, Output);
     InputMemoryStream.LoadFromStream(Input);
-    Output := Encoder.EncodeStream(InputMemoryStream, InputMemoryStream.Size);
-    Result := Output;
+    Output := UTF8Encode(Encoder.EncodeStream(InputMemoryStream, InputMemoryStream.Size));
+    Result := UTF8ToString(Output);
   finally
     FreeAndNil(Input);
     FreeAndNil(InputMemoryStream);
@@ -1822,9 +1822,11 @@ var
 begin
   Result := -1;
   try
+    {$WARNINGS OFF}
     if ((FileExists(filename)) and (FindFirst(filename, faAnyFile, sr) = 0)) then
         Result := Int64(sr.FindData.nFileSizeHigh) shl Int64(32) +
         Int64(sr.FindData.nFileSizeLow);
+    {$WARNINGS ON}
   finally
     FindClose(sr);
   end;
@@ -1924,6 +1926,7 @@ var
   _jsonString: TJSONString;
   _jsonValue: TJSONValue;
 begin
+  _jsonString := nil;
   // ... IS A JSONObject?
   if (aJsonValue is TJSONObject) then
   begin

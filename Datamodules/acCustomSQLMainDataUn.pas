@@ -148,7 +148,7 @@ begin
       begin
         Application.ProcessMessages;
 
-        RefreshTable := FindRefreshTable(Trim(NomeTabelaField.Value));
+        RefreshTable := FindRefreshTable(Trim(String(NomeTabelaField.Value)));
         if (RefreshTable <> nil) then
         begin
           if RefreshTable.FVersion < VersaoField.Value then
@@ -277,7 +277,7 @@ begin
         while not Query.Eof do
         begin
           RefreshTable := TRefreshTable.Create;
-          RefreshTable.FTableName := Trim(NomeTabelaField.Value);
+          RefreshTable.FTableName := Trim(String(NomeTabelaField.Value));
           RefreshTable.FVersion := VersaoField.Value;
           RefreshTable.FDataSet := nil;
 

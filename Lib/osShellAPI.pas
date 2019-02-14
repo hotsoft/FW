@@ -345,7 +345,7 @@ var
   s : String;
   Flags : LongInt;
 begin
-
+  Flags := 0;
   s := Application.ExeName;
   if Application.Title <> '' then
     s := Application.Title;
@@ -450,6 +450,8 @@ var
   bRet          : boolean;
 begin
   StrPCopy(pCommandLine, p_commandLine);
+  hAppThread := 0;
+  hAppProcess := 0;
 TRY
 { Prepare StartupInfo structure }
     FillChar(StartupInfo, SizeOf(StartupInfo), #0);

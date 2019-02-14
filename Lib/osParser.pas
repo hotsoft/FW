@@ -2,7 +2,7 @@ unit osParser;
 
 interface
 
-uses osLex, Classes, SysUtils, osParserErrorHand;
+uses osLex, Classes, SysUtils, osParserErrorHand, System.Types;
 
 type
   // representa uma pilha generica
@@ -201,12 +201,12 @@ end;
 procedure TosParser.NovaExpressao(Expr: AnsiString);
 begin
   FCompilado := False;
-  FLex.Expressao := AnsiUpperCase(Expr);
+  FLex.Expressao := AnsiUpperCase(AnsiString(Expr));
 end;
 
 function TosParser.ObtemExpressao: AnsiString;
 begin
-  Result := FLex.Expressao;
+  Result := AnsiString(FLex.Expressao);
 end;
 
 { Confere token atual e le o proximo token }
@@ -535,49 +535,49 @@ end;
 
 procedure TExprPrograma.emit_ConstBool(Num: String);
 begin
-  FFonte := FFonte + 'constbool:' + Num + #13#10;
+  FFonte := FFonte + 'constbool:' + AnsiString(Num) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_ConstNum(Num: String);
 begin
-  FFonte := FFonte + 'constnum:' + Num + #13#10;
+  FFonte := FFonte + 'constnum:' + AnsiString(Num) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_Func(NomeFunc: String);
 begin
-  FFonte := FFonte + 'func:' + Nomefunc + #13#10;
+  FFonte := FFonte + 'func:' + AnsiString(Nomefunc) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_FuncArg(NumArgumentos: Integer);
 begin
-  FFonte := FFonte + 'arg:' + IntToStr(NumArgumentos) + #13#10;
+  FFonte := FFonte + 'arg:' + AnsiString(IntToStr(NumArgumentos)) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_LValor(NomeVariavel: String);
 begin
-  FFonte := FFonte + 'lvalue:' + NomeVariavel + #13#10;
+  FFonte := FFonte + 'lvalue:' + AnsiString(NomeVariavel) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_Operador(Operador: String);
 begin
-  FFonte := FFonte + 'op:' + Operador + #13#10;
+  FFonte := FFonte + 'op:' + AnsiString(Operador) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_OperadorUnario(Operador: String);
 begin
-  FFonte := FFonte + 'opun:' + Operador + #13#10;
+  FFonte := FFonte + 'opun:' + AnsiString(Operador) + #13#10;
   inc(FnLinhas);
 end;
 
 procedure TExprPrograma.emit_RValor(NomeVariavel: String);
 begin
-  FFonte := FFonte + 'rvalue:' + NomeVariavel + #13#10;
+  FFonte := FFonte + 'rvalue:' + AnsiString(NomeVariavel) + #13#10;
   inc(FnLinhas);  
 end;
 
@@ -589,23 +589,23 @@ var
 begin
   i := 0;
   PosI := 1;
-  PosF := AnsiPos(#13#10, FFonte);;
+  PosF := AnsiPos(#13#10, String(FFonte));;
   Tamanho := Length(FFonte);
 
   while i < Index do
   begin
     PosI := PosF + 2;
-    PosF := PosI + AnsiPos(#13#10, Copy(FFonte, PosI, Tamanho - PosI + 1)) - 1;
+    PosF := PosI + AnsiPos(#13#10, Copy(String(FFonte), PosI, Tamanho - PosI + 1)) - 1;
 
     inc(i);
   end;
 
-  Result := Copy(FFonte, PosI, PosF-PosI);
+  Result := Copy(String(FFonte), PosI, PosF-PosI);
 end;
 
 procedure TExprPrograma.emit_ConstString(str: String);
 begin
-  FFonte := FFonte + 'conststring:' + str + #13#10;
+  FFonte := FFonte + 'conststring:' + AnsiString(str) + #13#10;
   inc(FnLinhas);
 end;
 
