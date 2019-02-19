@@ -1311,25 +1311,20 @@ var
   noPai, no: TTreeNode;
 begin
   sDomain := '';
-  noPai := TTreeNode.Create(nil);
-  try
-    for i:=0 to Manager.Resources.Count - 1 do
+  for i:=0 to Manager.Resources.Count - 1 do
+  begin
+    with Manager.Resources[i] do
     begin
-      with Manager.Resources[i] do
+      if DomainName <> sDomain then
       begin
-        if DomainName <> sDomain then
-        begin
-          sDomain := DomainName;
-          noPai := TreeView1.Items.Add(nil, sDomain);
-        end;
-        // Cria o botão
-        no := TreeView1.Items.AddChild(noPai, name);
-        no.ImageIndex := ImageIndex;
-        no.SelectedIndex := Manager.Resources[i].ID;
+        sDomain := DomainName;
+        noPai := TreeView1.Items.Add(nil, sDomain);
       end;
+      // Cria o botão
+      no := TreeView1.Items.AddChild(noPai, name);
+      no.ImageIndex := ImageIndex;
+      no.SelectedIndex := Manager.Resources[i].ID;
     end;
-  finally
-    FreeAndNil(noPai);
   end;
 end;
 
