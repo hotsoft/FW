@@ -71,7 +71,7 @@ type
     property Profile: string read FProfile;
 
 
-    constructor Create(AOwner: TComponent); overload; override;
+    constructor Create(AOwner: TComponent; RefreshTables: Boolean = True); overload;
     constructor Create(AOwner: TComponent; BD: String); overload;
     destructor Destroy; override;
     function GetNetUserName: string;
@@ -171,11 +171,12 @@ end;
  Observações> Comentario iniciado em 23.06.2006 por Ricardo N. Acras
  Atualização>
  ------------------------------------------------------------------------}
-constructor TacCustomSQLMainData.Create(AOwner: TComponent);
+constructor TacCustomSQLMainData.Create(AOwner: TComponent; RefreshTables: Boolean = True);
 begin
   FQueryList := TObjectList.Create(True); // OwnsObjects = True
   FIDHighValue := -1;
-  FRefreshTableList := TRefreshTableList.Create; // OwnsObjects = True
+  if RefreshTables then
+    FRefreshTableList := TRefreshTableList.Create; // OwnsObjects = True
   inherited Create(AOwner);
 end;
 
