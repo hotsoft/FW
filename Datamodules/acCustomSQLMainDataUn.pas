@@ -70,7 +70,6 @@ type
     property ApelidoUsuario: String read FApelidoUsuario;
     property Profile: string read FProfile;
 
-
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; BD: String); overload;
     destructor Destroy; override;
