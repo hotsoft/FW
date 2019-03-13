@@ -201,7 +201,7 @@ end;
 procedure TosParser.NovaExpressao(Expr: AnsiString);
 begin
   FCompilado := False;
-  FLex.Expressao := AnsiUpperCase(AnsiString(Expr));
+  FLex.Expressao := AnsiUpperCase(String(Expr));
 end;
 
 function TosParser.ObtemExpressao: AnsiString;

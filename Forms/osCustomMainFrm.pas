@@ -1311,6 +1311,7 @@ var
   noPai, no: TTreeNode;
 begin
   sDomain := '';
+  noPai := nil;
   for i:=0 to Manager.Resources.Count - 1 do
   begin
     with Manager.Resources[i] do
@@ -1320,6 +1321,7 @@ begin
         sDomain := DomainName;
         noPai := TreeView1.Items.Add(nil, sDomain);
       end;
+
       // Cria o botão
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;

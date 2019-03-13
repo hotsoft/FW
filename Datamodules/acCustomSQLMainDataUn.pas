@@ -71,7 +71,7 @@ type
     property Profile: string read FProfile;
 
     constructor Create(AOwner: TComponent); overload; override;
-    constructor Create(AOwner: TComponent; BD: String); overload;
+    constructor CreateOwn(AOwner: TComponent; BD: String); overload;
     destructor Destroy; override;
     function GetNetUserName: string;
 
@@ -186,7 +186,7 @@ end;
  Observações>
  Atualização>
  ------------------------------------------------------------------------}
-constructor TacCustomSQLMainData.Create(AOwner: TComponent; bd: string);
+constructor TacCustomSQLMainData.CreateOwn(AOwner: TComponent; bd: string);
 begin
   Self.Create(AOwner);
   self.BD := bd;
