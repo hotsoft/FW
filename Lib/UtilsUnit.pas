@@ -63,6 +63,7 @@ function ConverteStrToDate2(data: string): TDateTime;
 function ConverteStrToDate3(data: string): TDateTime;
 function ConverteStrToDate4(data: string): TDateTime;
 function GetIPAddress: string;
+function GetCurrentIpList:TSTringList;
 function FieldHasChanged(aField : TField):Boolean;
 procedure CheckChangedFields(aDataSet: TClientDataSet; aChangedFields: TStringList);
 function ValueIsEmptyNull(aValue : Variant):Boolean;
@@ -82,7 +83,7 @@ function TextFromBase64(const text: String): string;
 function BinaryFromBase64(const base64: string): TBytesStream;
 function Base64ToBitmap(base64Field: TBlobField): TBitmap;
 function Base64FromStream(const input: TStream): string;
-function TestConnection(const url: String): boolean;
+function TestConnection(const url: String; conn: TosSQLConnection = nil): boolean;
 function SortCustomClientDataSet(ClientDataSet: TClientDataSet;
   const FieldName: string): Boolean;
 function getUriUrlStatus(const address: String; stream: TStream; AOwner: TComponent=nil): Boolean;
@@ -820,6 +821,33 @@ begin
   Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
+Function GetCurrentIpList:TSTringList;
+type
+  TaPInAddr = array [0..10] of PInAddr;
+  PaPInAddr = ^TaPInAddr;
+var
+  phe : PHostEnt;
+  pptr : PaPInAddr;
+  Buffer : array [0..63] of Ansichar;
+  I : Integer;
+  GInitData : TWSADATA;
+begin
+  Result:=TStringList.Create;
+  WSAStartup($101, GInitData);
+  GetHostName(Buffer, SizeOf(Buffer));
+  phe :=GetHostByName(buffer);
+  if phe = nil then
+    Exit;
+  pptr := PaPInAddr(Phe^.h_addr_list);
+  I := 0;
+  while pptr^[I] <> nil do
+  begin
+    result.add(StrPas(inet_ntoa(pptr^[I]^)));
+    Inc(I);
+  end;
+  WSACleanup;
+end;
+
 function FormatIP(const ip: string): String;
 var
   _ip: TStringList;
@@ -1171,12 +1199,13 @@ begin
   end;
 end;
 
-function TestConnection(const url: String): boolean;
+function TestConnection(const url: String; conn: TosSQLConnection = nil): boolean;
 var
   HTTPClient: TidHTTP;
   Stream: TStringStream;
   LHandler: TIdSSLIOHandlerSocketOpenSSL;
   ParametroSistema: TParametroSistemaData;
+  qryProxy: TosSQLQuery;
 begin
   Stream := TStringStream.Create('', TEncoding.UTF8);
 
@@ -1189,17 +1218,41 @@ begin
   HTTPClient.ReadTimeout := 30000;
   HTTPClient.ConnectTimeout := 30000;
 
-  ParametroSistema := TParametroSistemaData.Create(nil);
-  ParametroSistema.MasterDataSet.Open;
-  if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
-  if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetPORTAPROXY.AsString;
-  if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
-  if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
-    HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+  if conn = nil then
+  begin
+    ParametroSistema := TParametroSistemaData.Create(nil);
+    ParametroSistema.MasterDataSet.Open;
+    if ParametroSistema.MasterDataSetENDERECOPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
+    if ParametroSistema.MasterDataSetPORTAPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
+    if ParametroSistema.MasterDataSetUSUARIOPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+    if ParametroSistema.MasterDataSetSENHAPROXY.AsString <> '' then
+      HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+  end
+  else
+  begin
+    try
+      qryProxy := TosSQLQuery.Create(nil);
+      qryProxy.SQLConnection := conn;
+      qryProxy.CommandText := 'select ENDERECOPROXY, PORTAPROXY, USUARIOPROXY, SENHAPROXY from PARAMETROSISTEMA';
+      qryProxy.Open;
 
+      if not ValueIsEmptyNull(qryProxy.FieldByName('ENDERECOPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyServer := ParametroSistema.MasterDataSetENDERECOPROXY.AsString;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('PORTAPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyPort := ParametroSistema.MasterDataSetPORTAPROXY.AsInteger;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('USUARIOPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyUsername := ParametroSistema.MasterDataSetUSUARIOPROXY.AsString;
+      if not ValueIsEmptyNull(qryProxy.FieldByName('SENHAPROXY').Value) then
+        HTTPClient.ProxyParams.ProxyPassword := ParametroSistema.MasterDataSetSENHAPROXY.AsString;
+    finally
+      FreeAndNil(qryProxy);
+    end;
+  end;
+
+  HTTPClient.ProxyParams.BasicAuthentication := HTTPClient.ProxyParams.ProxyUsername <> '';
   try
     try
       HTTPClient.Get(url, Stream);
