@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, osCustomEditFrm, Menus, ImgList, DB, ActnList, osActionList,
+  Dialogs, osCustomEditFrm, Menus, ImgList, DB, ActnList, osActionList, SQLMainData,
   Buttons, ExtCtrls, osUtils, DBClient, osClientDataset, StdCtrls, Mask,
   wwdbedit, Wwdotdot, Wwdbcomb, osComboFilter, osSQLQuery, ppReport,
   ppComm, ppRelatv, ppProd, ppClass, osCustomSearchFrm, ppMemo, TypInfo,
@@ -52,6 +52,7 @@ procedure TImprimirRelatorioForm.ImprimirRelatorioComFiltro(idRelatorio: integer
 var
   stream: TMemoryStream;
   qry: TosSQLQuery;
+  updateContadorImpressao : TosSQLQuery;
   templateName, FilterName: string;
   srchForm: TCustomSearchForm;
   config: TConfigImpressao;
@@ -189,7 +190,20 @@ begin
       report.DeviceType := 'TextFile';
   end;
 
+   updateContadorImpressao := MainData.GetQuery;
+  try
+    updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
+                            ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
+                            ' DATAULTIMAIMPRESSAO = '
+                            + QuotedStr(FormatDateTime('dd.mm.yyyy', MainData.GetServerDatetime)) +
+                            ' WHERE ITEM_ID = ' + IntToStr(getTemplateIDByName(TemplateName));
+    updateContadorImpressao.ExecSQL;
+  finally
+    acCustomSQLMainData.FreeQuery(updateContadorImpressao);
+  end;
+
   report.Print;
+
 end;
 
 procedure TImprimirRelatorioForm.ImprimirTemplate(templateName: string);
