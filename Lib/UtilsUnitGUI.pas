@@ -232,32 +232,36 @@ begin
   SysUtils.DeleteFile(diretorio + 'COMANDO.TXT');
   SysUtils.DeleteFile(diretorio + 'PRINTLBL.BAT');
 
-  AssignFile(FComando, diretorio + 'COMANDO.TXT');
   try
-    Rewrite(FComando);
-    Writeln(FComando, comando);
-  finally
-    CloseFile(FComando);
+    AssignFile(FComando, diretorio + 'COMANDO.TXT');
+    try
+      Rewrite(FComando);
+      Writeln(FComando, comando);
+    finally
+      CloseFile(FComando);
+    end;
+
+    _erroType := diretorio + '\errotype.txt';
+    _erroPrint := diretorio + '\erroprint.txt';
+
+    AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
+    try
+      Rewrite(FBat);
+      Writeln(FBat, Format('(TYPE "%s\COMANDO.TXT" >"%s" 2>%s ) 2>%s',[diretorio, impressora, _erroType, _erroPrint]));
+    finally
+      CloseFile(FBat);
+    end;
+
+    SysUtils.DeleteFile(_erroType);
+    SysUtils.DeleteFile(_erroPrint);
+
+    ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
+
+    erro := UtilsUnit.LoadFromFile(_erroType);
+    erro := erro + StrUtils.IfThen(erro.IsEmpty, #13#10) + UtilsUnit.LoadFromFile(_erroPrint);
+  except
+
   end;
-
-  _erroType := diretorio + '\errotype.txt';
-  _erroPrint := diretorio + '\erroprint.txt';
-
-  AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
-  try
-    Rewrite(FBat);
-    Writeln(FBat, Format('(TYPE "%s\COMANDO.TXT" >"%s" 2>%s ) 2>%s',[diretorio, impressora, _erroType, _erroPrint]));
-  finally
-    CloseFile(FBat);
-  end;
-
-  SysUtils.DeleteFile(_erroType);
-  SysUtils.DeleteFile(_erroPrint);
-
-  ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
-
-  erro := UtilsUnit.LoadFromFile(_erroType);
-  erro := erro + StrUtils.IfThen(erro.IsEmpty, #13#10) + UtilsUnit.LoadFromFile(_erroPrint);
 end;
 
 function ConverteRTF(rtf: string): string;
