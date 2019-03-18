@@ -315,9 +315,8 @@ begin
       Report.PrintToDevices;
     end
     else
-
+      Report.Print;
     updateContadorImpressao := MainData.GetQuery;
-    acCustomRelatorioData.MasterDataSet.Open;
     try
       updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
                               ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
@@ -328,8 +327,6 @@ begin
     finally
       acCustomSQLMainData.FreeQuery(updateContadorImpressao);
     end;
-
-      Report.Print;
   finally
     FreeAndNil(stream);
   end;
