@@ -157,6 +157,7 @@ function GetSpecialFolderPath(const folder : integer) : string;
 function GetProgramDataAppDataFolder: string;
 function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
 procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
+Function GetCurrentIpList: TStringList;
 
 implementation
 
@@ -2447,6 +2448,33 @@ begin
     Result := False;
     RaiseLastOSError;
   end;
+end;
+
+Function GetCurrentIpList: TStringList;
+type
+  TaPInAddr = array [0..10] of PInAddr;
+  PaPInAddr = ^TaPInAddr;
+var
+  phe : PHostEnt;
+  pptr : PaPInAddr;
+  Buffer : array [0..63] of Ansichar;
+  I : Integer;
+  GInitData : TWSADATA;
+begin
+  Result:=TStringList.Create;
+  WSAStartup($101, GInitData);
+  GetHostName(Buffer, SizeOf(Buffer));
+  phe :=GetHostByName(buffer);
+  if phe = nil then
+    Exit;
+  pptr := PaPInAddr(Phe^.h_addr_list);
+  I := 0;
+  while pptr^[I] <> nil do
+  begin
+    result.add(StrPas(inet_ntoa(pptr^[I]^)));
+    Inc(I);
+  end;
+  WSACleanup;
 end;
 
 end.
