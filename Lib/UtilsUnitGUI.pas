@@ -62,7 +62,7 @@ function LocalIp: string;
 
 implementation
 
-uses IdIPWatch, IdTCPClient;
+uses IdIPWatch, IdTCPClient, WinSpool;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
