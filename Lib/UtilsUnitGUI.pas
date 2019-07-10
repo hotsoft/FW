@@ -62,7 +62,7 @@ function LocalIp: string;
 
 implementation
 
-uses IdIPWatch, IdTCPClient, WinSpool;
+uses IdIPWatch, IdTCPClient;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
@@ -228,22 +228,8 @@ var
   cmm, printerName: AnsiString;
   I: Integer;
   vPrinter : TPrinter;
-  //_erroType, _erroPrint: string;
 begin
-  diretorio:= GetSpecialFolderLocation(Application.Handle, CSIDL_COMMON_APPDATA) + '\';
-
-  SysUtils.DeleteFile(diretorio + 'COMANDO.TXT');
-  SysUtils.DeleteFile(diretorio + 'PRINTLBL.BAT');
-
   try
-    AssignFile(FComando, diretorio + 'COMANDO.TXT');
-    try
-      Rewrite(FComando);
-      Writeln(FComando, comando);
-    finally
-      CloseFile(FComando);
-    end;
-
     if length(trim(comando)) > 30 then
     begin
       vPrinter := TPrinter.Create;
@@ -260,7 +246,7 @@ begin
           end
           else
           begin
-            if Trim(UpperCase(Printer.Printers[I])) = Trim(UpperCase(copy(Impressora, 1, POS('(', Impressora)-1))) then
+            if Trim(UpperCase(Printer.Printers[I])) = Trim(UpperCase(Impressora)) then
             begin
               vPrinter.PrinterIndex := I;
               break;
@@ -283,28 +269,6 @@ begin
         FreeAndNil(vPrinter);
       end;
     end;
-
-    /////////Dessa forma será gerado um arquivo txt e um BAT e o bat executa a impressao, mas apenas para impressoras compartilhadas
-    ///
-    ///
-    //_erroType := diretorio + '\errotype.txt';
-    //_erroPrint := diretorio + '\erroprint.txt';
-
-    {AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
-    try
-      Rewrite(FBat);
-      Writeln(FBat, Format('(TYPE "%s\COMANDO.TXT" >"%s" 2>%s ) 2>%s',[diretorio, impressora, _erroType, _erroPrint]));
-    finally
-      CloseFile(FBat);
-    end;}
-
-    //SysUtils.DeleteFile(_erroType);
-    //SysUtils.DeleteFile(_erroPrint);
-
-    //ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
-
-    //erro := UtilsUnit.LoadFromFile(_erroType);
-    //erro := erro + StrUtils.IfThen(erro.IsEmpty, #13#10) + UtilsUnit.LoadFromFile(_erroPrint);
   except
 
   end;
@@ -877,4 +841,5 @@ end;
 
 
 end.
+
 
