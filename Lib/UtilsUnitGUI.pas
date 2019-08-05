@@ -58,7 +58,7 @@ function LocalIp: string;
 
 implementation
 
-uses IdIPWatch, IdTCPClient;
+uses IdIPWatch, IdTCPClient, WinSpool;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
@@ -221,39 +221,53 @@ procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro:
 var
   FBat, FComando: TextFile;
   diretorio: string;
-  _erroType, _erroPrint: string;
+  cmm, printerName: AnsiString;
+  I: Integer;
+  vPrinter : TPrinter;
 begin
-  diretorio:= GetSpecialFolderLocation(Application.Handle, CSIDL_COMMON_APPDATA) + '\';
-
-  SysUtils.DeleteFile(diretorio + 'COMANDO.TXT');
-  SysUtils.DeleteFile(diretorio + 'PRINTLBL.BAT');
-
-  AssignFile(FComando, diretorio + 'COMANDO.TXT');
   try
-    Rewrite(FComando);
-    Writeln(FComando, comando);
-  finally
-    CloseFile(FComando);
+    if length(trim(comando)) > 30 then
+    begin
+      vPrinter := TPrinter.Create;
+      try
+        for I := 0 to Printer.Printers.Count-1 do
+        begin
+          if POS('(', Printer.Printers[I]) > 0 then
+          begin
+            if Trim(UpperCase(copy(Printer.Printers[I], 1, POS('(', Printer.Printers[I])-1))) = Trim(UpperCase(copy(Impressora, 1, POS('(', Impressora)-1))) then
+            begin
+              vPrinter.PrinterIndex := I;
+              break;
+            end;
+          end
+          else
+          begin
+            if Trim(UpperCase(Printer.Printers[I])) = Trim(UpperCase(Impressora)) then
+            begin
+              vPrinter.PrinterIndex := I;
+              break;
+            end;
+          end;
+        end;
+
+        //É necessário inicializar o comando com "N" para limpar as configurações da impressora caso ela tenha imprimido algum outro padrão de etiqueta.
+        //é necessário que haja 2 "N" logo no começo do comando;
+        cmm := 'N' + #10 + Trim(comando)+#10 + 'N' + #10;
+        StartDocPrinter(vPrinter.Handle, 1, @cmm);
+        vPrinter.BeginDoc;
+
+        pword(cmm)^ := length(cmm)-2;
+        if ExtEscape(vPrinter.Handle, PASSTHROUGH, Length(cmm), pointer(cmm), 0, nil)<0 then
+          erro := 'Error ao enviar comandos para a impressora';
+        EndDocPrinter(vPrinter.Handle);
+        vPrinter.EndDoc;
+      finally
+        FreeAndNil(vPrinter);
+      end;
+    end;
+  except
+
   end;
-
-  _erroType := diretorio + '\errotype.txt';
-  _erroPrint := diretorio + '\erroprint.txt';
-
-  AssignFile(FBat, diretorio + 'PRINTLBL.BAT');
-  try
-    Rewrite(FBat);
-    Writeln(FBat, Format('(TYPE "%s\COMANDO.TXT" >"%s" 2>%s ) 2>%s',[diretorio, impressora, _erroType, _erroPrint]));
-  finally
-    CloseFile(FBat);
-  end;
-
-  SysUtils.DeleteFile(_erroType);
-  SysUtils.DeleteFile(_erroPrint);
-
-  ShellExecute(0, nil, PWideChar(diretorio + 'PRINTLBL.BAT'), '', nil, SW_HIDE);
-
-  erro := UtilsUnit.LoadFromFile(_erroType);
-  erro := erro + StrUtils.IfThen(erro.IsEmpty, #13#10) + UtilsUnit.LoadFromFile(_erroPrint);
 end;
 
 function ConverteRTF(rtf: string): string;
@@ -771,4 +785,5 @@ end;
 
 
 end.
+
 

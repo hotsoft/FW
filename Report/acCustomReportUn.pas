@@ -4,11 +4,11 @@ interface
 
 uses
   SysUtils, Classes, ppComm, ppRelatv, ppProd, ppClass, ppReport, DB,
-  DBClient, osClientDataset, osComboFilter, FMTBcd, Provider,
+  DBClient, osClientDataset, osComboFilter, FMTBcd, Provider, SQLMainData,
   osCustomDataSetProvider, osSQLDataSetProvider, SqlExpr, osSQLDataSet,
   ppModule, raCodMod, ppMemo, ppVar, ppBands, ppStrtch, ppSubRpt, ppCtrls,
   ppPrnabl, ppCache, ppDB, ppDBPipe, ppTypes, Forms, ppViewr, daSQl,
-  daDataModule, daQueryDataView, TypInfo, Printers,
+  daDataModule, daQueryDataView, TypInfo, Printers, osSQLQuery,
   ppPDFDevice, ppPrintr, ppParameter, ppArchiv, System.Zlib;
 
 type
@@ -135,6 +135,7 @@ procedure TacCustomReport.Print(const PID: integer);
 var
   stream: TMemoryStream;
   idTemplate: integer;
+  updateContadorImpressao : TosSQLQuery;
   encontrou: boolean;
   showCancelDialog: boolean;
   config: TConfigImpressao;
@@ -321,6 +322,17 @@ begin
     end
     else
       Report.Print;
+    updateContadorImpressao := MainData.GetQuery;
+    try
+      updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
+                              ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
+                              ' DATAULTIMAIMPRESSAO = '
+                              + QuotedStr(FormatDateTime('dd.mm.yyyy', MainData.GetServerDatetime)) +
+                              ' WHERE ITEM_ID = ' + IntToStr(idTemplate);
+      updateContadorImpressao.ExecSQL;
+    finally
+      acCustomSQLMainData.FreeQuery(updateContadorImpressao);
+    end;
   finally
     FreeAndNil(stream);
   end;
