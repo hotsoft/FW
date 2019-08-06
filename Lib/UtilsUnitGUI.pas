@@ -219,9 +219,7 @@ end;
 
 procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro: string);
 var
-  FBat, FComando: TextFile;
-  diretorio: string;
-  cmm, printerName: AnsiString;
+  cmm: AnsiString;
   I: Integer;
   vPrinter : TPrinter;
 begin
@@ -252,7 +250,7 @@ begin
 
         //É necessário inicializar o comando com "N" para limpar as configurações da impressora caso ela tenha imprimido algum outro padrão de etiqueta.
         //é necessário que haja 2 "N" logo no começo do comando;
-        cmm := 'N' + #10 + Trim(comando)+#10 + 'N' + #10;
+        cmm := AnsiString('N' + #10 + Trim(comando)+#10 + 'N' + #10);
         StartDocPrinter(vPrinter.Handle, 1, @cmm);
         vPrinter.BeginDoc;
 
