@@ -91,7 +91,8 @@ type
     property forcePreview: Boolean read FForcePreview write setForcePreview;
     property PDFStream: TMemoryStream read FPDFStream write FPDFStream;
     property PrintToStream: Boolean read FPrintToStream write FPrintToStream;
-    procedure Print(const PID: integer); virtual;
+    procedure Print(const PID: integer); overload; virtual;
+    procedure Print(PID, reportId: integer); overload; virtual;
     function getPipeline(name: String): TppDataPipeline;
     function findComponentUserName(name: String): TComponent;
     procedure SetOutputFile(FileName: string; Format: TReportFormat = rfPrinter);
@@ -118,6 +119,11 @@ uses acCustomSQLMainDataUn, osReportUtils, acCustomRelatorioDataUn, Dialogs,
 procedure TacCustomReport.linkEvents;
 begin
 //
+end;
+
+procedure TacCustomReport.Print(PID, reportId: integer);
+begin
+  Print(PID);
 end;
 
 {-------------------------------------------------------------------------
@@ -152,6 +158,7 @@ begin
   config.preview := true;
   try
     encontrou := false;
+    idTemplate := 0;
     if acCustomRelatorioData.isChangeable(ClassName) then
     begin
       idTemplate := acCustomRelatorioData.getTemplateConfigForUser(ClassName, config);
@@ -342,14 +349,11 @@ end;
 
 function TacCustomReport.getPipeline(name: String): TppDataPipeline;
 var
-  aSQL: TDaSQL;
   lDataModule: TdaDataModule;
   liIndex, i: Integer;
   lDataView: TdaDataView;
   nomePipeline: String;
 begin
-  aSQL := nil;
-
   lDataModule := daGetDataModule(Report.MainReport);
 
   if (lDataModule <> nil) then
@@ -386,8 +390,6 @@ var
 begin
   if template.Size <> 0 then
     report.Template.LoadFromStream(template);
-
-  aSQL := nil;
 
   lDataModule := daGetDataModule(Report.MainReport);
 
@@ -437,8 +439,6 @@ begin
 end;
 
 function TacCustomReport.replaceId(str: string; id:integer): string;
-var
-  pos1, pos2, pos3: integer;
 begin
   result := StringReplace(str,'\id',IntToStr(id),[rfReplaceAll, rfIgnoreCase]);
 end;

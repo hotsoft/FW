@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, db, osCIC, richedit, RegExpr;
+  Dialogs, StdCtrls, db, osCIC, richedit, RegExpr, System.Types;
 
 type
   TErrorType = (etError, etCritical, etWarning);

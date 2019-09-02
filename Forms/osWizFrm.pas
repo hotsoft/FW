@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, ComCtrls, osUtils, ActnList, osActionList, osFrm,
-  System.Actions;
+  System.Actions, System.UITypes;
 
 type
   TosWizForm = class(TosForm)

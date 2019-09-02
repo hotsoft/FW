@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, osSQLDataSet, acCustomSQLMainDataUn, Controls, Dialogs,
-    osCustomLoginFormUn;
+    osCustomLoginFormUn, System.UITypes;
 
 type
   TLoginUsuario = class

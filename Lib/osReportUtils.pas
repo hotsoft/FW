@@ -96,8 +96,6 @@ end;
 function getTemplateLaudoRascunho(name: string; stream: TMemoryStream; var config: TConfigImpressao): boolean;
 var
   query: TosSQLQuery;
-  report: string;
-  ss: TStringStream;
   vIdRelatorio: Integer;
 begin
   name := UpperCase(Name);
@@ -477,12 +475,10 @@ function TIdade.getAnos: integer;
 var
   dia, mes, ano: word;
   diaAtual, mesAtual, anoAtual: word;
-  dataFinal: TDateTime;
   numAnos: integer;
 begin
   DecodeDate(dataReferencia, anoAtual, mesAtual, diaAtual);
   DecodeDate(dataReferencia-Fdias, ano, mes, dia);
-  dataFinal := dataReferencia;
 
   //calcular o número de anos que a pessoa possui
   numAnos := anoAtual - ano;
@@ -499,12 +495,10 @@ function TIdade.getMeses: integer;
 var
   dia, mes, ano: word;
   diaAtual, mesAtual, anoAtual: word;
-  dataFinal: TDateTime;
   numMeses: integer;
 begin
   DecodeDate(dataReferencia, anoAtual, mesAtual, diaAtual);
   DecodeDate(dataReferencia-Fdias, ano, mes, dia);
-  dataFinal := dataReferencia;
 
   //calcular o número de meses que a pessoa possui
   numMeses := getAnos*12;
@@ -535,7 +529,6 @@ var
   Total_dias: Real;
   Count: Integer;
 begin
-  Total_dias := Fdias;
   Count:= 1;
   DataNascimento:= FdataReferencia - Fdias;
 

@@ -16,7 +16,8 @@ uses
   ppModule, daDataModule, FMTBcd, osCustomDataSetProvider,
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
-  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons;
+  acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons,
+  System.UITypes;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -204,7 +205,6 @@ type
     FActionDblClick: TAction;
     FSelectedList: TStringListExt;
     FSelectionField: TField;
-    lastValidSentence: string;
 
     // Field que está sendo usado para ordenação
     SortField: TField;
@@ -295,7 +295,6 @@ var
   sName : string;
   i : integer;
   qry: TosSQLQuery;
-  vViews: variant;
 begin
   inherited;
   FIndiceMenu := 0;
@@ -510,8 +509,7 @@ begin
   ComponentNotFound := False;
   ComponentIsNotAction := False;
 
-  if FilterDataset.active then
-    DataSetIsEmpty := FilterDataset.RecordCount = 0;
+  DataSetIsEmpty := (FilterDataset.active) and (FilterDataset.RecordCount = 0);
 
   ActionDataSet.Open;
 
@@ -1133,7 +1131,6 @@ var
   cds: TosClientDataSet;
   ErrorCount: integer;
   LoginCorrect: boolean;
-  vViews: variant;
 begin
   FUserName := GetSystemUserName;
 
@@ -1269,8 +1266,6 @@ begin
 end;
 
 procedure TosCustomMainForm.Logout;
-var
-  i: integer;
 begin
   FilterDataSet.Close;
 
@@ -1316,6 +1311,7 @@ var
   noPai, no: TTreeNode;
 begin
   sDomain := '';
+  noPai := nil;
   for i:=0 to Manager.Resources.Count - 1 do
   begin
     with Manager.Resources[i] do
@@ -1325,6 +1321,7 @@ begin
         sDomain := DomainName;
         noPai := TreeView1.Items.Add(nil, sDomain);
       end;
+
       // Cria o botão
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;
@@ -1840,7 +1837,6 @@ procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
   Field: TField; State: TGridDrawState; Highlight: Boolean; AFont: TFont;
   ABrush: TBrush);
 var
-  dummy: integer;
   id: integer;
 begin
   inherited;
