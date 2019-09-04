@@ -791,7 +791,7 @@ var
  AppHandle : THandle;
 begin
   Result := False;
-
+  dwResult := nil;
   try
     AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
     if AppHandle <> 0 then
