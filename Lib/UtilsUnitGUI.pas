@@ -55,6 +55,8 @@ function Execute(const aCommando: string; const ShowWindow: boolean; var aProces
 procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function LocalIp: string;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 
 implementation
 
@@ -781,6 +783,57 @@ begin
   end;
 end;
 
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+var
+ dwResult: PDWORD_PTR;
+ ValorRetorno: Longint;
+ AppHandle : THandle;
+begin
+  Result := False;
+
+  try
+    AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+    if AppHandle <> 0 then
+    begin
+      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+      if ValorRetorno > 0 then
+        Result := True
+      else
+        Result := False;
+    end;
+  except
+  end;
+end;
+
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+var
+  ContinueLoop: BOOL;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  try
+    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+    Result := False;
+    while Integer(ContinueLoop) <> 0 do
+    begin
+      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+        UpperCase(ExeFileName))) then
+      begin
+        Result := True;
+        ValidaTravamento(UpperCase(ExeFileName), FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+      end;
+      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
+    end;
+  finally
+    CloseHandle(FSnapshotHandle);
+  end;
+end;
 
 end.
 
