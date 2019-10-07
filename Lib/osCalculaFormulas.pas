@@ -169,7 +169,7 @@ begin
   while Index < Count do
   begin
     // atribui expressao para que o parser processe-a
-    Parser.Expressao := TosFormula(Elementos[Index]).Formula;
+    Parser.Expressao := AnsiString(String(TosFormula(Elementos[Index]).Formula));
     if Parser.Expressao <> '' then
     begin
       // compila a expressao
@@ -273,7 +273,7 @@ end;
 
 function TosFormula.Processa(Dependencias: TListaElementos): Boolean;
 begin
-  FParser.Expressao := FFormula;
+  FParser.Expressao := AnsiString(String(FFormula));
 
   if not(FParser.Compile) then
     FListaErrosExpr.Assign(FParser.ListaErros);
@@ -309,7 +309,7 @@ var
   VariavelAdj : TosFormulaVariavel;
 begin
   // avaliacao da expressao
-  FParser.Expressao := FFormula;
+  FParser.Expressao := AnsiString(String(FFormula));
 
   if not(FParser.Compile) then
     FListaErrosExpr.Assign(FParser.ListaErros);

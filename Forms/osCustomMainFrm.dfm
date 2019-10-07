@@ -25,6 +25,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 268
+      Height = 22
       AutoSize = True
       ButtonHeight = 32
       ButtonWidth = 32

@@ -212,7 +212,7 @@ begin
     begin
       if not(cdsEditDetail.State in [dsEdit, dsInsert]) then
         cdsEditDetail.Edit;
-      cdsEditDetailQueryText.Value := getSQLFromTemplate(stream);
+      cdsEditDetailQueryText.Value := AnsiString(getSQLFromTemplate(stream));
     end;
 
   finally

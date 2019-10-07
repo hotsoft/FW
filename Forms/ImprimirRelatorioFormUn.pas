@@ -56,7 +56,7 @@ var
   templateName, FilterName: string;
   srchForm: TCustomSearchForm;
   config: TConfigImpressao;
-  sql, extensao: string;
+  extensao: string;
   FTextFileName: string;
   where, order: string; 
 begin

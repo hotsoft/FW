@@ -343,8 +343,6 @@ end;
 procedure TosMaquina.ProcessaInstrucao(bytecode: Integer; Parametro: String);
 var
   ValorVar: ^Double;
-  ValorString: PAnsiChar;
-  stringVar: string;
   doubleAux: Double;
   Variavel: TVariavelMaquina;
 begin

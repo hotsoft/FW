@@ -50,15 +50,13 @@ function GetProcessList: string;
 function GetSystemInfo: string;
 function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid: PDWORD_PTR;
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 procedure ExecuteAndWait(const aCommando: string);
 function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
 procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
-function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 function LocalIp: string;
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 
 implementation
 
@@ -223,9 +221,7 @@ end;
 
 procedure ImprimirImpressoraTermica(const comando, impressora: String; var erro: string);
 var
-  FBat, FComando: TextFile;
-  diretorio: string;
-  cmm, printerName: AnsiString;
+  cmm: AnsiString;
   I: Integer;
   vPrinter : TPrinter;
 begin
@@ -256,7 +252,7 @@ begin
 
         //É necessário inicializar o comando com "N" para limpar as configurações da impressora caso ela tenha imprimido algum outro padrão de etiqueta.
         //é necessário que haja 2 "N" logo no começo do comando;
-        cmm := 'N' + #10 + Trim(comando)+#10 + 'N' + #10;
+        cmm := AnsiString('N' + #10 + Trim(comando)+#10 + 'N' + #10);
         StartDocPrinter(vPrinter.Handle, 1, @cmm);
         vPrinter.BeginDoc;
 
@@ -753,30 +749,6 @@ begin
   //Result := GetSystemDecimal;
 end;
 
-function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
-  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
-var
- dwResult: PDWORD_PTR;
- ValorRetorno: Longint;
- AppHandle : THandle;
-begin
-  Result := False;
-
-  try
-    AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
-    if AppHandle <> 0 then
-    begin
-      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
-       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
-      if ValorRetorno > 0 then
-        Result := True
-      else
-        Result := False;
-    end;
-  except
-  end;
-end;
-
 procedure setHabilitaComboSearch(cbo: TosComboSearch; enabled: boolean);
 begin
   if enabled then
@@ -792,6 +764,47 @@ begin
     cbo.showButton := false;
   end;
   cbo.invalidate;
+end;
+
+function LocalIp: string;
+var
+  IPW: TIdIPWatch;
+begin
+  Result := '127.0.0.1';
+
+  IpW := TIdIPWatch.Create(Application);
+  try
+    IpW.Active := True;
+    if IpW.LocalIP <> EmptyStr then
+      Result := FormatIP(IpW.LocalIP);
+  finally
+    if Assigned(IpW) then
+      FreeAndNil(IpW);
+  end;
+end;
+
+function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR;
+  var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
+var
+ dwResult: PDWORD_PTR;
+ ValorRetorno: Longint;
+ AppHandle : THandle;
+begin
+  Result := False;
+  dwResult := nil;
+  try
+    AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
+    if AppHandle <> 0 then
+    begin
+      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+      if ValorRetorno > 0 then
+        Result := True
+      else
+        Result := False;
+    end;
+  except
+  end;
 end;
 
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR;
@@ -821,24 +834,6 @@ begin
     CloseHandle(FSnapshotHandle);
   end;
 end;
-
-function LocalIp: string;
-var
-  IPW: TIdIPWatch;
-begin
-  Result := '127.0.0.1';
-
-  IpW := TIdIPWatch.Create(Application);
-  try
-    IpW.Active := True;
-    if IpW.LocalIP <> EmptyStr then
-      Result := FormatIP(IpW.LocalIP);
-  finally
-    if Assigned(IpW) then
-      FreeAndNil(IpW);
-  end;
-end;
-
 
 end.
 

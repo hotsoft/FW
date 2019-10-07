@@ -9,7 +9,7 @@ uses
   ToolWin, ExtCtrls, osActionList, osClientDataset, provider, osUtils,
   Grids, Wwdbigrd, Wwdbgrid, wwdbdatetimepicker, wwrcdpnl, Mask, wwdbedit, wwriched,
   osComboSearch, osDBDualTree, wwDBSpin, wwDBNavigator, wwDBcomb, wwDBlook, DBGrids,
-  System.Actions;
+  System.Actions, System.UITypes;
 
 type
   TFormMode      = (fmEdit, fmInsert, fmView, fmDelete);

@@ -71,7 +71,7 @@ type
     property Profile: string read FProfile;
 
     constructor Create(AOwner: TComponent); overload; override;
-    constructor Create(AOwner: TComponent; BD: String); overload;
+    constructor CreateOwn(AOwner: TComponent; BD: String); overload;
     destructor Destroy; override;
     function GetNetUserName: string;
 
@@ -147,7 +147,7 @@ begin
       begin
         Application.ProcessMessages;
 
-        RefreshTable := FindRefreshTable(Trim(NomeTabelaField.Value));
+        RefreshTable := FindRefreshTable(Trim(String(NomeTabelaField.Value)));
         if (RefreshTable <> nil) then
         begin
           if RefreshTable.FVersion < VersaoField.Value then
@@ -186,7 +186,7 @@ end;
  Observações>
  Atualização>
  ------------------------------------------------------------------------}
-constructor TacCustomSQLMainData.Create(AOwner: TComponent; bd: string);
+constructor TacCustomSQLMainData.CreateOwn(AOwner: TComponent; bd: string);
 begin
   Self.Create(AOwner);
   self.BD := bd;
@@ -276,7 +276,7 @@ begin
         while not Query.Eof do
         begin
           RefreshTable := TRefreshTable.Create;
-          RefreshTable.FTableName := Trim(NomeTabelaField.Value);
+          RefreshTable.FTableName := Trim(String(NomeTabelaField.Value));
           RefreshTable.FVersion := VersaoField.Value;
           RefreshTable.FDataSet := nil;
 
