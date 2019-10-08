@@ -605,6 +605,7 @@ var
   tipoIdade: String;
   original: integer;
 begin
+  result := 0;
   idade := trim(idade);
   tipoIdade := idade[length(idade)];
   original := StrToInt(copy(idade, 1, length(idade)-1));
