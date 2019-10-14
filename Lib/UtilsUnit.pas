@@ -132,6 +132,7 @@ function MappJsonToDict(const aJsonString: string) : TJsonArray;
 function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringList;
 procedure SaveToFile(const aFilename, aContent: string);
 function LoadFromFile(const aFileName: string): string;
+Function FileIsOpen(const FileName : TFileName) : Boolean;
 
 
 implementation
@@ -2101,6 +2102,17 @@ begin
     finally
       _SStream.Free;
     end;
+  end;
+end;
+
+Function FileIsOpen(const FileName : TFileName) : Boolean;
+begin
+  Result := False;
+  try
+    With TFileStream.Create( FileName, fmOpenread or fmShareExclusive)
+    do Free;
+  except
+    Result := True;
   end;
 end;
 
