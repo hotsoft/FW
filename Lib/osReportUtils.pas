@@ -604,15 +604,17 @@ function getIdadeDias(idade: string): integer;
 var
   tipoIdade: String;
   original: integer;
+  data: TDateTime;
 begin
   result := 0;
   idade := trim(idade);
   tipoIdade := idade[length(idade)];
   original := StrToInt(copy(idade, 1, length(idade)-1));
+  data := acCustomSQLMainData.GetServerDate;
   case tipoIdade[1] of
-    'd': result := DaysBetween(acCustomSQLMainData.GetServerDate, IncDay(Now, original) * -1);
-    'm': result := DaysBetween(acCustomSQLMainData.GetServerDate, INCMONTH(Now, original) * -1);
-    'a': result := DaysBetween(acCustomSQLMainData.GetServerDate, IncYear(Now, original) * -1);
+    'd': result := DaysBetween(data, IncDay(data, original * -1));
+    'm': result := DaysBetween(data, INCMONTH(data, original * -1));
+    'a': result := DaysBetween(data, IncYear(data, original * -1));
   end;
 end;
 
