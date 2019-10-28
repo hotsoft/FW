@@ -133,7 +133,7 @@ function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringLis
 procedure SaveToFile(const aFilename, aContent: string);
 function LoadFromFile(const aFileName: string): string;
 Function FileIsOpen(const FileName : TFileName) : Boolean;
-procedure UpdateProxy(var dir: string);
+procedure UpdateProxy(dir: string);
 
 
 implementation
@@ -2117,7 +2117,7 @@ begin
   end;
 end;
 
-procedure UpdateProxy(var dir: string);
+procedure UpdateProxy(dir: string);
 var
   configFileName, porta, proxy: string;
   configFile: TStringList;
