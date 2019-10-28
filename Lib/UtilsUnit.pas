@@ -133,6 +133,7 @@ function GetListaCamposTabela(conn: TSQLConnection; pTabela: String): TStringLis
 procedure SaveToFile(const aFilename, aContent: string);
 function LoadFromFile(const aFileName: string): string;
 Function FileIsOpen(const FileName : TFileName) : Boolean;
+procedure UpdateProxy(var dir: string);
 
 
 implementation
@@ -2113,6 +2114,55 @@ begin
     do Free;
   except
     Result := True;
+  end;
+end;
+
+procedure UpdateProxy(var dir: string);
+var
+  configFileName, porta, proxy: string;
+  configFile: TStringList;
+  i: integer;
+begin
+  proxy := ParametroSistemaData.MasterClientDatasetENDERECOPROXY.asString;
+  porta := ParametroSistemaData.MasterClientDatasetPORTAPROXY.asString;
+
+  if (proxy <> '') and (porta <> '') then
+  begin
+    configFile := TStringList.Create;
+    configFileName := dir + '\prefs.js';
+
+    configFile.LoadFromFile(configFileName);
+    i := 0;
+    while (i < configFile.Count) do
+    begin
+      if (pos('user_pref("network.cookie.prefsMigrated', configFile.strings[i]) > 0)
+      or (pos('user_pref("network.predictor.cleaned-up', configFile.strings[i]) > 0)
+      or (pos('user_pref("network.proxy', configFile.strings[i]) > 0) then
+        configFile.Delete(i)
+      else
+        Inc(i);
+    end;
+
+    configFile.add('user_pref("network.cookie.prefsMigrated", true);');
+    configFile.add('user_pref("network.predictor.cleaned-up", true);');
+    configFile.add('user_pref("network.proxy.backup.ftp", "");');
+    configFile.add('user_pref("network.proxy.backup.ftp_port", 0);');
+    configFile.add('user_pref("network.proxy.backup.socks", "");');
+    configFile.add('user_pref("network.proxy.backup.socks_port", 0);');
+    configFile.add('user_pref("network.proxy.backup.ssl", "");');
+    configFile.add('user_pref("network.proxy.backup.ssl_port", 0);');
+    configFile.add('user_pref("network.proxy.ftp", "' + proxy + '");');
+    configFile.add('user_pref("network.proxy.ftp_port", ' + porta + ');');
+    configFile.add('user_pref("network.proxy.http", "' + proxy + '");');
+    configFile.add('user_pref("network.proxy.http_port", ' + porta + ');');
+    configFile.add('user_pref("network.proxy.share_proxy_settings", true);');
+    configFile.add('user_pref("network.proxy.socks", "' + proxy + '");');
+    configFile.add('user_pref("network.proxy.socks_port", ' + porta + ');');
+    configFile.add('user_pref("network.proxy.ssl", "' + proxy + '");');
+    configFile.add('user_pref("network.proxy.ssl_port", ' + porta + ');');
+    configFile.add('user_pref("network.proxy.type", 1);');
+
+    configFile.SaveToFile(configFileName);
   end;
 end;
 
