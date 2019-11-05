@@ -72,6 +72,7 @@ type
     procedure SetExternalCDS(const Value: TosClientDataset);
     procedure SetDatamodule(const Value: TDatamodule);
     function GetKeyValues: Variant;
+
   protected
     FMasterDataset: TosClientDataset;
     FKeyValues: variant;
@@ -92,6 +93,7 @@ type
     constructor Create(AOwner: TComponent); override;
     function Insert: boolean; virtual;
     function Edit(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
+    function EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet): boolean;
     function View(const KeyFields: string; const KeyValues: Variant; PClose: boolean = True; deleting: boolean = false): boolean; virtual;
     function Delete(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
     property CurrentKeyValues: Variant read GetKeyValues;
@@ -128,11 +130,41 @@ begin
 
     OnCheckActionsAction.Execute;
     Screen.Cursor := crDefault;
+
     ShowModal;
   finally
     Screen.Cursor := crDefault;
     FMasterDataset.Close;
     Result := (ModalResult = mrOK);
+  end;
+end;
+
+function TosCustomEditForm.EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet): boolean;
+begin
+  try
+    Screen.Cursor := crHourglass;
+    FFormMode := fmEdit;
+    CheckMasterDataset;
+
+    ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
+    FMasterDataset.close;
+    FMasterDataset.Open;
+
+    OnCheckActionsAction.Execute;
+    Screen.Cursor := crDefault;
+
+    FTabSheet := pTabSheet;
+    self.Parent := pTabSheet;
+    self.Align := alClient;
+    self.BorderStyle := bsNone;
+    self.Visible := true;
+    pTabSheet.Caption := self.Caption;
+
+    //ShowModal;
+  finally
+    //Screen.Cursor := crDefault;
+    //FMasterDataset.Close;
+    //Result := (ModalResult = mrOK);
   end;
 end;
 
@@ -305,6 +337,7 @@ procedure TosCustomEditForm.CloseActionExecute(Sender: TObject);
 begin
   inherited;
   Close;
+  FreeAndNil(FTabSheet);
 end;
 
 procedure TosCustomEditForm.SaveNewActionExecute(Sender: TObject);

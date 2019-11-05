@@ -33,6 +33,7 @@ type
     procedure btnCancelarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FMovingForward: boolean;
     FCompleteAction: boolean;
@@ -41,6 +42,7 @@ type
   protected
     procedure UpdatePage; virtual;
   public
+    FTabSheet: TTabSheet;
     procedure WizardConclusion; virtual;
     procedure NextPage; virtual;
     procedure PreviousPage; virtual;
@@ -207,6 +209,12 @@ begin
     while (not Pages[Result].TabVisible) and (Result > 0) do
       Dec(Result);
   end;
+end;
+
+procedure TosWizForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  inherited;
+  FreeAndNil(FTabSheet);
 end;
 
 procedure TosWizForm.FormShow(Sender: TObject);

@@ -12,6 +12,7 @@ object osWizForm: TosWizForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = True
+  OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
     496

@@ -3,7 +3,7 @@ unit osFrm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Vcl.ComCtrls,
   ActnList, osUtils, ImgList, osActionList, System.Generics.Collections, System.Actions {$IFDEF VER320} , System.ImageList {$ENDIF};
 
 type
@@ -23,6 +23,7 @@ type
     FOperacoes: TOperacoes;
     procedure SetOperacoes(const Value: TOperacoes);
   protected
+    FTabSheet: TTabSheet;
     FWhiteList: TWhiteList;
     procedure DisableWinControlComponents(aWinControl: TWinControl);
     procedure EnableWinControlComponents(aWinControl: TWinControl);
@@ -40,7 +41,7 @@ var
 
 implementation
 
-uses TypInfo, Vcl.ComCtrls, Vcl.Menus;
+uses TypInfo, Vcl.Menus;
 
 {$R *.DFM}
 

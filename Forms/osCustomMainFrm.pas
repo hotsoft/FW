@@ -76,7 +76,6 @@ type
     BarLargeImages: TImageList;
     BarSmallImages: TImageList;
     Panel2: TPanel;
-    Grid: TwwDBGrid;
     ResourcePanel: TPanel;
     AdvanceAction: TAction;
     RetrocedeAction: TAction;
@@ -143,6 +142,9 @@ type
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
     PrintAllToolButton: TW7ToolButton;
+    AbasPrincipalTS: TPageControl;
+    TabSheet1: TTabSheet;
+    Grid: TwwDBGrid;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -205,6 +207,7 @@ type
     FActionDblClick: TAction;
     FSelectedList: TStringListExt;
     FSelectionField: TField;
+    tabSheet : TTabSheet;
 
     // Field que está sendo usado para ordenação
     SortField: TField;
@@ -282,7 +285,7 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm;
 
 {$R *.DFM}
 
@@ -365,7 +368,7 @@ var
   Form: TosCustomEditForm;
 begin
   inherited;
-  Form := FCurrentEditForm;
+  Form := CreateCurrentEditForm;
   if Assigned(Form) then
   begin
     if not Form.Showing then
@@ -376,8 +379,13 @@ begin
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
       if assigned(Self.FOnEditForm) then
         Self.FOnEditForm(Form);
-      Form.Edit('ID', iID);
-      if Form.IsModified then
+
+      tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      tabSheet.PageControl := AbasPrincipalTS;
+
+      Form.EditAba('ID', iID, TabSheet);
+      AbasPrincipalTS.ActivePage := tabSheet;
+      {if Form.IsModified then
       begin
         FModifiedList.Add(FilterDatasource.DataSet.fieldByName('id').AsString);
         if false then //TODO: trocar pela lógica de forçar a reexecução de filtro
@@ -385,7 +393,7 @@ begin
           ExecLastFilter;
           FilterDataset.Locate('ID', iID, []);
         end;
-      end;
+      end;}
     end;
   end;
 end;
@@ -757,6 +765,9 @@ begin
     // Limpa o Template corrente
     FCurrentTemplate.Clear;
 
+    tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+    tabSheet.PageControl := AbasPrincipalTS;
+
     if FCurrentResource.ResType = rtReport then
     begin
       getReportByResource(FCurrentResource.ResClassName, FCurrentTemplate);
@@ -781,7 +792,12 @@ begin
       CheckActionsExecute(self);
       if FCurrentForm is TosCustomEditForm then
         (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
-      FCurrentForm.ShowModal;
+     // FCurrentForm.ShowModal;
+      FCurrentForm.Parent := tabSheet;
+      FCurrentForm.Align := alClient;
+      FCurrentForm.BorderStyle := bsNone;
+      FCurrentForm.Visible := true;
+      tabSheet.Caption := FCurrentForm.Caption;
     finally
       Screen.Cursor := crDefault;
     end;
@@ -805,7 +821,7 @@ begin
   if (Assigned(FCurrentResource)) and
      (Assigned(FCurrentResource.ResClass)) and
      (FCurrentResource.ResType = rtEdit) then
-      Result := TosCustomEditFormClass(FCurrentResource.ResClass).Create(Self)
+      Result := TosCustomEditFormClass(FCurrentResource.ResClass).Create(self)
   else
     Result := nil;
 //    raise Exception.CreateFmt('Form %s não registrado', [FCurrentResource.ResClassName]);
@@ -960,7 +976,7 @@ begin
   if (FCurrentResource.ResType = rtOther) then
   begin
     x := TosFormClass(FCurrentResource.ResClass);
-    Result := x.Create(Self);
+    Result := x.Create(self);
 //    Result := TosFormClass(FCurrentResource.ResClass).Create(Self)
   end
   else
@@ -1763,8 +1779,8 @@ begin
   end;
 
   NewResource := TosAppResource(Manager.Resources.FindItemID(node.SelectedIndex));
-  if FCurrentResource <> NewResource then
-  begin
+  //if FCurrentResource <> NewResource then
+  //begin
     FCurrentResource := NewResource;
     Manager.currentResource := FCurrentResource;
     // Libera o datamodule associado
@@ -1772,10 +1788,10 @@ begin
     FCurrentDatamodule := CreateCurrentDatamodule;
 
     // Libera o form corrente
-    if Assigned(FCurrentEditForm) then
-      FreeAndNil(FCurrentEditForm);
-    if Assigned(FCurrentForm) then
-      FreeAndNil(FCurrentForm);
+  //  if Assigned(FCurrentEditForm) then
+  //    FreeAndNil(FCurrentEditForm);
+  //  if Assigned(FCurrentForm) then
+  //    FreeAndNil(FCurrentForm);
 
     // Limpa o Template corrente
     FCurrentTemplate.Clear;
@@ -1788,14 +1804,20 @@ begin
     begin
       FActionDblClick := EditAction;
       FCurrentEditForm := CreateCurrentEditForm;
+      FCurrentEditForm.Visible := False;
+      AbasPrincipalTS.ActivePageIndex := 0;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
     else if FCurrentResource.ResType = rtOther then
+    begin
+      //tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      //tabSheet.PageControl := AbasPrincipalTS;
       FCurrentForm := CreateCurrentForm;
+    end;
 
     OnSelectResourceAction.Execute;
-  end;
+ // end;
 
   if FCurrentResource.ResType = rtOther then
   begin
@@ -1804,7 +1826,18 @@ begin
       CheckActionsExecute(self);
       if FCurrentForm is TosCustomEditForm then
         (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
-      FCurrentForm.ShowModal;
+
+
+      if FCurrentForm is TosWizForm then
+        TosWizForm(FCurrentForm).FTabSheet := tabSheet;
+
+        //      FCurrentForm.ShowModal;
+        FCurrentForm.Parent := tabSheet;
+        FCurrentForm.Align := alClient;
+        FCurrentForm.BorderStyle := bsNone;
+        FCurrentForm.Visible := true;
+        tabSheet.Caption := FCurrentForm.Caption;
+        AbasPrincipalTS.ActivePage := tabSheet;
     finally
       Screen.Cursor := crDefault;
     end;

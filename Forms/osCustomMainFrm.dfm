@@ -25,7 +25,6 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 268
-      Height = 22
       AutoSize = True
       ButtonHeight = 32
       ButtonWidth = 32
@@ -198,8 +197,6 @@ inherited osCustomMainForm: TosCustomMainForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 41
-    ExplicitHeight = 585
     object Splitter1: TSplitter
       Left = 165
       Top = 33
@@ -213,7 +210,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Width = 839
       Height = 554
       Align = alClient
-      TabOrder = 2
+      TabOrder = 1
       ExplicitLeft = 185
       ExplicitWidth = 823
       ExplicitHeight = 556
@@ -240,39 +237,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 1
-    end
-    object Grid: TwwDBGrid
-      Left = 83
-      Top = 39
-      Width = 389
-      Height = 283
-      IniAttributes.FileName = 'LabMaster.ini.ini'
-      IniAttributes.Delimiter = ';;'
-      IniAttributes.UnicodeIniFile = False
-      TitleColor = clBtnFace
-      FixedCols = 0
-      ShowHorzScrollBar = True
-      DataSource = FilterDatasource
-      Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgWordWrap]
-      ReadOnly = True
       TabOrder = 0
-      TitleAlignment = taLeftJustify
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'MS Sans Serif'
-      TitleFont.Style = []
-      TitleLines = 1
-      TitleButtons = True
-      OnCalcCellColors = GridCalcCellColors
-      OnTitleButtonClick = GridTitleButtonClick
-      OnDblClick = GridDblClick
-      OnKeyDown = GridKeyDown
-      OnKeyPress = GridKeyPress
-      OnCalcTitleImage = GridCalcTitleImage
-      TitleImageList = ArrowsImageList
-      PaintOptions.AlternatingRowColor = clWhite
     end
     object Panel1: TPanel
       Left = 0
@@ -280,8 +245,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Width = 165
       Height = 554
       Align = alLeft
-      TabOrder = 3
-      ExplicitHeight = 552
+      TabOrder = 2
       object TreeView1: TTreeView
         Left = 1
         Top = 1
@@ -299,7 +263,6 @@ inherited osCustomMainForm: TosCustomMainForm
         TabOrder = 0
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
-        ExplicitHeight = 529
       end
       object EdtPesquisa: TEdit
         Left = 1
@@ -312,7 +275,52 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
-        ExplicitTop = 530
+      end
+    end
+    object AbasPrincipalTS: TPageControl
+      Left = 169
+      Top = 33
+      Width = 839
+      Height = 554
+      ActivePage = TabSheet1
+      Align = alClient
+      TabOrder = 3
+      object TabSheet1: TTabSheet
+        Caption = 'Pesquisa'
+        ExplicitWidth = 281
+        ExplicitHeight = 165
+        object Grid: TwwDBGrid
+          Left = 186
+          Top = 63
+          Width = 389
+          Height = 283
+          IniAttributes.FileName = 'LabMaster.ini.ini'
+          IniAttributes.Delimiter = ';;'
+          IniAttributes.UnicodeIniFile = False
+          TitleColor = clBtnFace
+          FixedCols = 0
+          ShowHorzScrollBar = True
+          DataSource = FilterDatasource
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgWordWrap]
+          ReadOnly = True
+          TabOrder = 0
+          TitleAlignment = taLeftJustify
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'MS Sans Serif'
+          TitleFont.Style = []
+          TitleLines = 1
+          TitleButtons = True
+          OnCalcCellColors = GridCalcCellColors
+          OnTitleButtonClick = GridTitleButtonClick
+          OnDblClick = GridDblClick
+          OnKeyDown = GridKeyDown
+          OnKeyPress = GridKeyPress
+          OnCalcTitleImage = GridCalcTitleImage
+          TitleImageList = ArrowsImageList
+          PaintOptions.AlternatingRowColor = clWhite
+        end
       end
     end
   end
@@ -359,6 +367,8 @@ inherited osCustomMainForm: TosCustomMainForm
       Height = 41
       Align = alTop
       TabOrder = 2
+      ExplicitLeft = -39
+      ExplicitTop = -5
       object spbPreviewPrint: TSpeedButton
         Left = 4
         Top = 5
@@ -1869,7 +1879,7 @@ inherited osCustomMainForm: TosCustomMainForm
     DataPipeline = ppDBPipeline
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Custom'
+    PrinterSetup.PaperName = 'A4'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -1878,7 +1888,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 297000
     PrinterSetup.mmPaperWidth = 210000
-    PrinterSetup.PaperSize = 256
+    PrinterSetup.PaperSize = 9
     Template.Format = ftASCII
     Units = utMillimeters
     ArchiveFileName = '($MyDocuments)\ReportArchive.raf'
@@ -2043,7 +2053,7 @@ inherited osCustomMainForm: TosCustomMainForm
     AutoStop = False
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Custom'
+    PrinterSetup.PaperName = 'Carta'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -2052,7 +2062,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 279401
     PrinterSetup.mmPaperWidth = 215900
-    PrinterSetup.PaperSize = 256
+    PrinterSetup.PaperSize = 1
     Template.DatabaseSettings.DataPipeline = plItem
     Template.DatabaseSettings.NameField = 'Name'
     Template.DatabaseSettings.TemplateField = 'Template'
