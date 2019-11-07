@@ -9,7 +9,7 @@ uses
   ToolWin, ExtCtrls, osActionList, osClientDataset, provider, osUtils,
   Grids, Wwdbigrd, Wwdbgrid, wwdbdatetimepicker, wwrcdpnl, Mask, wwdbedit, wwriched,
   osComboSearch, osDBDualTree, wwDBSpin, wwDBNavigator, wwDBcomb, wwDBlook, DBGrids,
-  System.Actions, System.UITypes;
+  System.Actions, System.UITypes, AdvSmoothMegaMenu;
 
 type
   TFormMode      = (fmEdit, fmInsert, fmView, fmDelete);
@@ -52,6 +52,7 @@ type
     ExcluirButton: TSpeedButton;
     FecharButton: TSpeedButton;
     PararButton: TSpeedButton;
+    AdvSmoothMegaMenu1: TAdvSmoothMegaMenu;
     procedure FormShow(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure SaveCloseActionExecute(Sender: TObject);
