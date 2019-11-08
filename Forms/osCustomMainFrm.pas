@@ -17,7 +17,7 @@ uses
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
   acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons,
-  System.UITypes;
+  System.UITypes, AdvSmoothMegaMenu;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -145,6 +145,7 @@ type
     AbasPrincipalTS: TPageControl;
     TabSheet1: TTabSheet;
     Grid: TwwDBGrid;
+    AdvSmoothMegaMenu: TAdvSmoothMegaMenu;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -242,6 +243,7 @@ type
 
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
+    procedure clickMenu(Sender: TObject);
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -285,7 +287,7 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm, GDIPMenu;
 
 {$R *.DFM}
 
@@ -1022,7 +1024,7 @@ end;
 
 procedure TosCustomMainForm.PesquisaMenu(pOrigem: Integer; pIndice : Integer);
 var
-  i,vTamanho: integer;
+  i, j,vTamanho: integer;
   vNo: ttreenode;
 begin
   vTamanho := length(EdtPesquisa.text);
@@ -1030,7 +1032,7 @@ begin
   begin
     for i := pIndice to TreeView1.Items.Count-1 do
     begin
-      if Pos(UpperCase(EdtPesquisa.text), UpperCase(TreeView1.Items[i].Text)) > 0 then      
+      if Pos(UpperCase(EdtPesquisa.text), UpperCase(TreeView1.Items[i].Text)) > 0 then
       begin
         vNo := TreeView1.Items[i];
         TreeView1.Select(vNo);
@@ -1325,20 +1327,34 @@ var
   i: integer;
   sDomain: string;
   noPai, no: TTreeNode;
+  CountNoPai: Integer;
 begin
   sDomain := '';
   noPai := nil;
+  AdvSmoothMegaMenu.MenuItems.Clear;
+  CountNoPai := -1;
   for i:=0 to Manager.Resources.Count - 1 do
   begin
     with Manager.Resources[i] do
     begin
       if DomainName <> sDomain then
       begin
+        inc(CountNoPai);
         sDomain := DomainName;
         noPai := TreeView1.Items.Add(nil, sDomain);
+        AdvSmoothMegaMenu.MenuItems.Add;
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].Caption := '<b>'+sDomain+'</b>';
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.TearOff := False;
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].CaptionLocation := mlCenterLeft;
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.DropDownLocation := ddRightCenterBottom;
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections.Add;
       end;
 
       // Cria o botão
+      AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Add.Text := name;
+      AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].Tag := Manager.Resources[i].ID;
+      AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].OnClick := clickMenu;
+
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;
       no.SelectedIndex := Manager.Resources[i].ID;
@@ -1761,6 +1777,78 @@ begin
   FSuperUserName := 'FWSuperUser';
 
   StatusBar.Panels[2].Text := acCustomSQLMainData.Profile;
+end;
+
+procedure TosCustomMainForm.clickMenu(Sender: TObject);
+var
+  NewResource: TosAppResource;
+begin
+  FNewFilter := true;
+  NewResource := TosAppResource(Manager.Resources.FindItemID(TGDIPMenuSectionItem(Sender).Tag));
+  //if FCurrentResource <> NewResource then
+  //begin
+    FCurrentResource := NewResource;
+    Manager.currentResource := FCurrentResource;
+    // Libera o datamodule associado
+    FCurrentDatamodule.Free;
+    FCurrentDatamodule := CreateCurrentDatamodule;
+
+    // Libera o form corrente
+  //  if Assigned(FCurrentEditForm) then
+  //    FreeAndNil(FCurrentEditForm);
+  //  if Assigned(FCurrentForm) then
+  //    FreeAndNil(FCurrentForm);
+
+    // Limpa o Template corrente
+    FCurrentTemplate.Clear;
+
+    if FCurrentResource.ResType = rtReport then
+    begin
+      getReportByResource(FCurrentResource.Name, FCurrentTemplate);
+    end
+    else if FCurrentResource.ResType = rtEdit then
+    begin
+      FActionDblClick := EditAction;
+      FCurrentEditForm := CreateCurrentEditForm;
+      FCurrentEditForm.Visible := False;
+      AbasPrincipalTS.ActivePageIndex := 0;
+      if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
+        FCurrentEditForm.Datamodule := FCurrentDatamodule;
+    end
+    else if FCurrentResource.ResType = rtOther then
+    begin
+      //tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      //tabSheet.PageControl := AbasPrincipalTS;
+      FCurrentForm := CreateCurrentForm;
+    end;
+
+    OnSelectResourceAction.Execute;
+ // end;
+
+  if FCurrentResource.ResType = rtOther then
+  begin
+    Screen.Cursor := crHourglass;
+    try
+      CheckActionsExecute(self);
+      if FCurrentForm is TosCustomEditForm then
+        (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
+
+
+      if FCurrentForm is TosWizForm then
+        TosWizForm(FCurrentForm).FTabSheet := tabSheet;
+
+        //      FCurrentForm.ShowModal;
+        FCurrentForm.Parent := tabSheet;
+        FCurrentForm.Align := alClient;
+        FCurrentForm.BorderStyle := bsNone;
+        FCurrentForm.Visible := true;
+        tabSheet.Caption := FCurrentForm.Caption;
+        AbasPrincipalTS.ActivePage := tabSheet;
+    finally
+      Screen.Cursor := crDefault;
+    end;
+  end;
+  PrintAction.Enabled := (FCurrentResource.ReportClassName <> '');
 end;
 
 
