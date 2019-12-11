@@ -603,18 +603,19 @@ end;
 function getIdadeDias(idade: string): integer;
 var
   tipoIdade: String;
-  original, fatorMult: integer;
+  original: integer;
+  data: TDateTime;
 begin
+  result := 0;
   idade := trim(idade);
   tipoIdade := idade[length(idade)];
-  fatorMult := 1;
-  case tipoIdade[1] of
-    'd': fatorMult := 1;
-    'm': fatorMult := 30;
-    'a': fatorMult := 365;
-  end;
   original := StrToInt(copy(idade, 1, length(idade)-1));
-  result := original * fatorMult;
+  data := acCustomSQLMainData.GetServerDate;
+  case tipoIdade[1] of
+    'd': result := DaysBetween(data, IncDay(data, original * -1));
+    'm': result := DaysBetween(data, INCMONTH(data, original * -1));
+    'a': result := DaysBetween(data, IncYear(data, original * -1));
+  end;
 end;
 
 procedure replaceReportSQLAddParam(report: TppReport; template: TMemoryStream;
