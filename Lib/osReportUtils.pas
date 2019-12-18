@@ -28,7 +28,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
   end;
 
 
-  function getIdadeDias(idade: string): integer;
+  function getIdadeDias(idade: string; conn: TSQLConnection = nil): integer;
   function getTemplateByName(name: string; stream: TMemoryStream): boolean;
   function getTemplateByID(id: integer; stream: TMemoryStream): boolean;
   function getTemplateIDByName(name: string): integer;
@@ -600,7 +600,7 @@ begin
     result:= '0 dia'; 
 end;
 
-function getIdadeDias(idade: string): integer;
+function getIdadeDias(idade: string; conn: TSQLConnection = nil): integer;
 var
   tipoIdade: String;
   original: integer;
@@ -610,7 +610,7 @@ begin
   idade := trim(idade);
   tipoIdade := idade[length(idade)];
   original := StrToInt(copy(idade, 1, length(idade)-1));
-  data := acCustomSQLMainData.GetServerDate;
+  data := acCustomSQLMainData.GetServerDate(conn);
   case tipoIdade[1] of
     'd': result := DaysBetween(data, IncDay(data, original * -1));
     'm': result := DaysBetween(data, INCMONTH(data, original * -1));
