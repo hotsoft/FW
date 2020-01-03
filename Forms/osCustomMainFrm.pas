@@ -201,6 +201,7 @@ type
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EdtPesquisaEnter(Sender: TObject);
+    procedure AbasPrincipalTSChange(Sender: TObject);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -244,6 +245,7 @@ type
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
     procedure clickMenu(Sender: TObject);
+    procedure MontarMenu;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -387,6 +389,7 @@ begin
 
       Form.EditAba('ID', iID, TabSheet);
       AbasPrincipalTS.ActivePage := tabSheet;
+      self.MontarMenu;
       {if Form.IsModified then
       begin
         FModifiedList.Add(FilterDatasource.DataSet.fieldByName('id').AsString);
@@ -1622,6 +1625,23 @@ begin
   AdvanceAction.Enabled := enabled;
 end;
 
+procedure TosCustomMainForm.AbasPrincipalTSChange(Sender: TObject);
+begin
+  inherited;
+  self.MontarMenu
+end;
+
+procedure TosCustomMainForm.MontarMenu;
+begin
+  if AbasPrincipalTS.ActivePage = TabSheet1 then
+    self.Menu := MainMenu
+  else
+  begin
+    TForm(AbasPrincipalTS.ActivePage.Controls[0]).Menu := nil;
+    self.Menu := TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') as TMainMenu;
+  end;
+end;
+
 procedure TosCustomMainForm.adjustReportZoom;
 var
   liPercentage: Integer;
@@ -1812,13 +1832,14 @@ begin
       FCurrentEditForm := CreateCurrentEditForm;
       FCurrentEditForm.Visible := False;
       AbasPrincipalTS.ActivePageIndex := 0;
+      self.MontarMenu;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
     else if FCurrentResource.ResType = rtOther then
     begin
-      //tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
-      //tabSheet.PageControl := AbasPrincipalTS;
+      tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      tabSheet.PageControl := AbasPrincipalTS;
       FCurrentForm := CreateCurrentForm;
     end;
 
@@ -1835,7 +1856,10 @@ begin
 
 
       if FCurrentForm is TosWizForm then
+      begin
         TosWizForm(FCurrentForm).FTabSheet := tabSheet;
+        TosWizForm(FCurrentForm).pgcWizard.ActivePageIndex := 0;
+      end;
 
         //      FCurrentForm.ShowModal;
         FCurrentForm.Parent := tabSheet;
@@ -1844,13 +1868,13 @@ begin
         FCurrentForm.Visible := true;
         tabSheet.Caption := FCurrentForm.Caption;
         AbasPrincipalTS.ActivePage := tabSheet;
+        self.MontarMenu;
     finally
       Screen.Cursor := crDefault;
     end;
   end;
   PrintAction.Enabled := (FCurrentResource.ReportClassName <> '');
 end;
-
 
 procedure TosCustomMainForm.TreeView1Change(Sender: TObject;
   Node: TTreeNode);
@@ -1894,6 +1918,7 @@ begin
       FCurrentEditForm := CreateCurrentEditForm;
       FCurrentEditForm.Visible := False;
       AbasPrincipalTS.ActivePageIndex := 0;
+      self.MontarMenu;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
@@ -1926,6 +1951,7 @@ begin
         FCurrentForm.Visible := true;
         tabSheet.Caption := FCurrentForm.Caption;
         AbasPrincipalTS.ActivePage := tabSheet;
+        self.MontarMenu
     finally
       Screen.Cursor := crDefault;
     end;

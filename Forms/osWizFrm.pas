@@ -214,6 +214,7 @@ end;
 procedure TosWizForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   inherited;
+  FTabSheet.PageControl.SelectNextPage(True);
   FreeAndNil(FTabSheet);
 end;
 

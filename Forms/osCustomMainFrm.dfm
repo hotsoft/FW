@@ -8,7 +8,6 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
-  ExplicitTop = -210
   ExplicitWidth = 1024
   ExplicitHeight = 704
   PixelsPerInch = 96
@@ -278,7 +277,6 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
-        ExplicitWidth = 163
       end
       object AdvSmoothMegaMenu: TAdvSmoothMegaMenu
         Left = 45
@@ -1542,9 +1540,6 @@ inherited osCustomMainForm: TosCustomMainForm
         Transparent = True
         Version = '1.3.5.2'
         Align = alClient
-        ExplicitLeft = 89
-        ExplicitTop = -5
-        ExplicitWidth = 124
       end
     end
     object AbasPrincipalTS: TPageControl
@@ -1555,11 +1550,11 @@ inherited osCustomMainForm: TosCustomMainForm
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 3
-      ExplicitLeft = 169
-      ExplicitWidth = 839
+      OnChange = AbasPrincipalTSChange
       object TabSheet1: TTabSheet
         Caption = 'Pesquisa'
-        ExplicitWidth = 831
+        ExplicitLeft = 2
+        ExplicitTop = 22
         object Grid: TwwDBGrid
           Left = 186
           Top = 63
@@ -1640,7 +1635,7 @@ inherited osCustomMainForm: TosCustomMainForm
       TabOrder = 2
       object spbPreviewPrint: TSpeedButton
         Left = 4
-        Top = 5
+        Top = 6
         Width = 29
         Height = 29
         Hint = 'Print Report'

@@ -52,7 +52,6 @@ type
     ExcluirButton: TSpeedButton;
     FecharButton: TSpeedButton;
     PararButton: TSpeedButton;
-    AdvSmoothMegaMenu1: TAdvSmoothMegaMenu;
     procedure FormShow(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure SaveCloseActionExecute(Sender: TObject);
@@ -338,6 +337,7 @@ procedure TosCustomEditForm.CloseActionExecute(Sender: TObject);
 begin
   inherited;
   Close;
+  FTabSheet.PageControl.SelectNextPage(True);
   FreeAndNil(FTabSheet);
 end;
 
