@@ -32,7 +32,7 @@ function getSombraValue(Str:String): String;
 function TiraSimbolos(Str: String): String;
 function LastDayOfMonth(dia: TDate = 0): TDate;
 function roundToCurr(val: double): double;
-procedure ListFileDir(Path: string; FileList: TStrings);
+procedure ListFileDir(Path: string; FileList: TStrings; pExtensao: string = 'xml');
 function isNumeric(valor: string; acceptThousandSeparator: Boolean = False): boolean;
 function isIP(valor: string): boolean;
 function isConvert(Str: string): boolean;
@@ -134,6 +134,7 @@ procedure SaveToFile(const aFilename, aContent: string);
 function LoadFromFile(const aFileName: string): string;
 Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
+procedure RemoveDiretorio(Dir: String);
 
 
 implementation
@@ -184,11 +185,11 @@ begin
       Copy(data,9,2)+':'+Copy(data,11,2)+':'+Copy(data,13,2));
 end;
 
-procedure ListFileDir(Path: string; FileList: TStrings);
+procedure ListFileDir(Path: string; FileList: TStrings; pExtensao: string = 'xml');
 var
   SR: TSearchRec;
 begin
-  if FindFirst(Path + '\*.xml', faAnyFile, SR) = 0 then
+  if FindFirst(Path + '\*.'+pExtensao, faAnyFile, SR) = 0 then
   begin
     repeat
       if (SR.Attr <> faDirectory) then
@@ -2164,6 +2165,20 @@ begin
 
     configFile.SaveToFile(configFileName);
   end;
+end;
+
+procedure RemoveDiretorio(Dir: String);
+var
+  Result: TSearchRec; Found: Boolean;
+begin
+  Found := False;
+  if FindFirst(Dir + '\*', faAnyFile, Result) = 0 then
+    while not Found do begin
+      if (Result.Attr and faDirectory = faDirectory) AND (Result.Name <> '.') AND (Result.Name <> '..') then RemoveDiretorio(Dir + '\' + Result.Name)
+      else if (Result.Attr and faAnyFile <> faDirectory) then DeleteFile(Dir + '\' + Result.Name);
+      Found := FindNext(Result) <> 0;
+    end;
+  FindClose(Result); RemoveDir(Dir);
 end;
 
 end.

@@ -78,7 +78,7 @@ type
     function GetQuery(meta: boolean = false): TosSQLQuery;
     procedure FreeQuery(Query: TosSQLQuery);
 
-    function GetServerDate: TDatetime;
+    function GetServerDate(aConnection: TSQLConnection=nil): TDatetime;
     function GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
     function InTransaction: boolean;
     function StartTransaction: TDBXTransaction;
@@ -439,9 +439,9 @@ begin
   end;
 end;
 
-function TacCustomSQLMainData.GetServerDate: TDatetime;
+function TacCustomSQLMainData.GetServerDate(aConnection: TSQLConnection=nil): TDatetime;
 begin
-  Result := StrToDatetime(FormatDatetime('dd/mm/yyyy', GetServerDatetime));
+  Result := StrToDatetime(FormatDatetime('dd/mm/yyyy', GetServerDatetime(aConnection)));
 end;
 
 function TacCustomSQLMainData.GetServerDatetime(aConnection: TSQLConnection=nil): TDatetime;
