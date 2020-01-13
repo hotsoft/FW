@@ -25,6 +25,7 @@ type
     margemEsquerda: double;
     margemDireita: double;
     tipoSaida: string;
+    IDTemplate: integer;
   end;
 
   TAdendo = record
@@ -152,10 +153,12 @@ begin
   config.margemInferior := -1;
   config.margemEsquerda := -1;
   config.margemDireita := -1;
+  config.IDTemplate := -1;
   config.tipoSaida := TSTela;
   beforePrint := Report.BeforePrint;
   stream := TMemoryStream.Create;
   config.preview := true;
+
   try
     encontrou := false;
     idTemplate := 0;
@@ -325,6 +328,9 @@ begin
       Report.Print;
     updateContadorImpressao := MainData.GetQuery;
     try
+     if idTemplate = 0 then
+      idTemplate := config.IDTemplate;
+
       updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
                               ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
                               ' DATAULTIMAIMPRESSAO = '
