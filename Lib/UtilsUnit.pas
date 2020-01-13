@@ -135,6 +135,7 @@ function LoadFromFile(const aFileName: string): string;
 Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
+function ExtractBetween(const Value, A, B: string): string;
 
 
 implementation
@@ -2179,6 +2180,21 @@ begin
       Found := FindNext(Result) <> 0;
     end;
   FindClose(Result); RemoveDir(Dir);
+end;
+
+function ExtractBetween(const Value, A, B: string): string;
+var
+  aPos, bPos: Integer;
+begin
+  result := '';
+  aPos := Pos(A, Value);
+  if aPos > 0 then begin
+    aPos := aPos + Length(A);
+    bPos := PosEx(B, Value, aPos);
+    if bPos > 0 then begin
+      result := Copy(Value, aPos, bPos - aPos);
+    end;
+  end;
 end;
 
 end.
