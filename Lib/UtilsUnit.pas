@@ -70,7 +70,8 @@ function ValueIsEmptyNull(aValue : Variant):Boolean;
 function getDescricaoSexo(const vValor : Variant):String;
 function getDescricaoSimNao(const vValor : Variant):String;
 function getDescricaoTipoResultado(const vValor : Variant):String;
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet); overload;
+procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDataSet); overload;
 function FormataStringList(texto, delimitador: string): string;
 function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
@@ -1004,6 +1005,14 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateTimeField then
+        field := TDateTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateField then
+        field := TDateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TSQLTimeStampField then
+        field := TSQLTimeStampField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFloatField then
+        field := TFloatField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
@@ -1020,6 +1029,58 @@ begin
     cdsDestino.CreateDataSet;
   end;
 
+
+  cdsOrigem.First;
+  while not cdsOrigem.Eof do
+  begin
+    cdsDestino.Append;
+    for i := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      if not cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).IsNull then
+        cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
+    end;
+    cdsDestino.Post;
+    cdsOrigem.Next;
+  end;
+end;
+
+procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDataSet);
+var
+  field : TField;
+  i: Integer;
+  Parametro: TParam;
+begin
+  if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
+  begin
+    for i := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      if (cdsOrigem.Fields[i]) is TMemoField then
+        field := TMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TIntegerField then
+        field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateTimeField then
+        field := TDateTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateField then
+        field := TDateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TSQLTimeStampField then
+        field := TSQLTimeStampField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFloatField then
+        field := TFloatField.Create(cdsDestino)
+      else
+        field := TStringField.Create(cdsDestino);
+
+      Field.FieldKind := fkData;
+      Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
+      Field.Visible := cdsOrigem.Fields[i].Visible;
+      if (cdsOrigem.Fields[i] is TStringField) then
+        Field.Size := cdsOrigem.Fields[i].Size;
+      Field.DataSet := cdsDestino;
+
+    end;
+    cdsDestino.Close;
+    cdsDestino.CreateDataSet;
+  end;
 
   cdsOrigem.First;
   while not cdsOrigem.Eof do
