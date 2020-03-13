@@ -1048,7 +1048,6 @@ procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDa
 var
   field : TField;
   i: Integer;
-  Parametro: TParam;
 begin
   if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
   begin
