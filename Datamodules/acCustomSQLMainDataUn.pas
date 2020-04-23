@@ -188,8 +188,8 @@ end;
  ------------------------------------------------------------------------}
 constructor TacCustomSQLMainData.CreateOwn(AOwner: TComponent; bd: string);
 begin
-  Self.Create(AOwner);
   self.BD := bd;
+  Self.Create(AOwner);
 end;
 
 {-------------------------------------------------------------------------
@@ -333,8 +333,10 @@ begin
   with TStringList.Create do
   begin
     try
-      if bd='' then
+      if self.BD = '' then
         LoadFromFile(selectParamsFileName)
+      else if self.BD <> '' then //Atualmente usado pela ClimepeAgendador.dll, na unit BaseDLLUn é chamado o CreateOwn
+        LoadFromFile(bd)
       else
       begin
         add('BlobSize=-1');
@@ -541,7 +543,11 @@ begin
   else
     RefreshTable.FDataset := PDataSet;
 
-  PDataSet.Open;
+  Try
+    PDataSet.Open;
+  Except
+
+  End;
 end;
 
 
