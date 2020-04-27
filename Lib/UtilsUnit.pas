@@ -596,6 +596,7 @@ var
   keyboardState: TKeyboardState;
   asciiResult: Integer;
 begin
+  Result := '';
   case Key of
     VK_BACK:    Result := '[BACKSPACE]'; //backspace
     VK_RETURN:  Result := '[ENTER]'; //enter
@@ -649,7 +650,8 @@ begin
     222: Result := '~'; //~ acento
   else
     GetKeyboardState(keyboardState);
-    SetLength(Result, 10) ;
+    Result := EspacoDireita(Result,10);
+//    SetLength(Result, 10) ; //Se usar o SetLength em alguns casos o valor é inicializado com caracter estranho
     asciiResult := ToAscii(key, MapVirtualKey(key, 0), keyboardState, @Result[1], 0) ;
     case asciiResult of
       0: Result := '';
