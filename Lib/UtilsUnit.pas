@@ -1408,9 +1408,14 @@ var
   function Fallback: Boolean;
   var
     _FHttp: TIdHTTP;
+    _FLHandler: TIdSSLIOHandlerSocketOpenSSL;
   begin
     _FHttp := TIdHTTP.Create(AOwner);
+    _FLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_FHttp);
     try
+      _FHttp.AllowCookies := True;
+      _FHttp.IOHandler := _FLHandler;
+      _FHttp.HandleRedirects := True;
       Result := TestConnection(address);
       try
         if stream is TIdMultiPartFormDataStream  then
@@ -1426,6 +1431,7 @@ var
       end;
     finally
       FreeAndNil(_FHttp);
+      FreeAndNil(_FLHandler);
     end;
   end;
 begin
@@ -1931,6 +1937,8 @@ begin
     lUri := TIdUri.Create;
     try
       lHTTP.IOHandler := IOHandler;
+      lHTTP.HandleRedirects := True;
+      lHTTP.AllowCookies := True;
       Result := lHTTP.Get(lUri.URLEncode(url));
     finally
       FreeAndNil(IOHandler);
