@@ -42,6 +42,7 @@ function CriarMsgLogInclusaoExclusaoCDS(AlteradoCDS: TClientDataSet; OriginalCDS
   const sCampoChave: String; aCampoDescricao: Array of String): String;
 function CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS: TClientDataSet; AlteradoCDS: TClientDataSet;
   const sCampoChave: String;  aCampoDescricao: Array of String; const sDescricao : String ): String;
+function CriarMsgLogCDSNovoRegistro(pCDS: TClientDataSet) : String;
 function isRTFValue(vValor: Variant): Boolean; //{\rtf
 procedure TrimAppMemorySize;
 function dgCreateProcess(const FileName: string; SleepInterval: integer = 10000): boolean;
@@ -340,7 +341,7 @@ end;
 function CriarMsgLogAlteracaoField(aField : TField):String; overload;
 begin
   Result := EmptyStr;
-  if (aField.FieldKind <> fkLookup) and (FieldHasChanged(aField)) then
+  if (aField.FieldKind <> fkLookup) and (aField.DataType <> ftDataSet) and (FieldHasChanged(aField)) then
     Result := Format(sMODELOMSGLOG,[aField.DisplayLabel, getCampoSemRTF(aField.OldValue),
       getCampoSemRTF(aField.NewValue)]);
 end;
@@ -487,6 +488,23 @@ begin
   finally
     FreeAndNil(_Str);
   end;
+end;
+
+function CriarMsgLogCDSNovoRegistro(pCDS: TClientDataSet) : String;
+var
+  I: Integer;
+  msg: String;
+begin
+  Result := EmptyStr;
+  pCDS.First;
+  msg := '';
+  for I := 0 to pCDS.FieldCount-1 do
+  begin
+    if (pCDS.Fields[I].FieldKind = fkData) and (pCDS.Fields[I].DataType <> ftBlob) and (pCDS.Fields[I].DataType <> ftMemo) and
+       (pCDS.Fields[I].DataType <> ftDataSet) then
+      msg := msg + pCDS.Fields[I].DisplayLabel + ' : ' + pCDS.Fields[I].AsString + #13#10;
+  end;
+  Result := msg;
 end;
 
 function isRTFValue(vValor: Variant): Boolean;
