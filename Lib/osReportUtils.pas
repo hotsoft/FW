@@ -202,43 +202,58 @@ var
   query: TosSQLDataset;
   report: string;
   ss: TStringStream;
+  ComponenteRelatorio: TacReportContainer;
 begin
   Result := false;
-  report := TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).
-    findReportById(id);
-  if Length(report) > 0 then
-  begin
-    try
-      ss := TStringStream.Create(report);
-      stream.LoadFromStream(ss);
-      Result := True;
-    finally
-      FreeAndNil(ss);
-    end;
-  end
+  if Application.MainForm <> nil then
+    report := TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).findReportById(id)
   else
   begin
-    query := TosSQLDataSet.Create(nil);
-    try
-      query.SQLConnection := acCustomSQLMainData.SQLConnection;
-      query.CommandText := ' SELECT ' +
-                           '   template, '+
-                           '   name '+
-                           ' FROM ' +
-                           '   RB_ITEM '+
-                           ' WHERE ' +
-                           '   ITEM_ID = ' + intToStr(id);
-      query.Open;
-      if query.RecordCount>0 then
-      begin
-        TBLOBField(query.fields[0]).SaveToStream(stream);
-        TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).
-          addReport(id, query.fields[1].AsString, query.fields[0].AsString);
+    //Dessa forma o agendador pode ter acesso ao componente de relatório
+    ComponenteRelatorio := TacReportContainer.Create(nil);
+    report := ComponenteRelatorio.findReportById(id);
+  end;
+
+  try
+    if Length(report) > 0 then
+    begin
+      try
+        ss := TStringStream.Create(report);
+        stream.LoadFromStream(ss);
         Result := True;
+      finally
+        FreeAndNil(ss);
       end;
-    finally
-      FreeAndNil(query);
+    end
+    else
+    begin
+      query := TosSQLDataSet.Create(nil);
+      try
+        query.SQLConnection := acCustomSQLMainData.SQLConnection;
+        query.CommandText := ' SELECT ' +
+                             '   template, '+
+                             '   name '+
+                             ' FROM ' +
+                             '   RB_ITEM '+
+                             ' WHERE ' +
+                             '   ITEM_ID = ' + intToStr(id);
+        query.Open;
+        if query.RecordCount>0 then
+        begin
+          TBLOBField(query.fields[0]).SaveToStream(stream);
+          if Application.MainForm <> nil then
+            TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).addReport(id, query.fields[1].AsString, query.fields[0].AsString)
+          else
+            ComponenteRelatorio.addReport(id, query.fields[1].AsString, query.fields[0].AsString);
+          Result := True;
+        end;
+      finally
+        FreeAndNil(query);
+      end;
     end;
+  finally
+    if Application.MainForm = nil then
+      FreeAndNil(ComponenteRelatorio);
   end;
 end;
 
