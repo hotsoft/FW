@@ -808,24 +808,29 @@ begin
 end;
 
 function GetIPAddress: string;
+type pu_long = ^u_long;
 var
-  Buffer: array[0..255] of AnsiChar;
-  RemoteHost: PHostEnt;
-  tempAddress: Integer;
-  BufferR: array[0..3] of Byte absolute tempAddress;
+  varTWSAData : TWSAData;
+  varPHostEnt : PHostEnt;
+  varTInAddr : TInAddr;
+  namebuf : Array[0..255] of ansichar;
 begin
-  Winsock.GetHostName(@Buffer, 255);
-  RemoteHost := Winsock.GetHostByName(Buffer);
-  if RemoteHost = nil then
-  begin
-    tempAddress := winsock.htonl($07000001); { 127.0.0.1 }
-  end
-  else
-  begin
-    tempAddress := longint(pointer(RemoteHost^.h_addr_list^)^);
-    tempAddress := Winsock.ntohl(tempAddress);
+  try
+    try
+    If WSAStartup($101,varTWSAData) <> 0 Then
+      Result := ''
+    Else Begin
+      gethostname(namebuf,sizeof(namebuf));
+      varPHostEnt := gethostbyname(namebuf);
+      varTInAddr.S_addr := u_long(pu_long(varPHostEnt^.h_addr_list^)^);
+      Result := inet_ntoa(varTInAddr);
+    End;
+    except
+      Result := '';
+    end;
+  finally
+    WSACleanup;
   end;
-  Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
 Function GetCurrentIpList:TSTringList;
