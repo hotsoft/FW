@@ -70,7 +70,7 @@ function ValueIsEmptyNull(aValue : Variant):Boolean;
 function getDescricaoSexo(const vValor : Variant):String;
 function getDescricaoSimNao(const vValor : Variant):String;
 function getDescricaoTipoResultado(const vValor : Variant):String;
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet); overload;
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet; onlyData: Boolean = False); overload;
 procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDataSet); overload;
 function FormataStringList(texto, delimitador: string): string;
 function ApenasNumeros(const valor : String) : String;
@@ -999,7 +999,7 @@ begin
   end;
 end;
 
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet; onlyData: Boolean = False);
 var
   field : TField;
   i: Integer;
@@ -1008,6 +1008,9 @@ begin
   begin
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
+      if (onlyData) and ((cdsOrigem.Fields[i]) is TDataSetField) then
+        continue;
+
       if (cdsOrigem.Fields[i]) is TMemoField then
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
@@ -1020,6 +1023,36 @@ begin
         field := TSQLTimeStampField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TFloatField then
         field := TFloatField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TObjectField then
+        field := TObjectField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TGraphicField then
+        field := TGraphicField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TWideMemoField then
+        field := TWideMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TADTField then
+        field := TADTField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TArrayField then
+        field := TArrayField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDataSetField then
+        field := TDataSetField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TReferenceField then
+        field := TReferenceField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TVariantField then
+        field := TVariantField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TAggregateField then
+        field := TAggregateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBlobField then
+        field := TBlobField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFMTBCDField then
+        field := TFMTBCDField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBCDField then
+        field := TBCDField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TTimeField then
+        field := TTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBooleanField then
+        field := TBooleanField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TCurrencyField then
+        field := TCurrencyField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
@@ -1043,8 +1076,8 @@ begin
     cdsDestino.Append;
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      if not cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).IsNull then
-        cdsDestino.FieldByName(cdsDestino.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsDestino.Fields[i].FieldName).AsString;
+      if (not cdsOrigem.Fields[i].IsNull) and (cdsDestino.FindField(cdsOrigem.Fields[i].FieldName) <> nil) then
+        cdsDestino.FieldByName(cdsOrigem.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsOrigem.Fields[i].FieldName).AsString;
     end;
     cdsDestino.Post;
     cdsOrigem.Next;
