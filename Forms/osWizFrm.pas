@@ -5,15 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, ComCtrls, osUtils, ActnList, osActionList, osFrm,
-  System.Actions, System.UITypes;
+  System.Actions, System.UITypes, Vcl.Buttons;
 
 type
   TosWizForm = class(TosForm)
     Panel2: TPanel;
     Panel1: TPanel;
-    btnCancelar: TButton;
-    btnAvancar: TButton;
-    btnVoltar: TButton;
     pgcWizard: TPageControl;
     Bevel1: TBevel;
     TabSheet1: TTabSheet;
@@ -28,11 +25,14 @@ type
     OnEnterPage: TAction;
     OnLeavePage: TAction;
     OnInit: TAction;
+    btnVoltar: TSpeedButton;
+    btnAvancar: TSpeedButton;
+    btnCancelar: TSpeedButton;
+    procedure FormShow(Sender: TObject);
+    procedure pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
     procedure btnVoltarClick(Sender: TObject);
     procedure btnAvancarClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure pgcWizardChanging(Sender: TObject; var AllowChange: Boolean);
   private
     FMovingForward: boolean;
     FCompleteAction: boolean;
@@ -87,15 +87,33 @@ begin
   lblTituloDetalhe.Caption := GetWord(memTitulos.Lines[iLinha], 2, '|');
 end;
 
-procedure TosWizForm.btnVoltarClick(Sender: TObject);
+procedure TosWizForm.FirstPage;
 begin
-  inherited;
-  FMudarTela := True;
-  CompleteAction := True;
-  FMovingForward := False;
-  OnLeavePage.Execute;
-  if CompleteAction then
-    PreviousPage;
+  pgcWizard.ActivePage := pgcWizard.Pages[0];
+  UpdatePage;
+end;
+
+procedure TosWizForm.LastPage;
+begin
+  pgcWizard.ActivePage := pgcWizard.Pages[IndexLastPage];
+  UpdatePage;
+end;
+
+procedure TosWizForm.NextPage;
+begin
+  if pgcWizard.Visible then
+  begin
+    pgcWizard.SelectNextPage(True);
+    UpdatePage;
+    OnEnterPage.Execute;
+  end;
+end;
+
+procedure TosWizForm.PreviousPage;
+begin
+  pgcWizard.SelectNextPage(False);
+  UpdatePage;
+  OnEnterPage.Execute;
 end;
 
 procedure TosWizForm.btnAvancarClick(Sender: TObject);
@@ -144,33 +162,15 @@ begin
   end;
 end;
 
-procedure TosWizForm.FirstPage;
+procedure TosWizForm.btnVoltarClick(Sender: TObject);
 begin
-  pgcWizard.ActivePage := pgcWizard.Pages[0];
-  UpdatePage;
-end;
-
-procedure TosWizForm.LastPage;
-begin
-  pgcWizard.ActivePage := pgcWizard.Pages[IndexLastPage];
-  UpdatePage;
-end;
-
-procedure TosWizForm.NextPage;
-begin
-  if pgcWizard.Visible then
-  begin
-    pgcWizard.SelectNextPage(True);
-    UpdatePage;
-    OnEnterPage.Execute;
-  end;
-end;
-
-procedure TosWizForm.PreviousPage;
-begin
-  pgcWizard.SelectNextPage(False);
-  UpdatePage;
-  OnEnterPage.Execute;
+  inherited;
+  FMudarTela := True;
+  CompleteAction := True;
+  FMovingForward := False;
+  OnLeavePage.Execute;
+  if CompleteAction then
+    PreviousPage;
 end;
 
 function TosWizForm.PageIndex: integer;
@@ -215,7 +215,6 @@ begin
   btnAvancar.Enabled := True;
   btnCancelar.Caption := constCancelarCaption;
   btnCancelar.Enabled := True;
-  btnAvancar.Default := False;
   pgcWizard.Visible := True;
   FirstPage;
   OnInit.Execute;

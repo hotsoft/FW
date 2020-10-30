@@ -3,7 +3,7 @@ object osWizForm: TosWizForm
   Top = 185
   BorderStyle = bsDialog
   Caption = 'Assistente para'
-  ClientHeight = 360
+  ClientHeight = 364
   ClientWidth = 496
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,18 +15,19 @@ object osWizForm: TosWizForm
   OnShow = FormShow
   DesignSize = (
     496
-    360)
+    364)
   PixelsPerInch = 96
   TextHeight = 13
   object lbLog: TListBox
     Left = 40
     Top = 64
     Width = 453
-    Height = 245
+    Height = 249
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clScrollBar
     ItemHeight = 13
     TabOrder = 2
+    ExplicitHeight = 245
   end
   object pgcWizard: TPageControl
     Left = 0
@@ -56,12 +57,13 @@ object osWizForm: TosWizForm
   end
   object Panel2: TPanel
     Left = 0
-    Top = 314
+    Top = 319
     Width = 496
-    Height = 46
+    Height = 45
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 406
     object Bevel1: TBevel
       Left = 0
       Top = 0
@@ -74,37 +76,40 @@ object osWizForm: TosWizForm
       Left = 236
       Top = 3
       Width = 260
-      Height = 43
+      Height = 42
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      object btnCancelar: TButton
-        Left = 168
-        Top = 12
-        Width = 75
-        Height = 23
-        Caption = 'Cancelar'
-        TabOrder = 0
-        OnClick = btnCancelarClick
+      ExplicitHeight = 43
+      object btnVoltar: TSpeedButton
+        Left = 12
+        Top = 6
+        Width = 76
+        Height = 25
+        Align = alCustom
+        Caption = '< &Voltar'
+        Layout = blGlyphTop
+        OnClick = btnVoltarClick
       end
-      object btnAvancar: TButton
-        Left = 76
-        Top = 12
-        Width = 75
-        Height = 23
+      object btnAvancar: TSpeedButton
+        Left = 90
+        Top = 6
+        Width = 76
+        Height = 25
+        Align = alCustom
         Caption = '&Avan'#231'ar >'
-        Default = True
-        TabOrder = 1
+        Layout = blGlyphTop
         OnClick = btnAvancarClick
       end
-      object btnVoltar: TButton
-        Left = 1
-        Top = 12
-        Width = 75
-        Height = 23
-        Caption = '< &Voltar'
-        TabOrder = 2
-        OnClick = btnVoltarClick
+      object btnCancelar: TSpeedButton
+        Left = 179
+        Top = 6
+        Width = 73
+        Height = 25
+        Align = alCustom
+        Caption = 'Cancelar'
+        Layout = blGlyphTop
+        OnClick = btnCancelarClick
       end
     end
   end

@@ -137,6 +137,7 @@ Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
+function FormataNome(sNome: String): string;
 
 
 implementation
@@ -2303,6 +2304,24 @@ begin
       result := Copy(Value, aPos, bPos - aPos);
     end;
   end;
+end;
+
+function FormataNome(sNome: String): string;
+const
+  excecao: array[0..5] of string = (' da ', ' de ', ' do ', ' das ', ' dos ', ' e ');
+var
+  tamanho, j: integer;
+  i: byte;
+begin
+  Result := AnsiLowerCase(sNome);
+  tamanho := Length(Result);
+
+  for j := 1 to tamanho do
+    // Se é a primeira letra ou se o caracter anterior é um espaço
+    if (j = 1) or ((j>1) and (Result[j-1]=Chr(32))) then
+      Result[j] := AnsiUpperCase(Result[j])[1];
+  for i := 0 to Length(excecao)-1 do
+    result:= StringReplace(result,excecao[i],excecao[i],[rfReplaceAll, rfIgnoreCase]);
 end;
 
 end.
