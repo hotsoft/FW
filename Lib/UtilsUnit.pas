@@ -823,7 +823,7 @@ begin
       gethostname(namebuf,sizeof(namebuf));
       varPHostEnt := gethostbyname(namebuf);
       varTInAddr.S_addr := u_long(pu_long(varPHostEnt^.h_addr_list^)^);
-      Result := inet_ntoa(varTInAddr);
+      Result := string(inet_ntoa(varTInAddr));
     End;
     except
       Result := '';
