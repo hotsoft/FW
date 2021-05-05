@@ -77,6 +77,7 @@ function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
 function Base64FromText(const text: String): string;
@@ -1150,6 +1151,17 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := ' ' + Result;
+  Result := Result + Valor ;
 end;
 
 function KeyToStr(Key:Word): String;
