@@ -30,7 +30,7 @@ uses Classes, acCustomSQLMainDataUn, osSQLDataSet, SysUtils, DB, ppReport, daDat
 
   function getIdadeDias(idade: string; conn: TSQLConnection = nil): integer;
   function getTemplateByName(name: string; stream: TMemoryStream): boolean;
-  function getTemplateByID(id: integer; stream: TMemoryStream): boolean;
+  function getTemplateByID(id: integer; stream: TMemoryStream; var config: TConfigImpressao): boolean;
   function getTemplateIDByName(name: string): integer;
   function getTemplateLaudoRascunho(name: string; stream: TMemoryStream; var config: TConfigImpressao): boolean;
 
@@ -197,7 +197,7 @@ begin
 end;
 
 
-function getTemplateById(id: integer; stream: TMemoryStream): boolean;
+function getTemplateById(id: integer; stream: TMemoryStream; var config: TConfigImpressao): boolean;
 var
   query: TosSQLDataset;
   report: string;
@@ -205,39 +205,42 @@ var
   ComponenteRelatorio: TacReportContainer;
 begin
   Result := false;
-  if Application.MainForm <> nil then
-    report := TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).findReportById(id)
-  else
-  begin
-    //Dessa forma o agendador pode ter acesso ao componente de relatório
-    ComponenteRelatorio := TacReportContainer.Create(nil);
-    report := ComponenteRelatorio.findReportById(id);
-  end;
-
+  query := TosSQLDataSet.Create(nil);
   try
-    if Length(report) > 0 then
-    begin
-      try
-        ss := TStringStream.Create(report);
-        stream.LoadFromStream(ss);
-        Result := True;
-      finally
-        FreeAndNil(ss);
-      end;
-    end
+    query.SQLConnection := acCustomSQLMainData.SQLConnection;
+    query.CommandText := ' SELECT ' +
+                         '   template, '+
+                         '   name '+
+                         ' FROM ' +
+                         '   RB_ITEM '+
+                         ' WHERE ' +
+                         '   ITEM_ID = ' + intToStr(id);
+    query.Open;
+    if query.RecordCount>0 then
+      config.NomeRelatorio := query.FieldByName('name').AsString;
+
+    if Application.MainForm <> nil then
+      report := TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).findReportById(id)
     else
     begin
-      query := TosSQLDataSet.Create(nil);
-      try
-        query.SQLConnection := acCustomSQLMainData.SQLConnection;
-        query.CommandText := ' SELECT ' +
-                             '   template, '+
-                             '   name '+
-                             ' FROM ' +
-                             '   RB_ITEM '+
-                             ' WHERE ' +
-                             '   ITEM_ID = ' + intToStr(id);
-        query.Open;
+      //Dessa forma o agendador pode ter acesso ao componente de relatório
+      ComponenteRelatorio := TacReportContainer.Create(nil);
+      report := ComponenteRelatorio.findReportById(id);
+    end;
+
+    try
+      if Length(report) > 0 then
+      begin
+        try
+          ss := TStringStream.Create(report);
+          stream.LoadFromStream(ss);
+          Result := True;
+        finally
+          FreeAndNil(ss);
+        end;
+      end
+      else
+      begin
         if query.RecordCount>0 then
         begin
           TBLOBField(query.fields[0]).SaveToStream(stream);
@@ -245,15 +248,16 @@ begin
             TacReportContainer(Application.MainForm.FindComponent('FReportDepot')).addReport(id, query.fields[1].AsString, query.fields[0].AsString)
           else
             ComponenteRelatorio.addReport(id, query.fields[1].AsString, query.fields[0].AsString);
+          config.NomeRelatorio := query.FieldByName('name').AsString;
           Result := True;
         end;
-      finally
-        FreeAndNil(query);
       end;
+    finally
+      if Application.MainForm = nil then
+        FreeAndNil(ComponenteRelatorio);
     end;
   finally
-    if Application.MainForm = nil then
-      FreeAndNil(ComponenteRelatorio);
+    FreeAndNil(query);
   end;
 end;
 

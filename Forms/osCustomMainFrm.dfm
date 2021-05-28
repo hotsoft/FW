@@ -25,7 +25,6 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 268
-      Height = 22
       AutoSize = True
       ButtonHeight = 32
       ButtonWidth = 32
@@ -198,8 +197,6 @@ inherited osCustomMainForm: TosCustomMainForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 41
-    ExplicitHeight = 585
     object Splitter1: TSplitter
       Left = 165
       Top = 33
@@ -281,7 +278,6 @@ inherited osCustomMainForm: TosCustomMainForm
       Height = 554
       Align = alLeft
       TabOrder = 3
-      ExplicitHeight = 552
       object TreeView1: TTreeView
         Left = 1
         Top = 1
@@ -299,7 +295,6 @@ inherited osCustomMainForm: TosCustomMainForm
         TabOrder = 0
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
-        ExplicitHeight = 529
       end
       object EdtPesquisa: TEdit
         Left = 1
@@ -312,7 +307,6 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
-        ExplicitTop = 530
       end
     end
   end
@@ -1869,7 +1863,7 @@ inherited osCustomMainForm: TosCustomMainForm
     DataPipeline = ppDBPipeline
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Custom'
+    PrinterSetup.PaperName = 'A4'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -1878,7 +1872,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 297000
     PrinterSetup.mmPaperWidth = 210000
-    PrinterSetup.PaperSize = 256
+    PrinterSetup.PaperSize = 9
     Template.Format = ftASCII
     Units = utMillimeters
     ArchiveFileName = '($MyDocuments)\ReportArchive.raf'
@@ -2043,7 +2037,7 @@ inherited osCustomMainForm: TosCustomMainForm
     AutoStop = False
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'Custom'
+    PrinterSetup.PaperName = 'Carta'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -2052,7 +2046,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 279401
     PrinterSetup.mmPaperWidth = 215900
-    PrinterSetup.PaperSize = 256
+    PrinterSetup.PaperSize = 1
     Template.DatabaseSettings.DataPipeline = plItem
     Template.DatabaseSettings.NameField = 'Name'
     Template.DatabaseSettings.TemplateField = 'Template'
