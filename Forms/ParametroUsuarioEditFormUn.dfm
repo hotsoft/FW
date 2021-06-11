@@ -137,27 +137,27 @@ inherited ParametroUsuarioEditForm: TParametroUsuarioEditForm
       ProviderFlags = [pfInWhere, pfInKey]
       Required = True
     end
-    object ParametroClientDataSetNOMEPARAMETRO: TStringField
+    object ParametroClientDataSetNOMEPARAMETRO: TWideStringField
       DisplayLabel = 'Nome do Par'#226'metro'
       FieldName = 'NOMEPARAMETRO'
       ProviderFlags = [pfInUpdate]
       Required = True
       Size = 40
     end
-    object ParametroClientDataSetDESCRICAO: TStringField
+    object ParametroClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       Size = 50
     end
-    object ParametroClientDataSetCONTEUDO: TStringField
+    object ParametroClientDataSetCONTEUDO: TWideStringField
       DisplayLabel = 'Conte'#250'do'
       DisplayWidth = 1000
       FieldName = 'CONTEUDO'
       ProviderFlags = [pfInUpdate]
       Size = 1000
     end
-    object ParametroClientDataSetTIPODADO: TStringField
+    object ParametroClientDataSetTIPODADO: TWideStringField
       DisplayLabel = 'Tipo de Dado'
       FieldName = 'TIPODADO'
       ProviderFlags = [pfInUpdate]

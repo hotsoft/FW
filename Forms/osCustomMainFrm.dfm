@@ -8,6 +8,7 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
+  ExplicitTop = -195
   ExplicitWidth = 1024
   ExplicitHeight = 704
   PixelsPerInch = 96
@@ -25,6 +26,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 268
+      Height = 22
       AutoSize = True
       ButtonHeight = 32
       ButtonWidth = 32
@@ -1704,7 +1706,7 @@ inherited osCustomMainForm: TosCustomMainForm
     DataProvider = RecursoData.AcoesUsuarioProvider
     Left = 840
     Top = 112
-    object ActionDataSetNOMECOMPONENTE: TStringField
+    object ActionDataSetNOMECOMPONENTE: TWideStringField
       FieldName = 'NOMECOMPONENTE'
       Size = 40
     end
@@ -2878,22 +2880,32 @@ inherited osCustomMainForm: TosCustomMainForm
   end
   object SQLConnection: TSQLConnection
     ConnectionName = 'IBLocal'
-    DriverName = 'Interbase'
+    DriverName = 'DevartMySQL'
     LoginPrompt = False
     Params.Strings = (
-      'BlobSize='
-      'CommitRetain='
-      'Database='
-      'DriverName=Interbase'
-      'ErrorResourceFile='
-      'LocaleCode='
-      'Password='
-      'RoleName='
-      'ServerCharSet='
-      'SQLDialect='
-      'Interbase TransIsolation='
+      'DriverUnit=DbxDevartMySql'
+      
+        'DriverPackageLoader=TDBXDynalinkDriverLoader,DBXCommonDriver180.' +
+        'bpl'
+      
+        'MetaDataPackageLoader=TDBXDevartMySqlMetaDataCommandFactory,DbxD' +
+        'evartMySqlDriver180.bpl'
+      'ProductName=DevartMySQL'
+      'GetDriverFunc=getSQLDriverMySQL'
+      'LibraryName=dbexpmda40.dll'
+      'VendorLib=libmysql.dll'
+      'LibraryNameOsx=libdbexpmda40.dylib'
+      'VendorLibOsx=libmysql.dylib'
+      'MaxBlobSize=-1'
+      'FetchAll=True'
+      'EnableBoolean=False'
+      'UseUnicode=True'
+      'IPVersion=IPv4'
+      'BlobSize=-1'
+      'HostName='
+      'DataBase='
       'User_Name='
-      'WaitOnLocks=')
+      'Password=')
     Left = 288
     Top = 360
   end

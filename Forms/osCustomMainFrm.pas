@@ -17,7 +17,7 @@ uses
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
   acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons,
-  System.UITypes;
+  System.UITypes, DbxDevartMySql;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -82,7 +82,7 @@ type
     RetrocedeAction: TAction;
     ActionDataSet: TosClientDataset;
     OnSelectResourceAction: TAction;
-    ActionDataSetNOMECOMPONENTE: TStringField;
+    ActionDataSetNOMECOMPONENTE: TWideStringField;
     WebBrowser: TWebBrowser;
     PaginaInicialToolButton: TToolButton;
     Exibir: TMenuItem;
@@ -503,7 +503,7 @@ begin
     if (Components[i] is TAction) and (Components[i].Tag = 0) then
       (Components[i] as TAction).Enabled := False;
 
-  Assert(ftString = ActionDataSet.FieldByName('NomeComponente').DataType,
+  Assert(ftWideString = ActionDataSet.FieldByName('NomeComponente').DataType,
       'O field que deveria conter o nome do componente não é do tipo string.');
 
   if not Assigned(CurrentResource) then

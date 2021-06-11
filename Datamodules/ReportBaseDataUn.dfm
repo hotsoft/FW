@@ -304,28 +304,28 @@ object ReportBaseData: TReportBaseData
     Params = <>
     Left = 152
     Top = 16
-    object ParametroClientDatasetNOMEFANTASIA: TStringField
+    object ParametroClientDatasetNOMEFANTASIA: TWideStringField
       FieldName = 'NOMEFANTASIA'
       Size = 40
     end
-    object ParametroClientDatasetENDERECO: TStringField
+    object ParametroClientDatasetENDERECO: TWideStringField
       FieldName = 'ENDERECO'
       Size = 40
     end
-    object ParametroClientDatasetBAIRRO: TStringField
+    object ParametroClientDatasetBAIRRO: TWideStringField
       FieldName = 'BAIRRO'
       Size = 40
     end
-    object ParametroClientDatasetCIDADE: TStringField
+    object ParametroClientDatasetCIDADE: TWideStringField
       FieldName = 'CIDADE'
       Size = 40
     end
-    object ParametroClientDatasetUF: TStringField
+    object ParametroClientDatasetUF: TWideStringField
       FieldName = 'UF'
       FixedChar = True
       Size = 2
     end
-    object ParametroClientDatasetTELEFONE: TStringField
+    object ParametroClientDatasetTELEFONE: TWideStringField
       FieldName = 'TELEFONE'
     end
     object ParametroClientDatasetLOGO: TBlobField

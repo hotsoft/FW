@@ -445,7 +445,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
     BizDatamoduleName = 'BizFilterDef'
     Left = 292
     Top = 36
-    object RelatorioClientDataSetTemplate: TStringField
+    object RelatorioClientDataSetTemplate: TWideStringField
       DisplayLabel = 'Template do Relat'#243'rio'
       FieldKind = fkLookup
       FieldName = 'Template'
@@ -456,7 +456,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
       Size = 50
       Lookup = True
     end
-    object RelatorioClientDataSetNomeUsuario: TStringField
+    object RelatorioClientDataSetNomeUsuario: TWideStringField
       DisplayLabel = 'Nome do Usu'#225'rio'
       FieldKind = fkInternalCalc
       FieldName = 'NomeUsuario'
@@ -467,7 +467,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object RelatorioClientDataSetTITULO: TStringField
+    object RelatorioClientDataSetTITULO: TWideStringField
       FieldName = 'TITULO'
       Size = 50
     end
@@ -477,18 +477,18 @@ inherited RelatorioEditForm: TRelatorioEditForm
       BlobType = ftMemo
       Size = 1
     end
-    object RelatorioClientDataSetCLASSEIMPRESSORA: TStringField
+    object RelatorioClientDataSetCLASSEIMPRESSORA: TWideStringField
       FieldName = 'CLASSEIMPRESSORA'
       FixedChar = True
       Size = 30
     end
-    object RelatorioClientDataSetCOMPATIVELAPARTIRDAVERSAO: TStringField
+    object RelatorioClientDataSetCOMPATIVELAPARTIRDAVERSAO: TWideStringField
       DisplayLabel = 'Vers'#227'o Inicial'
       FieldName = 'COMPATIVELAPARTIRDAVERSAO'
       FixedChar = True
       Size = 10
     end
-    object RelatorioClientDataSetCOMPATIVELATEVERSAO: TStringField
+    object RelatorioClientDataSetCOMPATIVELATEVERSAO: TWideStringField
       DisplayLabel = 'Vers'#227'o Final'
       FieldName = 'COMPATIVELATEVERSAO'
       FixedChar = True
@@ -497,7 +497,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
     object RelatorioClientDataSetDATAIMPORTACAO: TSQLTimeStampField
       FieldName = 'DATAIMPORTACAO'
     end
-    object RelatorioClientDataSetARQUIVOORIGEM: TStringField
+    object RelatorioClientDataSetARQUIVOORIGEM: TWideStringField
       FieldName = 'ARQUIVOORIGEM'
       Size = 40
     end
@@ -511,7 +511,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
     object RelatorioClientDataSetIDXFILTERDEF: TIntegerField
       FieldName = 'IDXFILTERDEF'
     end
-    object RelatorioClientDataSetNomeFiltro: TStringField
+    object RelatorioClientDataSetNomeFiltro: TWideStringField
       FieldKind = fkLookup
       FieldName = 'NomeFiltro'
       LookupDataSet = RelatorioLookupData.FilterDefClientDataSet
@@ -525,11 +525,11 @@ inherited RelatorioEditForm: TRelatorioEditForm
       FieldName = 'IDTIPORELATORIO'
       Required = True
     end
-    object RelatorioClientDataSetCLASSERELATORIO: TStringField
+    object RelatorioClientDataSetCLASSERELATORIO: TWideStringField
       FieldName = 'CLASSERELATORIO'
       Size = 30
     end
-    object RelatorioClientDataSetNomeTipoRelatorio: TStringField
+    object RelatorioClientDataSetNomeTipoRelatorio: TWideStringField
       FieldKind = fkLookup
       FieldName = 'NomeTipoRelatorio'
       LookupDataSet = RelatorioLookupData.TipoRelatorioClientDataSet

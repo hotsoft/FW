@@ -23,7 +23,7 @@ object UsuarioData: TUsuarioData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object MasterDataSetNOME: TStringField
+    object MasterDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 50
@@ -32,18 +32,18 @@ object UsuarioData: TUsuarioData
       FieldName = 'IDCARGO'
       ProviderFlags = [pfInUpdate]
     end
-    object MasterDataSetAPELIDO: TStringField
+    object MasterDataSetAPELIDO: TWideStringField
       FieldName = 'APELIDO'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object MasterDataSetSENHA: TStringField
+    object MasterDataSetSENHA: TWideStringField
       FieldName = 'SENHA'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 32
     end
-    object MasterDataSetSTATUS: TStringField
+    object MasterDataSetSTATUS: TWideStringField
       FieldName = 'STATUS'
       ProviderFlags = [pfInUpdate]
       FixedChar = True

@@ -166,7 +166,7 @@ inherited UsuarioEditForm: TUsuarioEditForm
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object UsuarioClientDataSetNOME: TStringField
+    object UsuarioClientDataSetNOME: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
@@ -177,27 +177,27 @@ inherited UsuarioEditForm: TUsuarioEditForm
       FieldName = 'IDCARGO'
       ProviderFlags = [pfInUpdate]
     end
-    object UsuarioClientDataSetAPELIDO: TStringField
+    object UsuarioClientDataSetAPELIDO: TWideStringField
       DisplayLabel = 'Apelido'
       FieldName = 'APELIDO'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object UsuarioClientDataSetSENHA: TStringField
+    object UsuarioClientDataSetSENHA: TWideStringField
       DisplayLabel = 'Senha'
       FieldName = 'SENHA'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 32
     end
-    object UsuarioClientDataSetSTATUS: TStringField
+    object UsuarioClientDataSetSTATUS: TWideStringField
       DisplayLabel = 'Status'
       FieldName = 'STATUS'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 1
     end
-    object UsuarioClientDataSetNomeCargo: TStringField
+    object UsuarioClientDataSetNomeCargo: TWideStringField
       DisplayLabel = 'Cargo'
       FieldKind = fkLookup
       FieldName = 'NomeCargo'
@@ -226,7 +226,7 @@ inherited UsuarioEditForm: TUsuarioEditForm
       FieldName = 'IDGRUPO'
       Required = True
     end
-    object GrupoClientDataSetNOME: TStringField
+    object GrupoClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end

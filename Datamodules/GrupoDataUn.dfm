@@ -23,12 +23,12 @@ object GrupoData: TGrupoData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object MasterDataSetNOME: TStringField
+    object MasterDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       Size = 50
@@ -88,7 +88,7 @@ object GrupoData: TGrupoData
       FieldName = 'IDUSUARIO'
       ProviderFlags = [pfInWhere, pfInKey]
     end
-    object UsuarioDataSetNOME: TStringField
+    object UsuarioDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = []
       Size = 50
@@ -143,12 +143,12 @@ object GrupoData: TGrupoData
       ProviderFlags = [pfInWhere, pfInKey]
       Required = True
     end
-    object RecursoDataSetNOMERECURSO: TStringField
+    object RecursoDataSetNOMERECURSO: TWideStringField
       FieldName = 'NOMERECURSO'
       ProviderFlags = []
       Size = 40
     end
-    object RecursoDataSetNOMEDOMINIO: TStringField
+    object RecursoDataSetNOMEDOMINIO: TWideStringField
       FieldName = 'NOMEDOMINIO'
       ProviderFlags = []
       Size = 50
@@ -228,7 +228,7 @@ object GrupoData: TGrupoData
       FieldName = 'IDACAO'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object AcaoDataSetNOME: TStringField
+    object AcaoDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40

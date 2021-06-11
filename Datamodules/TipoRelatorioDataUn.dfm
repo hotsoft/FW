@@ -18,13 +18,13 @@ object TipoRelatorioData: TTipoRelatorioData
     SQLConnection = MainData.SQLConnection
     Left = 40
     Top = 24
-    object MasterDataSetNOME: TStringField
+    object MasterDataSetNOME: TWideStringField
       DisplayLabel = 'Nome da Classe'
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       Size = 50

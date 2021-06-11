@@ -14,7 +14,7 @@ type
     MasterDataSetIDRECURSO: TIntegerField;
     MasterDataSetIDUSUARIO: TIntegerField;
     MasterDataSetDATAHORA: TSQLTimeStampField;
-    MasterDataSetDESCRICAO: TStringField;
+    MasterDataSetDESCRICAO: TWideStringField;
   private
     { Private declarations }
   public

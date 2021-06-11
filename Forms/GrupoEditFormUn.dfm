@@ -167,12 +167,12 @@ inherited GrupoEditForm: TGrupoEditForm
       FieldName = 'IDGRUPO'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object GrupoDataSetNOME: TStringField
+    object GrupoDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object GrupoDataSetDESCRICAO: TStringField
+    object GrupoDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       Size = 50
@@ -224,7 +224,7 @@ inherited GrupoEditForm: TGrupoEditForm
       FieldName = 'IDUSUARIO'
       ProviderFlags = [pfInWhere, pfInKey]
     end
-    object UsuarioClientDataSetNOME: TStringField
+    object UsuarioClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = []
       Size = 50
@@ -308,12 +308,12 @@ inherited GrupoEditForm: TGrupoEditForm
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object RecursoClientDataSetNOMERECURSO: TStringField
+    object RecursoClientDataSetNOMERECURSO: TWideStringField
       FieldName = 'NOMERECURSO'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object RecursoClientDataSetNOMEDOMINIO: TStringField
+    object RecursoClientDataSetNOMEDOMINIO: TWideStringField
       FieldName = 'NOMEDOMINIO'
       ProviderFlags = [pfInUpdate]
       Size = 50
@@ -338,7 +338,7 @@ inherited GrupoEditForm: TGrupoEditForm
       FieldName = 'IDACAO'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object AcaoClientDataSetNOME: TStringField
+    object AcaoClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40

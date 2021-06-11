@@ -24,7 +24,7 @@ object TipoRecursoData: TTipoRecursoData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]

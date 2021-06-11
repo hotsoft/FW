@@ -25,7 +25,7 @@ object acCustomRelatorioData: TacCustomRelatorioData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object MasterDataSetTITULO: TStringField
+    object MasterDataSetTITULO: TWideStringField
       FieldName = 'TITULO'
       ProviderFlags = [pfInUpdate]
       Size = 50
@@ -36,13 +36,13 @@ object acCustomRelatorioData: TacCustomRelatorioData
       BlobType = ftMemo
       Size = 1
     end
-    object MasterDataSetCOMPATIVELAPARTIRDAVERSAO: TStringField
+    object MasterDataSetCOMPATIVELAPARTIRDAVERSAO: TWideStringField
       FieldName = 'COMPATIVELAPARTIRDAVERSAO'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 10
     end
-    object MasterDataSetCOMPATIVELATEVERSAO: TStringField
+    object MasterDataSetCOMPATIVELATEVERSAO: TWideStringField
       FieldName = 'COMPATIVELATEVERSAO'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
@@ -52,7 +52,7 @@ object acCustomRelatorioData: TacCustomRelatorioData
       FieldName = 'DATAIMPORTACAO'
       ProviderFlags = [pfInUpdate]
     end
-    object MasterDataSetARQUIVOORIGEM: TStringField
+    object MasterDataSetARQUIVOORIGEM: TWideStringField
       FieldName = 'ARQUIVOORIGEM'
       ProviderFlags = [pfInUpdate]
       Size = 40
@@ -69,7 +69,7 @@ object acCustomRelatorioData: TacCustomRelatorioData
       FieldName = 'IDXFILTERDEF'
       ProviderFlags = [pfInUpdate]
     end
-    object MasterDataSetCLASSEIMPRESSORA: TStringField
+    object MasterDataSetCLASSEIMPRESSORA: TWideStringField
       FieldName = 'CLASSEIMPRESSORA'
       Size = 30
     end
@@ -77,7 +77,7 @@ object acCustomRelatorioData: TacCustomRelatorioData
       FieldName = 'IDTIPORELATORIO'
       Required = True
     end
-    object MasterDataSetCLASSERELATORIO: TStringField
+    object MasterDataSetCLASSERELATORIO: TWideStringField
       FieldName = 'CLASSERELATORIO'
       Size = 30
     end

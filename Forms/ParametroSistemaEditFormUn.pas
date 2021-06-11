@@ -18,16 +18,16 @@ type
     MasterClientDataSetIDEMPRESA: TIntegerField;
     MasterClientDataSetLOGO: TBlobField;
     OpenDialog: TOpenPictureDialog;
-    MasterClientDataSetNOMEFANTASIA: TStringField;
-    MasterClientDataSetENDERECO: TStringField;
-    MasterClientDataSetBAIRRO: TStringField;
-    MasterClientDataSetCIDADE: TStringField;
-    MasterClientDataSetUF: TStringField;
-    MasterClientDataSetTELEFONE: TStringField;
-    MasterClientDataSetNomeEmpresa: TStringField;
-    MasterClientDataSetMENSAGEMORCAMENTO: TStringField;
-    MasterClientDataSetMENSAGEMLOCACAO: TStringField;
-    MasterClientDataSetNOMELOCATARIO: TStringField;
+    MasterClientDataSetNOMEFANTASIA: TWideStringField;
+    MasterClientDataSetENDERECO: TWideStringField;
+    MasterClientDataSetBAIRRO: TWideStringField;
+    MasterClientDataSetCIDADE: TWideStringField;
+    MasterClientDataSetUF: TWideStringField;
+    MasterClientDataSetTELEFONE: TWideStringField;
+    MasterClientDataSetNomeEmpresa: TWideStringField;
+    MasterClientDataSetMENSAGEMORCAMENTO: TWideStringField;
+    MasterClientDataSetMENSAGEMLOCACAO: TWideStringField;
+    MasterClientDataSetNOMELOCATARIO: TWideStringField;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private

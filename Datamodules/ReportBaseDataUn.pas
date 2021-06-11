@@ -16,12 +16,12 @@ type
     ParametroDBPipeline: TppDBPipeline;
     MasterClientDataset: TosClientDataset;
     ParametroClientDataset: TosClientDataset;
-    ParametroClientDatasetNOMEFANTASIA: TStringField;
-    ParametroClientDatasetENDERECO: TStringField;
-    ParametroClientDatasetBAIRRO: TStringField;
-    ParametroClientDatasetCIDADE: TStringField;
-    ParametroClientDatasetUF: TStringField;
-    ParametroClientDatasetTELEFONE: TStringField;
+    ParametroClientDatasetNOMEFANTASIA: TWideStringField;
+    ParametroClientDatasetENDERECO: TWideStringField;
+    ParametroClientDatasetBAIRRO: TWideStringField;
+    ParametroClientDatasetCIDADE: TWideStringField;
+    ParametroClientDatasetUF: TWideStringField;
+    ParametroClientDatasetTELEFONE: TWideStringField;
     ParametroClientDatasetLOGO: TBlobField;
     ppHeaderBand1: TppHeaderBand;
     ppLine1: TppLine;

@@ -33,7 +33,7 @@ object RecursoData: TRecursoData
       FieldName = 'IDTIPORECURSO'
       ProviderFlags = [pfInUpdate]
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       DisplayWidth = 255
       FieldName = 'DESCRICAO'
@@ -44,24 +44,24 @@ object RecursoData: TRecursoData
       FieldName = 'IDDOMINIO'
       ProviderFlags = [pfInUpdate]
     end
-    object MasterDataSetNOME: TStringField
+    object MasterDataSetNOME: TWideStringField
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object MasterDataSetFILTERDEFNAME: TStringField
+    object MasterDataSetFILTERDEFNAME: TWideStringField
       FieldName = 'FILTERDEFNAME'
       Size = 50
     end
-    object MasterDataSetDATACLASSNAME: TStringField
+    object MasterDataSetDATACLASSNAME: TWideStringField
       FieldName = 'DATACLASSNAME'
       Size = 50
     end
-    object MasterDataSetRESCLASSNAME: TStringField
+    object MasterDataSetRESCLASSNAME: TWideStringField
       FieldName = 'RESCLASSNAME'
       Size = 50
     end
-    object MasterDataSetREPORTCLASSNAME: TStringField
+    object MasterDataSetREPORTCLASSNAME: TWideStringField
       FieldName = 'REPORTCLASSNAME'
       Size = 50
     end
@@ -73,13 +73,13 @@ object RecursoData: TRecursoData
       DisplayLabel = 'Ordem'
       FieldName = 'NUMORDEM'
     end
-    object MasterDataSetHABILITAEDITARTODOS: TStringField
+    object MasterDataSetHABILITAEDITARTODOS: TWideStringField
       FieldName = 'HABILITAEDITARTODOS'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 1
     end
-    object MasterDataSetFORCAREEXECUCAOFILTRO: TStringField
+    object MasterDataSetFORCAREEXECUCAOFILTRO: TWideStringField
       FieldName = 'FORCAREEXECUCAOFILTRO'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
@@ -144,7 +144,7 @@ object RecursoData: TRecursoData
     SQLConnection = acCustomSQLMainData.SQLConnection
     Left = 104
     Top = 80
-    object AcaoDataSetDESCRICAO: TStringField
+    object AcaoDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       Size = 50
     end
@@ -158,11 +158,11 @@ object RecursoData: TRecursoData
     object AcaoDataSetINDICEIMAGEM: TIntegerField
       FieldName = 'INDICEIMAGEM'
     end
-    object AcaoDataSetNOME: TStringField
+    object AcaoDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
-    object AcaoDataSetNOMECOMPONENTE: TStringField
+    object AcaoDataSetNOMECOMPONENTE: TWideStringField
       FieldName = 'NOMECOMPONENTE'
       Size = 40
     end
@@ -191,7 +191,7 @@ object RecursoData: TRecursoData
     SQLConnection = acCustomSQLMainData.SQLConnection
     Left = 60
     Top = 148
-    object AcoesUsuarioDataSetNOMECOMPONENTE: TStringField
+    object AcoesUsuarioDataSetNOMECOMPONENTE: TWideStringField
       FieldName = 'NOMECOMPONENTE'
       Size = 40
     end
@@ -216,20 +216,20 @@ object RecursoData: TRecursoData
     SQLConnection = acCustomSQLMainData.SQLConnection
     Left = 60
     Top = 244
-    object UsuarioDataSetAPELIDO: TStringField
+    object UsuarioDataSetAPELIDO: TWideStringField
       FieldName = 'APELIDO'
       Size = 40
     end
-    object UsuarioDataSetSENHA: TStringField
+    object UsuarioDataSetSENHA: TWideStringField
       FieldName = 'SENHA'
       FixedChar = True
       Size = 32
     end
-    object UsuarioDataSetNOME: TStringField
+    object UsuarioDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 50
     end
-    object UsuarioDataSetSTATUS: TStringField
+    object UsuarioDataSetSTATUS: TWideStringField
       FieldName = 'STATUS'
       FixedChar = True
       Size = 1

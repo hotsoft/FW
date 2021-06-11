@@ -11,8 +11,8 @@ type
     MasterDataSet: TosSQLDataset;
     MasterProvider: TosSQLDataSetProvider;
     MasterDataSetIDCLASSERELATORIO: TIntegerField;
-    MasterDataSetNOME: TStringField;
-    MasterDataSetDESCRICAO: TStringField;
+    MasterDataSetNOME: TWideStringField;
+    MasterDataSetDESCRICAO: TWideStringField;
   private
 
   public

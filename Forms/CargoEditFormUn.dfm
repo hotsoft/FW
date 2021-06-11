@@ -103,12 +103,12 @@ inherited CargoEditForm: TCargoEditForm
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object CargoClientDataSetNOME: TStringField
+    object CargoClientDataSetNOME: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'NOME'
       Size = 40
     end
-    object CargoClientDataSetAREAATUACAO: TStringField
+    object CargoClientDataSetAREAATUACAO: TWideStringField
       FieldName = 'AREAATUACAO'
       Size = 40
     end

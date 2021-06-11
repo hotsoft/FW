@@ -386,7 +386,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
       FieldName = 'IDXFILTERDEF'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object cdsEditName: TStringField
+    object cdsEditName: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'Name'
       Origin = 'DB.XPFilterDef.Name'
@@ -396,13 +396,13 @@ inherited FilterDefEditForm: TFilterDefEditForm
     object cdsEditFilterDefDetailDataset: TDataSetField
       FieldName = 'FilterDefDetailDataset'
     end
-    object cdsEditFILTERTYPE: TStringField
+    object cdsEditFILTERTYPE: TWideStringField
       DisplayLabel = 'Tipo'
       FieldName = 'FILTERTYPE'
       FixedChar = True
       Size = 3
     end
-    object cdsEditTITULO: TStringField
+    object cdsEditTITULO: TWideStringField
       FieldName = 'TITULO'
       ProviderFlags = [pfInUpdate]
       Size = 100
@@ -426,7 +426,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
       DisplayLabel = 'N'#250'mero'
       FieldName = 'Number'
     end
-    object cdsEditDetailDescription: TStringField
+    object cdsEditDetailDescription: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'Description'
       FixedChar = True
@@ -462,11 +462,11 @@ inherited FilterDefEditForm: TFilterDefEditForm
       BlobType = ftMemo
       Size = 1
     end
-    object cdsEditDetailORDERCOLUMN: TStringField
+    object cdsEditDetailORDERCOLUMN: TWideStringField
       FieldName = 'ORDERCOLUMN'
       Size = 50
     end
-    object cdsEditDetailORDERTYPE: TStringField
+    object cdsEditDetailORDERTYPE: TWideStringField
       FieldName = 'ORDERTYPE'
       FixedChar = True
       Size = 1
@@ -490,11 +490,11 @@ inherited FilterDefEditForm: TFilterDefEditForm
     Params = <>
     Left = 304
     Top = 432
-    object cdsTesteTeste: TStringField
+    object cdsTesteTeste: TWideStringField
       FieldName = 'Teste'
       Size = 100
     end
-    object cdsTesteResult: TStringField
+    object cdsTesteResult: TWideStringField
       DisplayLabel = 'Resultado'
       FieldName = 'Result'
       Size = 100

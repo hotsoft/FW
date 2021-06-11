@@ -33,8 +33,8 @@ type
     ParticipantesDualTree: TosDBDualTree;
     GrupoDataSet: TosClientDataset;
     GrupoDataSetIDGRUPO: TIntegerField;
-    GrupoDataSetNOME: TStringField;
-    GrupoDataSetDESCRICAO: TStringField;
+    GrupoDataSetNOME: TWideStringField;
+    GrupoDataSetDESCRICAO: TWideStringField;
     GrupoDataSetGrupoUsuarioDataSet: TDataSetField;
     GrupoUsuarioClientDataSet: TosClientDataset;
     GrupoUsuarioClientDataSetIDGRUPOUSUARIO: TIntegerField;
@@ -42,7 +42,7 @@ type
     GrupoUsuarioClientDataSetIDUSUARIO: TIntegerField;
     UsuarioClientDataSet: TosClientDataset;
     UsuarioClientDataSetIDUSUARIO: TIntegerField;
-    UsuarioClientDataSetNOME: TStringField;
+    UsuarioClientDataSetNOME: TWideStringField;
     GrupoDataSetDireitoUsoDataSet: TDataSetField;
     DireitoUsoClientDataSet: TosClientDataset;
     DireitoUsoClientDataSetIDGRUPO: TIntegerField;
@@ -56,11 +56,11 @@ type
     RecursoClientDataSet: TosClientDataset;
     AcaoClientDataSet: TosClientDataset;
     AcaoClientDataSetIDACAO: TIntegerField;
-    AcaoClientDataSetNOME: TStringField;
+    AcaoClientDataSetNOME: TWideStringField;
     DireitoUsoDualTree: TosDBDualTree;
     RecursoClientDataSetIDRECURSO: TIntegerField;
-    RecursoClientDataSetNOMERECURSO: TStringField;
-    RecursoClientDataSetNOMEDOMINIO: TStringField;
+    RecursoClientDataSetNOMERECURSO: TWideStringField;
+    RecursoClientDataSetNOMEDOMINIO: TWideStringField;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure DireitoUsoDualTreeNodeSelect(LeafSelected: Boolean);

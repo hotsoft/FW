@@ -12,19 +12,19 @@ type
     TipoRelatorioClientDataSet: TosClientDataset;
     TipoRelatorioLookupDataSet: TosSQLDataSet;
     TipoRelatorioLookupProvider: TosSQLDataSetProvider;
-    TipoRelatorioClientDataSetNOME: TStringField;
+    TipoRelatorioClientDataSetNOME: TWideStringField;
     TemplateClientDataset: TosClientDataset;
     TemplateLookupDataSet: TosSQLDataSet;
     TemplateLookupProvider: TosSQLDataSetProvider;
-    TemplateLookupDataSetNOME: TStringField;
+    TemplateLookupDataSetNOME: TWideStringField;
     TemplateLookupDataSetITEM_ID: TIntegerField;
-    TemplateClientDatasetNOME: TStringField;
+    TemplateClientDatasetNOME: TWideStringField;
     TemplateClientDatasetITEM_ID: TIntegerField;
     FilterDefClientDataSet: TosClientDataset;
     FilterDefLookupDataSet: TosSQLDataSet;
     FilterDefLookupProvider: TosSQLDataSetProvider;
-    FilterDefLookupDataSetNAME: TStringField;
-    FilterDefClientDataSetNAME: TStringField;
+    FilterDefLookupDataSetNAME: TWideStringField;
+    FilterDefClientDataSetNAME: TWideStringField;
     FilterDefLookupDataSetIDXFILTERDEF: TIntegerField;
     FilterDefClientDataSetIDXFILTERDEF: TIntegerField;
     TipoRelatorioClientDataSetIDTIPORELATORIO: TIntegerField;
@@ -32,7 +32,7 @@ type
     RelatorioDataSet: TosSQLDataSet;
     RelatorioDataSetProvider: TosSQLDataSetProvider;
     RelatorioClientDatasetIDRELATORIO: TIntegerField;
-    RelatorioClientDatasetTITULO: TStringField;
+    RelatorioClientDatasetTITULO: TWideStringField;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }

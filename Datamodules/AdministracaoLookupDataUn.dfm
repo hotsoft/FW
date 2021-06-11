@@ -16,7 +16,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDUSUARIO'
       Required = True
     end
-    object UsuarioClientDataSetNOME: TStringField
+    object UsuarioClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 50
     end
@@ -32,7 +32,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDRECURSO'
       Required = True
     end
-    object RecursoClientDatasetNOME: TStringField
+    object RecursoClientDatasetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
@@ -56,7 +56,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
     object AcaoClientDataSetIDRECURSO: TIntegerField
       FieldName = 'IDRECURSO'
     end
-    object AcaoClientDataSetNOME: TStringField
+    object AcaoClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 42
     end
@@ -72,7 +72,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDDOMINIO'
       Required = True
     end
-    object DominioClientDatasetDESCRICAO: TStringField
+    object DominioClientDatasetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       Size = 50
     end
@@ -90,7 +90,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object TipoRecursoClientDataSetDESCRICAO: TStringField
+    object TipoRecursoClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
@@ -108,7 +108,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDCARGO'
       Required = True
     end
-    object CargoClientDataSetNOME: TStringField
+    object CargoClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
@@ -127,7 +127,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       Required = True
       Visible = False
     end
-    object StringField1: TStringField
+    object StringField1: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
@@ -155,7 +155,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object StringField2: TStringField
+    object StringField2: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
@@ -181,7 +181,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDDOMINIO'
       Required = True
     end
-    object DominioLookupDataSetDESCRICAO: TStringField
+    object DominioLookupDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       Size = 50
     end
@@ -213,7 +213,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
     object AcaoLookupDataSetIDRECURSO: TIntegerField
       FieldName = 'IDRECURSO'
     end
-    object AcaoLookupDataSetNOME: TStringField
+    object AcaoLookupDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 42
     end
@@ -235,7 +235,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDRECURSO'
       Required = True
     end
-    object RecursoLookupDataSetNOME: TStringField
+    object RecursoLookupDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
@@ -257,7 +257,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDUSUARIO'
       Required = True
     end
-    object UsuarioLookupDataSetNOME: TStringField
+    object UsuarioLookupDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 50
     end
@@ -279,7 +279,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDGRUPO'
       Required = True
     end
-    object GrupoClientDataSetNOME: TStringField
+    object GrupoClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
@@ -295,7 +295,7 @@ inherited AdministracaoLookupData: TAdministracaoLookupData
       FieldName = 'IDGRUPO'
       Required = True
     end
-    object GrupoLookupDataSetNOME: TStringField
+    object GrupoLookupDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end

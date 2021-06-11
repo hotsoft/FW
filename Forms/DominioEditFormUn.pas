@@ -15,7 +15,7 @@ type
     Label2: TLabel;
     DescricaoEdit: TDBEdit;
     DominioClientDataSetIDDOMINIO: TIntegerField;
-    DominioClientDataSetDESCRICAO: TStringField;
+    DominioClientDataSetDESCRICAO: TWideStringField;
     DominioClientDataSetNUMORDEM: TIntegerField;
     Label1: TLabel;
     NumOrdemSpinEdit: TwwDBSpinEdit;

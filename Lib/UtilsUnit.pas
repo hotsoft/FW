@@ -1055,13 +1055,13 @@ begin
       else if (cdsOrigem.Fields[i]) is TCurrencyField then
         field := TCurrencyField.Create(cdsDestino)
       else
-        field := TStringField.Create(cdsDestino);
+        field := TWideStringField.Create(cdsDestino);
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
-      if (cdsOrigem.Fields[i] is TStringField) then
+      if (cdsOrigem.Fields[i] is TWideStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
       
@@ -1107,13 +1107,13 @@ begin
       else if (cdsOrigem.Fields[i]) is TFloatField then
         field := TFloatField.Create(cdsDestino)
       else
-        field := TStringField.Create(cdsDestino);
+        field := TWideStringField.Create(cdsDestino);
 
       Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
-      if (cdsOrigem.Fields[i] is TStringField) then
+      if (cdsOrigem.Fields[i] is TWideStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
 

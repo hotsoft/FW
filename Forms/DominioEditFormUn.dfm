@@ -91,7 +91,7 @@ inherited DominioEditForm: TDominioEditForm
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object DominioClientDataSetDESCRICAO: TStringField
+    object DominioClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]

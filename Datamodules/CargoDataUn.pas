@@ -11,8 +11,8 @@ type
     MasterDataSet: TosSQLDataset;
     MasterProvider: TosSQLDataSetProvider;
     MasterDataSetIDCARGO: TIntegerField;
-    MasterDataSetNOME: TStringField;
-    MasterDataSetAREAATUACAO: TStringField;
+    MasterDataSetNOME: TWideStringField;
+    MasterDataSetAREAATUACAO: TWideStringField;
 
   private
 

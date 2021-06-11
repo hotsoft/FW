@@ -11,18 +11,18 @@ type
     MasterDataSet: TosSQLDataset;
     MasterProvider: TosSQLDataSetProvider;
     MasterDataSetIDRELATORIO: TIntegerField;
-    MasterDataSetTITULO: TStringField;
+    MasterDataSetTITULO: TWideStringField;
     MasterDataSetDESCRICAO: TMemoField;
-    MasterDataSetCOMPATIVELAPARTIRDAVERSAO: TStringField;
-    MasterDataSetCOMPATIVELATEVERSAO: TStringField;
+    MasterDataSetCOMPATIVELAPARTIRDAVERSAO: TWideStringField;
+    MasterDataSetCOMPATIVELATEVERSAO: TWideStringField;
     MasterDataSetDATAIMPORTACAO: TSQLTimeStampField;
-    MasterDataSetARQUIVOORIGEM: TStringField;
+    MasterDataSetARQUIVOORIGEM: TWideStringField;
     MasterDataSetIDUSUARIOIMPORTACAO: TIntegerField;
     MasterDataSetITEM_ID: TIntegerField;
     MasterDataSetIDXFILTERDEF: TIntegerField;
-    MasterDataSetCLASSEIMPRESSORA: TStringField;
+    MasterDataSetCLASSEIMPRESSORA: TWideStringField;
     MasterDataSetIDTIPORELATORIO: TIntegerField;
-    MasterDataSetCLASSERELATORIO: TStringField;
+    MasterDataSetCLASSERELATORIO: TWideStringField;
   private
 
   public

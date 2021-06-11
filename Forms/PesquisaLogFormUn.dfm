@@ -218,13 +218,13 @@ inherited PesquisaLogForm: TPesquisaLogForm
       FieldName = 'DATAHORA'
       ProviderFlags = [pfInUpdate]
     end
-    object cdsLogsUsuario: TStringField
+    object cdsLogsUsuario: TWideStringField
       DisplayWidth = 20
       FieldKind = fkCalculated
       FieldName = 'Usuario'
       Calculated = True
     end
-    object cdsLogsEvento: TStringField
+    object cdsLogsEvento: TWideStringField
       DisplayWidth = 200
       FieldKind = fkCalculated
       FieldName = 'Evento'

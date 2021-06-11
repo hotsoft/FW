@@ -14,7 +14,7 @@ type
     Label2: TLabel;
     DescricaoEdit: TDBEdit;
     DominioClientDataSetIDTIPORECURSO: TIntegerField;
-    DominioClientDataSetDESCRICAO: TStringField;
+    DominioClientDataSetDESCRICAO: TWideStringField;
 
     procedure DominioClientDataSetBeforePost(DataSet: TDataSet);
     procedure DominioClientDataSetAfterApplyUpdates(Sender: TObject;

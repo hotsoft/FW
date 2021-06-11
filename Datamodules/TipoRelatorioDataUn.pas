@@ -10,8 +10,8 @@ type
   TTipoRelatorioData = class(TDataModule)
     MasterDataSet: TosSQLDataset;
     MasterProvider: TosSQLDataSetProvider;
-    MasterDataSetNOME: TStringField;
-    MasterDataSetDESCRICAO: TStringField;
+    MasterDataSetNOME: TWideStringField;
+    MasterDataSetDESCRICAO: TWideStringField;
     MasterDataSetIDTIPORELATORIO: TIntegerField;
   private
 

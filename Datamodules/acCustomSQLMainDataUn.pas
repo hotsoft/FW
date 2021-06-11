@@ -126,7 +126,7 @@ uses EscolhaConexaoFormUn;
 procedure TacCustomSQLMainData.CheckVersion(PTableFilter: string);
 var
   Query: TosSQLQuery;
-  NomeTabelaField: TStringField;
+  NomeTabelaField: TWideStringField;
   VersaoField: TIntegerField;
   RefreshTable: TRefreshTable;
 begin
@@ -141,7 +141,7 @@ begin
     Query.Open;
     if not Query.Eof then
     begin
-      NomeTabelaField := TStringField(Query.Fields[0]);
+      NomeTabelaField := TWideStringField(Query.Fields[0]);
       VersaoField := TIntegerField(Query.Fields[1]);
       while not Query.Eof do
       begin
@@ -255,7 +255,7 @@ end;
 procedure TacCustomSQLMainData.LoadRefreshTables;
 var
   Query: TosSQLQuery;
-  NomeTabelaField: TStringField;
+  NomeTabelaField: TWideStringField;
   VersaoField: TIntegerField;
   RefreshTable: TRefreshTable;
 begin
@@ -270,7 +270,7 @@ begin
       Query.Open;
       if not Query.Eof then
       begin
-        NomeTabelaField := TStringField(Query.Fields[0]);
+        NomeTabelaField := TWideStringField(Query.Fields[0]);
         VersaoField := TIntegerField(Query.Fields[1]);
         FRefreshTableList.Clear;
         while not Query.Eof do
@@ -456,7 +456,7 @@ begin
       Query.SQLConnection := aConnection;
 
     try
-      Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
+      Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor');
       Query.Open;
       Result := Query.Fields[0].AsDatetime;
       Query.Close;

@@ -11,10 +11,10 @@ type
     MasterDataSet: TosSQLDataset;
     MasterProvider: TosSQLDataSetProvider;
     MasterDataSetIDPARAMETROUSUARIO: TIntegerField;
-    MasterDataSetNOMEPARAMETRO: TStringField;
-    MasterDataSetDESCRICAO: TStringField;
-    MasterDataSetCONTEUDO: TStringField;
-    MasterDataSetTIPODADO: TStringField;
+    MasterDataSetNOMEPARAMETRO: TWideStringField;
+    MasterDataSetDESCRICAO: TWideStringField;
+    MasterDataSetCONTEUDO: TWideStringField;
+    MasterDataSetTIPODADO: TWideStringField;
   private
 
   public

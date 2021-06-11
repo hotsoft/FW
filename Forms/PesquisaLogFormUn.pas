@@ -38,9 +38,9 @@ type
     cdsLogsTIPO: TIntegerField;
     cdsLogsDESCRICAO: TBlobField;
     dsLogs: TDataSource;
-    cdsLogsEvento: TStringField;
+    cdsLogsEvento: TWideStringField;
     FramePeriodo: TFramePeriodo;
-    cdsLogsUsuario: TStringField;
+    cdsLogsUsuario: TWideStringField;
     procedure cboClassesChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure chkUsuarioClick(Sender: TObject);

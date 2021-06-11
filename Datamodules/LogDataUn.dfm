@@ -38,7 +38,7 @@ object LogData: TLogData
       DisplayLabel = 'Data e hora'
       FieldName = 'DATAHORA'
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       Size = 50

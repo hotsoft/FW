@@ -14,8 +14,8 @@ type
     Label2: TLabel;
     NomeEdit: TDBEdit;
     CargoClientDataSetIDCARGO: TIntegerField;
-    CargoClientDataSetNOME: TStringField;
-    CargoClientDataSetAREAATUACAO: TStringField;
+    CargoClientDataSetNOME: TWideStringField;
+    CargoClientDataSetAREAATUACAO: TWideStringField;
     Label1: TLabel;
     AreaAtuacaoComboBox: TwwDBComboBox;
 

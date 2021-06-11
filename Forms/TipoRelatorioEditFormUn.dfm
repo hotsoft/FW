@@ -80,13 +80,13 @@ inherited TipoRelatorioEditForm: TTipoRelatorioEditForm
     BizDatamoduleName = 'BizFilterDef'
     Left = 376
     Top = 4
-    object TipoRelatorioClientDataSetNOME: TStringField
+    object TipoRelatorioClientDataSetNOME: TWideStringField
       DisplayLabel = 'Nome da Classe'
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object TipoRelatorioClientDataSetDESCRICAO: TStringField
+    object TipoRelatorioClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]

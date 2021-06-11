@@ -12,10 +12,10 @@ type
   TParametroUsuarioEditForm = class(TosCustomEditForm)
     ParametroClientDataSet: TosClientDataset;
     ParametroClientDataSetIDPARAMETROUSUARIO: TIntegerField;
-    ParametroClientDataSetNOMEPARAMETRO: TStringField;
-    ParametroClientDataSetDESCRICAO: TStringField;
-    ParametroClientDataSetCONTEUDO: TStringField;
-    ParametroClientDataSetTIPODADO: TStringField;
+    ParametroClientDataSetNOMEPARAMETRO: TWideStringField;
+    ParametroClientDataSetDESCRICAO: TWideStringField;
+    ParametroClientDataSetCONTEUDO: TWideStringField;
+    ParametroClientDataSetTIPODADO: TWideStringField;
     Label2: TLabel;
     NomeParametroEdit: TDBEdit;
     Label1: TLabel;

@@ -23,11 +23,11 @@ object CargoData: TCargoData
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object MasterDataSetNOME: TStringField
+    object MasterDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
-    object MasterDataSetAREAATUACAO: TStringField
+    object MasterDataSetAREAATUACAO: TWideStringField
       FieldName = 'AREAATUACAO'
       Size = 40
     end

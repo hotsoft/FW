@@ -13,10 +13,10 @@ type
     TipoRelatorioClientDataSet: TosClientDataset;
     Label2: TLabel;
     NomeEdit: TDBEdit;
-    TipoRelatorioClientDataSetNOME: TStringField;
+    TipoRelatorioClientDataSetNOME: TWideStringField;
     Label1: TLabel;
     DescricaoEdit: TDBEdit;
-    TipoRelatorioClientDataSetDESCRICAO: TStringField;
+    TipoRelatorioClientDataSetDESCRICAO: TWideStringField;
     TipoRelatorioClientDataSetIDTIPORELATORIO: TIntegerField;
     procedure TipoRelatorioClientDataSetBeforePost(DataSet: TDataSet);
     procedure TipoRelatorioClientDataSetAfterApplyUpdates(

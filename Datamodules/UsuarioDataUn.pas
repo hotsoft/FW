@@ -14,11 +14,11 @@ type
     GrupoDataSet: TosSQLDataset;
     GrupoProvider: TosSQLDataSetProvider;
     MasterDataSetIDUSUARIO: TIntegerField;
-    MasterDataSetNOME: TStringField;
+    MasterDataSetNOME: TWideStringField;
     MasterDataSetIDCARGO: TIntegerField;
-    MasterDataSetAPELIDO: TStringField;
-    MasterDataSetSENHA: TStringField;
-    MasterDataSetSTATUS: TStringField;
+    MasterDataSetAPELIDO: TWideStringField;
+    MasterDataSetSENHA: TWideStringField;
+    MasterDataSetSTATUS: TWideStringField;
     GrupoUsuarioDataSet: TosSQLDataset;
     GrupoUsuarioDataSetIDGRUPOUSUARIO: TIntegerField;
     GrupoUsuarioDataSetIDGRUPO: TIntegerField;

@@ -12,7 +12,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
     DataProvider = TipoRelatorioLookupProvider
     Left = 380
     Top = 40
-    object TipoRelatorioClientDataSetNOME: TStringField
+    object TipoRelatorioClientDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Size = 40
     end
@@ -63,7 +63,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
     ClosedLookup = True
     Left = 380
     Top = 112
-    object TemplateClientDatasetNOME: TStringField
+    object TemplateClientDatasetNOME: TWideStringField
       FieldName = 'NOME'
       Required = True
       Size = 60
@@ -87,7 +87,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
     SQLConnection = acCustomSQLMainData.SQLConnection
     Left = 68
     Top = 108
-    object TemplateLookupDataSetNOME: TStringField
+    object TemplateLookupDataSetNOME: TWideStringField
       FieldName = 'NOME'
       Required = True
       Size = 60
@@ -128,7 +128,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
     ClosedLookup = True
     Left = 380
     Top = 176
-    object FilterDefClientDataSetNAME: TStringField
+    object FilterDefClientDataSetNAME: TWideStringField
       FieldName = 'NAME'
       Size = 50
     end
@@ -152,7 +152,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
     SQLConnection = acCustomSQLMainData.SQLConnection
     Left = 68
     Top = 172
-    object FilterDefLookupDataSetNAME: TStringField
+    object FilterDefLookupDataSetNAME: TWideStringField
       FieldName = 'NAME'
       Size = 50
     end
@@ -178,7 +178,7 @@ inherited RelatorioLookupData: TRelatorioLookupData
       FieldName = 'IDRELATORIO'
       Required = True
     end
-    object RelatorioClientDatasetTITULO: TStringField
+    object RelatorioClientDatasetTITULO: TWideStringField
       FieldName = 'TITULO'
       Size = 50
     end

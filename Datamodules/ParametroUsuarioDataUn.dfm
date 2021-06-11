@@ -24,24 +24,24 @@ object ParametroUsuarioData: TParametroUsuarioData
       FieldName = 'IDPARAMETROUSUARIO'
       Required = True
     end
-    object MasterDataSetNOMEPARAMETRO: TStringField
+    object MasterDataSetNOMEPARAMETRO: TWideStringField
       FieldName = 'NOMEPARAMETRO'
       ProviderFlags = [pfInUpdate]
       Required = True
       Size = 40
     end
-    object MasterDataSetDESCRICAO: TStringField
+    object MasterDataSetDESCRICAO: TWideStringField
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       Size = 50
     end
-    object MasterDataSetCONTEUDO: TStringField
+    object MasterDataSetCONTEUDO: TWideStringField
       DisplayWidth = 1000
       FieldName = 'CONTEUDO'
       ProviderFlags = [pfInUpdate]
       Size = 1000
     end
-    object MasterDataSetTIPODADO: TStringField
+    object MasterDataSetTIPODADO: TWideStringField
       FieldName = 'TIPODADO'
       ProviderFlags = [pfInUpdate]
       FixedChar = True

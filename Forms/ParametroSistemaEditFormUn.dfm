@@ -47,42 +47,42 @@ inherited EstruturaContabilEditForm: TEstruturaContabilEditForm
       BlobType = ftGraphic
       Size = 1
     end
-    object MasterClientDataSetNOMEFANTASIA: TStringField
+    object MasterClientDataSetNOMEFANTASIA: TWideStringField
       DisplayLabel = 'Nome Fantasia'
       FieldName = 'NOMEFANTASIA'
       ProviderFlags = []
       Size = 40
     end
-    object MasterClientDataSetENDERECO: TStringField
+    object MasterClientDataSetENDERECO: TWideStringField
       DisplayLabel = 'Endere'#231'o'
       FieldName = 'ENDERECO'
       ProviderFlags = []
       Size = 40
     end
-    object MasterClientDataSetBAIRRO: TStringField
+    object MasterClientDataSetBAIRRO: TWideStringField
       DisplayLabel = 'Bairro'
       FieldName = 'BAIRRO'
       ProviderFlags = []
       Size = 40
     end
-    object MasterClientDataSetCIDADE: TStringField
+    object MasterClientDataSetCIDADE: TWideStringField
       DisplayLabel = 'Cidade'
       FieldName = 'CIDADE'
       ProviderFlags = []
       Size = 40
     end
-    object MasterClientDataSetUF: TStringField
+    object MasterClientDataSetUF: TWideStringField
       FieldName = 'UF'
       ProviderFlags = []
       FixedChar = True
       Size = 2
     end
-    object MasterClientDataSetTELEFONE: TStringField
+    object MasterClientDataSetTELEFONE: TWideStringField
       DisplayLabel = 'Telefone'
       FieldName = 'TELEFONE'
       ProviderFlags = []
     end
-    object MasterClientDataSetNomeEmpresa: TStringField
+    object MasterClientDataSetNomeEmpresa: TWideStringField
       FieldKind = fkLookup
       FieldName = 'NomeEmpresa'
       LookupKeyFields = 'IDEMPRESA'
@@ -91,17 +91,17 @@ inherited EstruturaContabilEditForm: TEstruturaContabilEditForm
       Size = 40
       Lookup = True
     end
-    object MasterClientDataSetMENSAGEMORCAMENTO: TStringField
+    object MasterClientDataSetMENSAGEMORCAMENTO: TWideStringField
       FieldName = 'MENSAGEMORCAMENTO'
       ProviderFlags = [pfInUpdate]
       Size = 512
     end
-    object MasterClientDataSetMENSAGEMLOCACAO: TStringField
+    object MasterClientDataSetMENSAGEMLOCACAO: TWideStringField
       FieldName = 'MENSAGEMLOCACAO'
       ProviderFlags = [pfInUpdate]
       Size = 512
     end
-    object MasterClientDataSetNOMELOCATARIO: TStringField
+    object MasterClientDataSetNOMELOCATARIO: TWideStringField
       FieldName = 'NOMELOCATARIO'
       ProviderFlags = [pfInUpdate]
       Size = 40

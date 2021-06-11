@@ -67,7 +67,7 @@ inherited TipoRecursoEditForm: TTipoRecursoEditForm
       FieldName = 'IDTIPORECURSO'
       Required = True
     end
-    object DominioClientDataSetDESCRICAO: TStringField
+    object DominioClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       Size = 50

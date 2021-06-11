@@ -314,7 +314,7 @@ inherited RecursoEditForm: TRecursoEditForm
       FieldName = 'IDTIPORECURSO'
       ProviderFlags = [pfInUpdate]
     end
-    object RecursoClientDataSourceDESCRICAO: TStringField
+    object RecursoClientDataSourceDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       DisplayWidth = 255
       FieldName = 'DESCRICAO'
@@ -326,7 +326,7 @@ inherited RecursoEditForm: TRecursoEditForm
       FieldName = 'IDDOMINIO'
       ProviderFlags = [pfInUpdate]
     end
-    object RecursoClientDataSourceNOME: TStringField
+    object RecursoClientDataSourceNOME: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
@@ -338,7 +338,7 @@ inherited RecursoEditForm: TRecursoEditForm
     object RecursoClientDataSourceNUMORDEM: TIntegerField
       FieldName = 'NUMORDEM'
     end
-    object RecursoClientDataSourceDescricaoDominio: TStringField
+    object RecursoClientDataSourceDescricaoDominio: TWideStringField
       DisplayLabel = 'Descri'#231#227'o do Dom'#237'nio'
       FieldKind = fkLookup
       FieldName = 'DescricaoDominio'
@@ -349,7 +349,7 @@ inherited RecursoEditForm: TRecursoEditForm
       Size = 50
       Lookup = True
     end
-    object RecursoClientDataSourceDescricaoTipoRecurso: TStringField
+    object RecursoClientDataSourceDescricaoTipoRecurso: TWideStringField
       DisplayLabel = 'Descri'#231#227'o do Tipo de Recurso'
       FieldKind = fkLookup
       FieldName = 'DescricaoTipoRecurso'
@@ -360,22 +360,22 @@ inherited RecursoEditForm: TRecursoEditForm
       Size = 50
       Lookup = True
     end
-    object RecursoClientDataSourceFILTERDEFNAME: TStringField
+    object RecursoClientDataSourceFILTERDEFNAME: TWideStringField
       DisplayLabel = 'Nome da defini'#231#227'o de Filtro'
       FieldName = 'FILTERDEFNAME'
       Size = 50
     end
-    object RecursoClientDataSourceDATACLASSNAME: TStringField
+    object RecursoClientDataSourceDATACLASSNAME: TWideStringField
       DisplayLabel = 'Nome da classe de Dados'
       FieldName = 'DATACLASSNAME'
       Size = 50
     end
-    object RecursoClientDataSourceRESCLASSNAME: TStringField
+    object RecursoClientDataSourceRESCLASSNAME: TWideStringField
       DisplayLabel = 'Nome da classe do Recurso'
       FieldName = 'RESCLASSNAME'
       Size = 50
     end
-    object RecursoClientDataSourceREPORTCLASSNAME: TStringField
+    object RecursoClientDataSourceREPORTCLASSNAME: TWideStringField
       DisplayLabel = 'Nome da classe do Relat'#243'rio'
       FieldName = 'REPORTCLASSNAME'
       Size = 50
@@ -383,13 +383,13 @@ inherited RecursoEditForm: TRecursoEditForm
     object RecursoClientDataSourceAcaoDataSet: TDataSetField
       FieldName = 'AcaoDataSet'
     end
-    object RecursoClientDataSourceHABILITAEDITARTODOS: TStringField
+    object RecursoClientDataSourceHABILITAEDITARTODOS: TWideStringField
       FieldName = 'HABILITAEDITARTODOS'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
       Size = 1
     end
-    object RecursoClientDataSourceFORCAREEXECUCAOFILTRO: TStringField
+    object RecursoClientDataSourceFORCAREEXECUCAOFILTRO: TWideStringField
       FieldName = 'FORCAREEXECUCAOFILTRO'
       ProviderFlags = [pfInUpdate]
       FixedChar = True
@@ -404,21 +404,21 @@ inherited RecursoEditForm: TRecursoEditForm
     BeforePost = AcaoClientDataSetBeforePost
     AfterApplyUpdates = AcaoClientDataSetAfterApplyUpdates
     Left = 364
-    object AcaoClientDataSetNOME: TStringField
+    object AcaoClientDataSetNOME: TWideStringField
       DisplayLabel = 'Nome'
       DisplayWidth = 15
       FieldName = 'NOME'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object AcaoClientDataSetNOMECOMPONENTE: TStringField
+    object AcaoClientDataSetNOMECOMPONENTE: TWideStringField
       DisplayLabel = 'Componente'
       DisplayWidth = 20
       FieldName = 'NOMECOMPONENTE'
       ProviderFlags = [pfInUpdate]
       Size = 40
     end
-    object AcaoClientDataSetDESCRICAO: TStringField
+    object AcaoClientDataSetDESCRICAO: TWideStringField
       DisplayLabel = 'Descri'#231#227'o'
       DisplayWidth = 35
       FieldName = 'DESCRICAO'
