@@ -741,7 +741,7 @@ begin
   try
     qry := TosSQLQuery.Create(nil);
     qry.SQLConnection := conn;
-    qry.SQL.Text := 'select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE';
+    qry.SQL.Text := 'select CURRENT_TIMESTAMP as DataHoraServidor';
     qry.Open;
     Result := qry.FieldByName('DataHoraServidor').AsDatetime;
   finally
@@ -752,33 +752,51 @@ end;
 
 function GetNewID(conn: TSQLConnection): Integer;
 var
-  qry: TosSQLQuery;
+  InternalDataSet: TSQLDataSet;
+  PSeqName: String;
 begin
   try
-    qry := TosSQLQuery.Create(nil);
-    qry.SQLConnection := conn;
-    qry.SQL.Text := 'select gen_id(KGIDHIGH, 1) id from RDB$DATABASE';
-    qry.Open;
-
-    Result := qry.FieldByName('id').AsInteger * 10;
+    InternalDataSet := TSQLDataSet.Create(nil);
+    with InternalDataset do
+    begin
+       SQLConnection := conn;
+      if Active then
+        Close;
+      CommandType := ctStoredProc;
+      CommandText := 'OS_GETIDHIGH';
+      Params.Clear;
+      with Params.CreateParam(ftstring, 'SEQNAME', ptInput) do
+        AsString := PSeqName;
+      Params.CreateParam(ftInteger, 'HIGHVALUE', ptOutput);
+      ExecSQL;
+      Result := Params.ParamByName('HighValue').Value;
+    end;
   finally
-    FreeAndNil(qry);
+    FreeAndNil(InternalDataSet);
   end;
 end;
 
 function GetGenerator(conn: TSQLConnection; generator: string): Integer;
 var
   qry: TosSQLQuery;
+  InternalDataSet: TSQLDataSet;
 begin
   try
-    qry := TosSQLQuery.Create(nil);
-    qry.SQLConnection := conn;
-    qry.SQL.Text := 'select gen_id('+generator+', 1) id from RDB$DATABASE';
-    qry.Open;
-
-    Result := qry.FieldByName('id').AsInteger * 10;
+    InternalDataSet := TSQLDataSet.Create(nil);
+    with InternalDataset do
+    begin
+       SQLConnection := conn;
+      if Active then
+        Close;
+      CommandType := ctStoredProc;
+      CommandText := 'OS_' + generator;
+      Params.Clear;
+      Params.CreateParam(ftInteger, generator, ptOutput);
+      ExecSQL;
+      Result := Params.ParamByName(generator).Value;
+    end;
   finally
-    FreeAndNil(qry);
+    FreeAndNil(InternalDataSet);
   end;
 end;
 

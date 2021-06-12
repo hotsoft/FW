@@ -404,7 +404,7 @@ end;
 function TacCustomSQLMainData.GetNewID(nomeGenerator: String= ''; aConnection: TSQLConnection = nil): integer;
 var
   v: variant;
-  qryAux: TosSQLDataSet;
+  InternalDataSet: TSQLDataSet;
 begin
   if nomeGenerator='' then
   begin
@@ -414,7 +414,7 @@ begin
       try
         if (aConnection <> nil) then
           FilterQuery.SQLConnection := aConnection;
-      
+
         v := prvFilter.GetIDHigh;
         if v = NULL then
           raise Exception.Create('Não conseguiu obter o ID do server para inclusão');
@@ -426,18 +426,32 @@ begin
     end;
     Result := FIDHighValue * 10 + FIDLowValue;
     Inc(FIDLowValue);
-  end else
+  end
+  else
   begin
-    qryAux := GeTosSQLDataset;
     try
-      if (aConnection <> nil) then
-        qryAux.SQLConnection := aConnection;
-      qryAux.CommandText := 'select gen_id('+nomeGenerator+', 1) from RDB$DATABASE';
-      qryAux.Open;
-      result := qryAux.Fields[0].AsInteger;
+      InternalDataSet := TSQLDataSet.Create(nil);
+      with InternalDataset do
+      begin
+        if (aConnection <> nil) then
+          SQLConnection := aConnection
+        else
+          SQLConnection := self.SQLConnection;
+
+        if Active then
+          Close;
+        CommandType := ctStoredProc;
+        CommandText := 'OS_' + nomeGenerator;
+        Params.Clear;
+        Params.CreateParam(ftInteger, nomeGenerator, ptOutput);
+        ExecSQL;
+        Result := Params.ParamByName(nomeGenerator).Value;
+      end;
     finally
-      FreeAndNil(qryAux);
+      FreeAndNil(InternalDataSet);
     end;
+
+
   end;
 end;
 
@@ -571,13 +585,17 @@ begin
     Query.Open;
     _Versao := 1;
     if (not Query.IsEmpty) then
+    begin
       _Versao := Query.FieldByName('Versao').AsInteger + 1;
-    
-    Query.SQL.Text := Format(
-    'UPDATE OR INSERT INTO ' +
-    ' VersaoTabela (nometabela, Versao) ' +
-    ' VALUES (%s,  %d) ' +
-    ' MATCHING (nomeTabela) ', [QuotedStr(PTableName), _Versao]);
+      Query.SQL.Text := 'UPDATE VersaoTabela set versao = :versao where nomeTabela = :tabela';
+      Query.ParamByName('versao').AsInteger := _Versao;
+    end
+    else
+    begin
+      Query.SQL.Text := 'INSERT INTO VersaoTabela (nometabela, Versao) values (:nometabela, :versao)';
+      Query.ParamByName('versao').AsInteger := _Versao;
+      Query.ParamByName('nometabela').AsString := PTableName;
+    end;
     Query.ExecSql;
   finally
     FreeQuery(Query);
@@ -676,14 +694,14 @@ begin
 end;
 
 
-function TacCustomSQLMainData.GetGeneratorValue(
-  nomeGenerator: String): integer;
+function TacCustomSQLMainData.GetGeneratorValue(nomeGenerator: String): integer;
 var
   qryAux: TosSQLDataSet;
 begin
   qryAux := GeTosSQLDataset;
   try
-    qryAux.CommandText := 'select gen_id('+nomeGenerator+', 1) from RDB$DATABASE';
+    qryAux.CommandText := 'select sequencial from generators where nome = :nome';
+    qryAux.ParamByName('nome').AsString := nomeGenerator;
     qryAux.Open;
     result := qryAux.fields[0].AsInteger;
   finally
