@@ -26,9 +26,24 @@ object FilterDefData: TFilterDefData
         ParamType = ptInput
         Value = '-1'
       end>
-    SQLConnection = acCustomSQLMainData.SQLConnection
+    SQLConnection = MainData.SQLConnection
     Left = 56
     Top = 20
+    object MasterDatasetIDXFilterDef: TIntegerField
+      FieldName = 'IDXFilterDef'
+    end
+    object MasterDatasetName: TWideStringField
+      FieldName = 'Name'
+      Size = 50
+    end
+    object MasterDatasetFilterType: TWideStringField
+      FieldName = 'FilterType'
+      Size = 3
+    end
+    object MasterDatasetTitulo: TWideStringField
+      FieldName = 'Titulo'
+      Size = 100
+    end
   end
   object FilterDefDetailDataset: TosSQLDataSet
     CommandText = 
@@ -44,8 +59,51 @@ object FilterDefData: TFilterDefData
         Name = 'IDXFilterDef'
         ParamType = ptInput
       end>
-    SQLConnection = acCustomSQLMainData.SQLConnection
+    SQLConnection = MainData.SQLConnection
     Left = 188
     Top = 92
+    object FilterDefDetailDatasetIDXFilterDefDetail: TIntegerField
+      FieldName = 'IDXFilterDefDetail'
+    end
+    object FilterDefDetailDatasetIDXFilterDef: TIntegerField
+      FieldName = 'IDXFilterDef'
+    end
+    object FilterDefDetailDatasetNumber: TIntegerField
+      FieldName = 'Number'
+    end
+    object FilterDefDetailDatasetDescription: TWideStringField
+      FieldName = 'Description'
+      Size = 200
+    end
+    object FilterDefDetailDatasetQueryText: TBlobField
+      FieldName = 'QueryText'
+      Size = -1
+    end
+    object FilterDefDetailDatasetExpressionList: TBlobField
+      FieldName = 'ExpressionList'
+      BlobType = ftMemo
+      Size = -1
+    end
+    object FilterDefDetailDatasetConstraintList: TBlobField
+      FieldName = 'ConstraintList'
+      Size = -1
+    end
+    object FilterDefDetailDatasetOrderList: TBlobField
+      FieldName = 'OrderList'
+      Size = -1
+    end
+    object FilterDefDetailDatasetOrderColumn: TWideStringField
+      FieldName = 'OrderColumn'
+      Size = 50
+    end
+    object FilterDefDetailDatasetOrderType: TWideStringField
+      FieldName = 'OrderType'
+      Size = 1
+    end
+    object FilterDefDetailDatasetAttributeList: TWideMemoField
+      FieldName = 'AttributeList'
+      BlobType = ftWideMemo
+      Size = -1
+    end
   end
 end

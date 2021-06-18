@@ -7,7 +7,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
   Caption = 'Defini'#231#227'o de Filtros'
   ClientHeight = 501
   ClientWidth = 496
-  ExplicitTop = -195
+  ExplicitTop = -166
   ExplicitWidth = 520
   ExplicitHeight = 568
   PixelsPerInch = 96
@@ -438,12 +438,6 @@ inherited FilterDefEditForm: TFilterDefEditForm
       BlobType = ftMemo
       Size = 1
     end
-    object cdsEditDetailAttributeList: TMemoField
-      DisplayLabel = 'Attributos'
-      FieldName = 'AttributeList'
-      BlobType = ftMemo
-      Size = 1
-    end
     object cdsEditDetailExpressionList: TMemoField
       DisplayLabel = 'Express'#245'es Default'
       FieldName = 'ExpressionList'
@@ -470,6 +464,10 @@ inherited FilterDefEditForm: TFilterDefEditForm
       FieldName = 'ORDERTYPE'
       FixedChar = True
       Size = 1
+    end
+    object cdsEditDetailAttributeList: TWideMemoField
+      FieldName = 'AttributeList'
+      BlobType = ftWideMemo
     end
   end
   object dsEditDetail: TDataSource
@@ -508,7 +506,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
   object report: TppReport
     PrinterSetup.BinName = 'Default'
     PrinterSetup.DocumentName = 'Report'
-    PrinterSetup.PaperName = 'A4 (210 x 297 mm)'
+    PrinterSetup.PaperName = 'A4'
     PrinterSetup.PrinterName = 'Default'
     PrinterSetup.SaveDeviceSettings = False
     PrinterSetup.mmMarginBottom = 6350
@@ -517,7 +515,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 297000
     PrinterSetup.mmPaperWidth = 210000
-    PrinterSetup.PaperSize = 256
+    PrinterSetup.PaperSize = 9
     ArchiveFileName = '($MyDocuments)\ReportArchive.raf'
     DeviceType = 'Screen'
     DefaultFileDeviceType = 'PDF'

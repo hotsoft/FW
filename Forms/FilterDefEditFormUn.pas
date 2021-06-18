@@ -23,7 +23,6 @@ type
     cdsEditDetailNumber: TIntegerField;
     cdsEditDetailDescription: TWideStringField;
     cdsEditDetailQueryText: TMemoField;
-    cdsEditDetailAttributeList: TMemoField;
     cdsEditDetailExpressionList: TMemoField;
     cdsEditDetailConstraintList: TMemoField;
     cdsEditDetailOrderList: TMemoField;
@@ -69,6 +68,7 @@ type
     cdsEditDetailORDERCOLUMN: TWideStringField;
     DBCheckBox1: TDBCheckBox;
     cdsEditDetailORDERTYPE: TWideStringField;
+    cdsEditDetailAttributeList: TWideMemoField;
     procedure TestarActionExecute(Sender: TObject);
     procedure cdsEditNewRecord(DataSet: TDataSet);
     procedure ApagarFiltroActionExecute(Sender: TObject);

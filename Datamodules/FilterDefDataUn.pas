@@ -13,6 +13,21 @@ type
     MasterProvider: TosSQLDataSetProvider;
     MasterDataset: TosSQLDataset;
     FilterDefDetailDataset: TosSQLDataset;
+    FilterDefDetailDatasetIDXFilterDefDetail: TIntegerField;
+    FilterDefDetailDatasetIDXFilterDef: TIntegerField;
+    FilterDefDetailDatasetNumber: TIntegerField;
+    FilterDefDetailDatasetDescription: TWideStringField;
+    FilterDefDetailDatasetQueryText: TBlobField;
+    FilterDefDetailDatasetExpressionList: TBlobField;
+    FilterDefDetailDatasetConstraintList: TBlobField;
+    FilterDefDetailDatasetOrderList: TBlobField;
+    FilterDefDetailDatasetOrderColumn: TWideStringField;
+    FilterDefDetailDatasetOrderType: TWideStringField;
+    MasterDatasetIDXFilterDef: TIntegerField;
+    MasterDatasetName: TWideStringField;
+    MasterDatasetFilterType: TWideStringField;
+    MasterDatasetTitulo: TWideStringField;
+    FilterDefDetailDatasetAttributeList: TWideMemoField;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
