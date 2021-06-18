@@ -47,7 +47,7 @@ type
     Report: TppReport;
     RelatorioClientDataSetIDRELATORIO: TIntegerField;
     RelatorioClientDataSetTITULO: TWideStringField;
-    RelatorioClientDataSetDESCRICAO: TMemoField;
+    RelatorioClientDataSetDESCRICAO: TWideMemoField;
     RelatorioClientDataSetCLASSEIMPRESSORA: TWideStringField;
     RelatorioClientDataSetCOMPATIVELAPARTIRDAVERSAO: TWideStringField;
     RelatorioClientDataSetCOMPATIVELATEVERSAO: TWideStringField;

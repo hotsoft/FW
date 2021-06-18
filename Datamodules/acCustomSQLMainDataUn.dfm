@@ -11,23 +11,32 @@ object acCustomSQLMainData: TacCustomSQLMainData
   end
   object SQLConnection: TosSQLConnection
     ConnectionName = 'IBConnection'
-    DriverName = 'Interbase'
+    DriverName = 'DevartMySQL'
     LoginPrompt = False
     Params.Strings = (
-      'DriverName=Interbase'
-      'Database=database.gdb'
-      'RoleName=RoleName'
-      'User_Name=sysdba'
-      'Password=masterkey'
-      'ServerCharSet='
-      'SQLDialect=3'
-      'ErrorResourceFile='
-      'LocaleCode=0000'
+      'DriverUnit=DbxDevartMySql'
+      
+        'DriverPackageLoader=TDBXDynalinkDriverLoader,DBXCommonDriver180.' +
+        'bpl'
+      
+        'MetaDataPackageLoader=TDBXDevartMySqlMetaDataCommandFactory,DbxD' +
+        'evartMySqlDriver180.bpl'
+      'ProductName=DevartMySQL'
+      'GetDriverFunc=getSQLDriverMySQL'
+      'LibraryName=dbexpmda40.dll'
+      'VendorLib=libmysql.dll'
+      'LibraryNameOsx=libdbexpmda40.dylib'
+      'VendorLibOsx=libmysql.dylib'
+      'MaxBlobSize=-1'
+      'FetchAll=True'
+      'EnableBoolean=False'
+      'UseUnicode=True'
+      'IPVersion=IPv4'
       'BlobSize=-1'
-      'CommitRetain=False'
-      'WaitOnLocks=True'
-      'IsolationLevel=ReadCommitted'
-      'Trim Char=False')
+      'HostName=localhost'
+      'DataBase=labmaster'
+      'User_Name=root'
+      'Password=senhaMySql')
     Left = 100
     Top = 80
   end

@@ -30,7 +30,7 @@ object acCustomRelatorioData: TacCustomRelatorioData
       ProviderFlags = [pfInUpdate]
       Size = 50
     end
-    object MasterDataSetDESCRICAO: TMemoField
+    object MasterDataSetDESCRICAO: TWideMemoField
       FieldName = 'DESCRICAO'
       ProviderFlags = [pfInUpdate]
       BlobType = ftMemo

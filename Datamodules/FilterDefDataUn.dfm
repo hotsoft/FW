@@ -75,21 +75,29 @@ object FilterDefData: TFilterDefData
       FieldName = 'Description'
       Size = 200
     end
-    object FilterDefDetailDatasetQueryText: TBlobField
+    object FilterDefDetailDatasetQueryText: TWideMemoField
       FieldName = 'QueryText'
+      BlobType = ftWideMemo
       Size = -1
     end
-    object FilterDefDetailDatasetExpressionList: TBlobField
+    object FilterDefDetailDatasetAttributeList: TWideMemoField
+      FieldName = 'AttributeList'
+      BlobType = ftWideMemo
+      Size = -1
+    end
+    object FilterDefDetailDatasetExpressionList: TWideMemoField
       FieldName = 'ExpressionList'
-      BlobType = ftMemo
+      BlobType = ftWideMemo
       Size = -1
     end
-    object FilterDefDetailDatasetConstraintList: TBlobField
+    object FilterDefDetailDatasetConstraintList: TWideMemoField
       FieldName = 'ConstraintList'
+      BlobType = ftWideMemo
       Size = -1
     end
-    object FilterDefDetailDatasetOrderList: TBlobField
+    object FilterDefDetailDatasetOrderList: TWideMemoField
       FieldName = 'OrderList'
+      BlobType = ftWideMemo
       Size = -1
     end
     object FilterDefDetailDatasetOrderColumn: TWideStringField
@@ -99,11 +107,6 @@ object FilterDefData: TFilterDefData
     object FilterDefDetailDatasetOrderType: TWideStringField
       FieldName = 'OrderType'
       Size = 1
-    end
-    object FilterDefDetailDatasetAttributeList: TWideMemoField
-      FieldName = 'AttributeList'
-      BlobType = ftWideMemo
-      Size = -1
     end
   end
 end

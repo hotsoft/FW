@@ -1030,8 +1030,8 @@ begin
       if (onlyData) and ((cdsOrigem.Fields[i]) is TDataSetField) then
         continue;
 
-      if (cdsOrigem.Fields[i]) is TMemoField then
-        field := TMemoField.Create(cdsDestino)
+      if (cdsOrigem.Fields[i]) is TWideMemoField then
+        field := TWideMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
@@ -1112,8 +1112,8 @@ begin
   begin
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
-      if (cdsOrigem.Fields[i]) is TMemoField then
-        field := TMemoField.Create(cdsDestino)
+      if (cdsOrigem.Fields[i]) is TWideMemoField then
+        field := TWideMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then

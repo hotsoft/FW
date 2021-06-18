@@ -8,7 +8,6 @@ inherited osCustomMainForm: TosCustomMainForm
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized
-  ExplicitTop = -195
   ExplicitWidth = 1024
   ExplicitHeight = 704
   PixelsPerInch = 96
@@ -26,7 +25,6 @@ inherited osCustomMainForm: TosCustomMainForm
       Left = 11
       Top = 2
       Width = 268
-      Height = 22
       AutoSize = True
       ButtonHeight = 32
       ButtonWidth = 32

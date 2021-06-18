@@ -12,7 +12,7 @@ type
     MasterProvider: TosSQLDataSetProvider;
     MasterDataSetIDRELATORIO: TIntegerField;
     MasterDataSetTITULO: TWideStringField;
-    MasterDataSetDESCRICAO: TMemoField;
+    MasterDataSetDESCRICAO: TWideMemoField;
     MasterDataSetCOMPATIVELAPARTIRDAVERSAO: TWideStringField;
     MasterDataSetCOMPATIVELATEVERSAO: TWideStringField;
     MasterDataSetDATAIMPORTACAO: TSQLTimeStampField;

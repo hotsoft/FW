@@ -7,7 +7,7 @@ inherited FilterDefEditForm: TFilterDefEditForm
   Caption = 'Defini'#231#227'o de Filtros'
   ClientHeight = 501
   ClientWidth = 496
-  ExplicitTop = -166
+  ExplicitTop = -58
   ExplicitWidth = 520
   ExplicitHeight = 568
   PixelsPerInch = 96
@@ -427,47 +427,36 @@ inherited FilterDefEditForm: TFilterDefEditForm
       FieldName = 'Number'
     end
     object cdsEditDetailDescription: TWideStringField
-      DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'Description'
-      FixedChar = True
       Size = 200
     end
-    object cdsEditDetailQueryText: TMemoField
-      DisplayLabel = 'Query'
+    object cdsEditDetailQueryText: TWideMemoField
       FieldName = 'QueryText'
-      BlobType = ftMemo
-      Size = 1
-    end
-    object cdsEditDetailExpressionList: TMemoField
-      DisplayLabel = 'Express'#245'es Default'
-      FieldName = 'ExpressionList'
-      BlobType = ftMemo
-      Size = 1
-    end
-    object cdsEditDetailConstraintList: TMemoField
-      DisplayLabel = 'Restri'#231#245'es do Usu'#225'rio'
-      FieldName = 'ConstraintList'
-      BlobType = ftMemo
-      Size = 1
-    end
-    object cdsEditDetailOrderList: TMemoField
-      DisplayLabel = 'Ordena'#231#227'o'
-      FieldName = 'OrderList'
-      BlobType = ftMemo
-      Size = 1
-    end
-    object cdsEditDetailORDERCOLUMN: TWideStringField
-      FieldName = 'ORDERCOLUMN'
-      Size = 50
-    end
-    object cdsEditDetailORDERTYPE: TWideStringField
-      FieldName = 'ORDERTYPE'
-      FixedChar = True
-      Size = 1
+      BlobType = ftWideMemo
     end
     object cdsEditDetailAttributeList: TWideMemoField
       FieldName = 'AttributeList'
       BlobType = ftWideMemo
+    end
+    object cdsEditDetailExpressionList: TWideMemoField
+      FieldName = 'ExpressionList'
+      BlobType = ftWideMemo
+    end
+    object cdsEditDetailConstraintList: TWideMemoField
+      FieldName = 'ConstraintList'
+      BlobType = ftWideMemo
+    end
+    object cdsEditDetailOrderList: TWideMemoField
+      FieldName = 'OrderList'
+      BlobType = ftWideMemo
+    end
+    object cdsEditDetailOrderColumn: TWideStringField
+      FieldName = 'OrderColumn'
+      Size = 50
+    end
+    object cdsEditDetailOrderType: TWideStringField
+      FieldName = 'OrderType'
+      Size = 1
     end
   end
   object dsEditDetail: TDataSource

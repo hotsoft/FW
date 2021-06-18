@@ -471,7 +471,7 @@ inherited RelatorioEditForm: TRelatorioEditForm
       FieldName = 'TITULO'
       Size = 50
     end
-    object RelatorioClientDataSetDESCRICAO: TMemoField
+    object RelatorioClientDataSetDESCRICAO: TWideMemoField
       DisplayLabel = 'Descri'#231#227'o'
       FieldName = 'DESCRICAO'
       BlobType = ftMemo

@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Data.DBXFirebird, FMTBcd, SqlExpr, osSQLDataSet, DB,
   osSQLConnection, Provider, osCustomDataSetProvider, osSQLDataSetProvider,
   osClientDataSet, Contnrs, osSQLQuery, Forms, Types, Variants,
-  Data.DBXInterBase, Data.DBXCommon, System.Generics.Collections;
+  Data.DBXInterBase, Data.DBXCommon, System.Generics.Collections, DbxDevartMySql;
 
 const
 
