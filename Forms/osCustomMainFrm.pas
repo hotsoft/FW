@@ -17,7 +17,9 @@ uses
   osSQLDataSetProvider, daSQl, daQueryDataView, ppTypes, acCustomReportUn,
   osSQLQuery, acFilterController, CommCtrl, clipbrd, osCustomLoginFormUn,
   acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons,
-  System.UITypes;
+  System.UITypes, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxStyles, cxCustomData,
+  cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -76,7 +78,6 @@ type
     BarLargeImages: TImageList;
     BarSmallImages: TImageList;
     Panel2: TPanel;
-    Grid: TwwDBGrid;
     ResourcePanel: TPanel;
     AdvanceAction: TAction;
     RetrocedeAction: TAction;
@@ -143,17 +144,43 @@ type
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
     PrintAllToolButton: TW7ToolButton;
+    cxStyleRepository1: TcxStyleRepository;
+    cxStyle1: TcxStyle;
+    cxStyle2: TcxStyle;
+    cxStyle3: TcxStyle;
+    cxStyle4: TcxStyle;
+    cxStyle5: TcxStyle;
+    cxStyle6: TcxStyle;
+    cxStyle7: TcxStyle;
+    cxStyle8: TcxStyle;
+    cxStyle9: TcxStyle;
+    cxStyle10: TcxStyle;
+    cxStyle11: TcxStyle;
+    cxStyle12: TcxStyle;
+    cxStyle14: TcxStyle;
+    cxStyleBandHeader: TcxStyle;
+    cxBandVersao: TcxStyle;
+    cxBandAtributo: TcxStyle;
+    cxBandValorReferencia: TcxStyle;
+    cxBandRecomendacaoPaciente: TcxStyle;
+    cxBandRecomendacaoColeta: TcxStyle;
+    cxStyle13: TcxStyle;
+    cxExameAlterado: TcxStyle;
+    cxStyle15: TcxStyle;
+    cxStyle16: TcxStyle;
+    cxBandApoio: TcxStyle;
+    Grid: TcxGrid;
+    TvGrid: TcxGridDBTableView;
+    LvGrid: TcxGridLevel;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
     procedure DeleteActionExecute(Sender: TObject);
     procedure FilterDatasetAfterOpen(DataSet: TDataSet);
-    procedure GridDblClick(Sender: TObject);
     procedure CheckActionsExecute(Sender: TObject);
     procedure FilterActionExecute(Sender: TObject);
     procedure ConsultaComboCloseUp(Sender: TwwDBComboBox; Select: Boolean);
     procedure FilterDatasetAfterScroll(DataSet: TDataSet);
-    procedure GridTitleClick(Column: TColumn);
     procedure FilterDatasetBeforeOpen(DataSet: TDataSet);
     procedure ShowQueryActionExecute(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
@@ -168,9 +195,6 @@ type
     procedure PrintFilterActionExecute(Sender: TObject);
     procedure LoginActionExecute(Sender: TObject);
     procedure LogoutActionExecute(Sender: TObject);
-    procedure GridKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure GridKeyPress(Sender: TObject; var Key: Char);
     procedure spbPreviewPrintClick(Sender: TObject);
     procedure spbPreviewWholeClick(Sender: TObject);
     procedure spbPreviewWidthClick(Sender: TObject);
@@ -198,6 +222,10 @@ type
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EdtPesquisaEnter(Sender: TObject);
+    procedure TvGridDblClick(Sender: TObject);
+    procedure TvGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TvGridKeyPress(Sender: TObject; var Key: Char);
+    procedure TvGridTopRecordIndexChanged(Sender: TObject);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -239,6 +267,7 @@ type
 
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
+    procedure IniciaGrid;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -474,18 +503,12 @@ begin
   FilterDataset.First;
 
   // Redesenha o grid para que seja mostrada a seta na coluna apropriada
-  Grid.RedrawGrid;
+//  Grid.RedrawGrid;
 end;
 
 procedure TosCustomMainForm.SetActionDblClick(const Value: TAction);
 begin
   FActionDblClick := Value;
-end;
-
-procedure TosCustomMainForm.GridDblClick(Sender: TObject);
-begin
-  inherited;
-  ActionDblClick.Execute;
 end;
 
 procedure TosCustomMainForm.CheckActionsExecute(Sender: TObject);
@@ -564,7 +587,10 @@ begin
         ReplaceReportSQLPrint
       else
       begin
+        TvGrid.DataController.BeginUpdate;
         sent := ConsultaCombo.ExecuteFilter;
+        self.IniciaGrid;
+        TvGrid.DataController.EndUpdate;
         if sent = '' then
         begin
           FilterDataset.data := data;
@@ -626,8 +652,8 @@ begin
 		DisableControls;
 		for i:= 0 to SelectedList.Count-1 do
     begin
-		  GotoBookmark(SelectedList.items[i]);
-			Freebookmark(SelectedList.items[i]);
+//		  GotoBookmark(SelectedList.items[i]);
+//			Freebookmark(SelectedList.items[i]);
       FSelectedList.Add(FIDField.AsString);
 		end;
 		SelectedList.Clear;
@@ -642,12 +668,6 @@ begin
   FreeAndNil(FSelectedList);
   FreeAndNil(FModifiedList);
   inherited;
-end;
-
-procedure TosCustomMainForm.GridTitleClick(Column: TColumn);
-begin
-  inherited;
-  FilterDataset.IndexFieldNames := Column.FieldName;
 end;
 
 procedure TosCustomMainForm.PrintFilterActionExecute(Sender: TObject);
@@ -944,13 +964,13 @@ begin
   FSelectionField := FilterDataset.Fields.FindField('Selected');
   if Assigned(FSelectionField) then
   begin
-    Grid.Options := Grid.Options + [dgMultiSelect];
-    Grid.MultiSelectOptions := [msoShiftSelect];
+   // Grid.Options := Grid.Options + [dgMultiSelect];
+   // Grid.MultiSelectOptions := [msoShiftSelect];
   end
   else
   begin
-    Grid.Options := Grid.Options - [dgMultiSelect];
-    Grid.MultiSelectOptions := [];
+   // Grid.Options := Grid.Options - [dgMultiSelect];
+   // Grid.MultiSelectOptions := [];
   end
 end;
 
@@ -1070,7 +1090,7 @@ begin
   // caso o field não seja encontrado. Todavia isso não deve acontecer, uma vez
   // que este evento será disparado apenas quando o dataset estiver aberto e com
   // fields válidos)
-  Field := Grid.DataSource.DataSet.FieldByName(AFieldName);
+  Field := TvGrid.DataController.DataSource.DataSet.FieldByName(AFieldName); //Grid.DataSource.DataSet.FieldByName(AFieldName);
   // Se o usuário clicou no mesmo field de antes então...
   if Field = SortField then
     // ... muda o sentido da seta
@@ -1082,7 +1102,7 @@ begin
     // outras colunas
     SortField := Field;
     AscendingSort := True;
-    Grid.RedrawGrid;
+    //Grid.RedrawGrid;
   end;
 
 
@@ -1333,66 +1353,6 @@ begin
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;
       no.SelectedIndex := Manager.Resources[i].ID;
-    end;
-  end;
-end;
-
-procedure TosCustomMainForm.GridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  inherited;
-  // Executa a ação padrão para o recurso quando o usuário pressiona Enter
-  if VK_RETURN = Key then
-  begin
-    // Limpa a string para impedir que a busca incremental continue do ponto
-    // onde parou após o usuário fechar a caixa de diálogo
-    CurrentSearchString := '';
-    ActionDblClick.Execute;
-  end
-  else
-  begin
-    // A string de busca incremental é esvaziada quando o usuário pressiona ESC
-    if VK_ESCAPE = Key then
-      CurrentSearchString := '';
-
-    // Sinaliza, para o evento OnKeyPress, que a tecla Alt ou Ctrl está
-    // pressionada. Isto é necessário porque o evento OnKeyPress não reconhece
-    // se uma dessas teclas está pressionada quando um caractere é recebido do
-    // teclado. A tecla Shift não interessa ao evento OnKeyPress porque a busca
-    // incremental não é sensível à caixa
-    CtrlOrAltPressed := Shift * [ssAlt, ssCtrl] <> [];
-  end;
-end;
-
-procedure TosCustomMainForm.GridKeyPress(Sender: TObject; var Key: Char);
-begin
-  inherited;
-  if not Assigned(SortField) then exit;
-  // O índice de ordenação é criado no evento AfterOpen do dataset e, por isso,
-  // ele deve estar obrigatoriamente criado quando este método for executado e
-  // o dataset estiver ativo
-  Assert((not FilterDataset.Active) or Assigned(SortField));
-
-  // Não faz sentido usar a busca incremental enquanto o dataset está fechado;
-  // deve-se ignorar teclas como TAB e ESC, que acionam o evento OnKeyPress; a
-  // tecla deve ser ignorada se Alt Ou Ctrl estiver pressionado; e, por fim, o
-  // field deve ser do tipo string, porque o FindNearest não funciona de outro
-  // modo. O teste que verifica se o dataset está ativo deve ser feito antes
-  // daquele que verifica o tipo do field para impedir que seja feito o acesso a
-  // uma propriedade cujo objeto não existe
-  if (not CtrlOrAltPressed) and (Ord(Key) >= 32) and FilterDataset.Active
-      and (SortField.DataType = ftString) then
-  begin
-    // Adiciona o novo caractere à string de busca incremental
-    CurrentSearchString := CurrentSearchString + Key;
-    // Sinaliza para os eventos OnScroll que irá rolar o dataset
-    IncrementalSearchScrolling := True;
-    try
-      // Procura o registro mais semelhante, baseado na string de busca
-      // acumulada até o momento e no índice selecionado atualmente
-      FilterDataset.FindNearest([CurrentSearchString]);
-    finally
-      // Restaura o valor da variável
-      IncrementalSearchScrolling := False;
     end;
   end;
 end;
@@ -1842,6 +1802,78 @@ end;
 
 
 
+procedure TosCustomMainForm.TvGridDblClick(Sender: TObject);
+begin
+  inherited;
+  ActionDblClick.Execute;
+end;
+
+procedure TosCustomMainForm.TvGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  // Executa a ação padrão para o recurso quando o usuário pressiona Enter
+  if VK_RETURN = Key then
+  begin
+    // Limpa a string para impedir que a busca incremental continue do ponto
+    // onde parou após o usuário fechar a caixa de diálogo
+    CurrentSearchString := '';
+    ActionDblClick.Execute;
+  end
+  else
+  begin
+    // A string de busca incremental é esvaziada quando o usuário pressiona ESC
+    if VK_ESCAPE = Key then
+      CurrentSearchString := '';
+
+    // Sinaliza, para o evento OnKeyPress, que a tecla Alt ou Ctrl está
+    // pressionada. Isto é necessário porque o evento OnKeyPress não reconhece
+    // se uma dessas teclas está pressionada quando um caractere é recebido do
+    // teclado. A tecla Shift não interessa ao evento OnKeyPress porque a busca
+    // incremental não é sensível à caixa
+    CtrlOrAltPressed := Shift * [ssAlt, ssCtrl] <> [];
+  end;
+end;
+
+procedure TosCustomMainForm.TvGridKeyPress(Sender: TObject; var Key: Char);
+begin
+  inherited;
+  if not Assigned(SortField) then exit;
+  // O índice de ordenação é criado no evento AfterOpen do dataset e, por isso,
+  // ele deve estar obrigatoriamente criado quando este método for executado e
+  // o dataset estiver ativo
+  Assert((not FilterDataset.Active) or Assigned(SortField));
+
+  // Não faz sentido usar a busca incremental enquanto o dataset está fechado;
+  // deve-se ignorar teclas como TAB e ESC, que acionam o evento OnKeyPress; a
+  // tecla deve ser ignorada se Alt Ou Ctrl estiver pressionado; e, por fim, o
+  // field deve ser do tipo string, porque o FindNearest não funciona de outro
+  // modo. O teste que verifica se o dataset está ativo deve ser feito antes
+  // daquele que verifica o tipo do field para impedir que seja feito o acesso a
+  // uma propriedade cujo objeto não existe
+  if (not CtrlOrAltPressed) and (Ord(Key) >= 32) and FilterDataset.Active
+      and (SortField.DataType = ftString) then
+  begin
+    // Adiciona o novo caractere à string de busca incremental
+    CurrentSearchString := CurrentSearchString + Key;
+    // Sinaliza para os eventos OnScroll que irá rolar o dataset
+    IncrementalSearchScrolling := True;
+    try
+      // Procura o registro mais semelhante, baseado na string de busca
+      // acumulada até o momento e no índice selecionado atualmente
+      FilterDataset.FindNearest([CurrentSearchString]);
+    finally
+      // Restaura o valor da variável
+      IncrementalSearchScrolling := False;
+    end;
+  end;
+end;
+
+procedure TosCustomMainForm.TvGridTopRecordIndexChanged(Sender: TObject);
+begin
+  inherited;
+  //FilterDataset.IndexFieldNames := Column.FieldName;
+end;
+
 procedure TosCustomMainForm.GridCalcCellColors(Sender: TObject;
   Field: TField; State: TGridDrawState; Highlight: Boolean; AFont: TFont;
   ABrush: TBrush);
@@ -1861,6 +1893,16 @@ end;
 function TosCustomMainForm.getLoginFormClass: TLoginFormClass;
 begin
   result := TosCustomLoginForm;
+end;
+
+Procedure TosCustomMainForm.IniciaGrid;
+var
+  i: Integer;
+begin
+  for i := Pred(TvGrid.ColumnCount) downto 0 do
+    TvGrid.Columns[i].Destroy;
+  TvGrid.DataController.DataSource := FilterDatasource;
+    TvGrid.DataController.CreateAllItems();
 end;
 
 initialization

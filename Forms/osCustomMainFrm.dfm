@@ -210,7 +210,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Width = 839
       Height = 554
       Align = alClient
-      TabOrder = 2
+      TabOrder = 1
       ExplicitLeft = 185
       ExplicitWidth = 823
       ExplicitHeight = 556
@@ -237,39 +237,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 1
-    end
-    object Grid: TwwDBGrid
-      Left = 83
-      Top = 39
-      Width = 389
-      Height = 283
-      IniAttributes.FileName = 'LabMaster.ini.ini'
-      IniAttributes.Delimiter = ';;'
-      IniAttributes.UnicodeIniFile = False
-      TitleColor = clBtnFace
-      FixedCols = 0
-      ShowHorzScrollBar = True
-      DataSource = FilterDatasource
-      Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgWordWrap]
-      ReadOnly = True
       TabOrder = 0
-      TitleAlignment = taLeftJustify
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'MS Sans Serif'
-      TitleFont.Style = []
-      TitleLines = 1
-      TitleButtons = True
-      OnCalcCellColors = GridCalcCellColors
-      OnTitleButtonClick = GridTitleButtonClick
-      OnDblClick = GridDblClick
-      OnKeyDown = GridKeyDown
-      OnKeyPress = GridKeyPress
-      OnCalcTitleImage = GridCalcTitleImage
-      TitleImageList = ArrowsImageList
-      PaintOptions.AlternatingRowColor = clWhite
     end
     object Panel1: TPanel
       Left = 0
@@ -277,7 +245,7 @@ inherited osCustomMainForm: TosCustomMainForm
       Width = 165
       Height = 554
       Align = alLeft
-      TabOrder = 3
+      TabOrder = 2
       object TreeView1: TTreeView
         Left = 1
         Top = 1
@@ -309,9 +277,73 @@ inherited osCustomMainForm: TosCustomMainForm
         OnKeyDown = EdtPesquisaKeyDown
       end
     end
+    object Grid: TcxGrid
+      Left = 192
+      Top = 39
+      Width = 251
+      Height = 146
+      Align = alCustom
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      LookAndFeel.NativeStyle = False
+      object TvGrid: TcxGridDBTableView
+        OnDblClick = TvGridDblClick
+        OnKeyDown = TvGridKeyDown
+        OnKeyPress = TvGridKeyPress
+        Navigator.Buttons.CustomButtons = <>
+        OnTopRecordIndexChanged = TvGridTopRecordIndexChanged
+        DataController.Options = []
+        DataController.Summary.DefaultGroupSummaryItems = <
+          item
+            Kind = skCount
+          end>
+        DataController.Summary.FooterSummaryItems = <
+          item
+            Kind = skCount
+            DisplayText = 'Total: '
+          end>
+        DataController.Summary.SummaryGroups = <>
+        OptionsBehavior.AlwaysShowEditor = True
+        OptionsBehavior.FocusCellOnTab = True
+        OptionsBehavior.GoToNextCellOnEnter = True
+        OptionsCustomize.DataRowSizing = True
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.MultiSelect = True
+        OptionsView.NoDataToDisplayInfoText = 'Sem dados para exibir'
+        OptionsView.Footer = True
+        OptionsView.GroupFooterMultiSummaries = True
+        OptionsView.GroupFooters = gfVisibleWhenExpanded
+        Styles.Background = cxStyle1
+        Styles.Content = cxStyle2
+        Styles.ContentEven = cxStyle3
+        Styles.ContentOdd = cxStyle3
+        Styles.FilterBox = cxStyle4
+        Styles.IncSearch = cxStyle10
+        Styles.Footer = cxStyle5
+        Styles.Group = cxStyle6
+        Styles.GroupByBox = cxStyle7
+        Styles.Header = cxStyle8
+        Styles.Inactive = cxStyle14
+        Styles.Indicator = cxStyle11
+        Styles.Preview = cxStyle12
+        Styles.Selection = cxStyle16
+      end
+      object LvGrid: TcxGridLevel
+        GridView = TvGrid
+      end
+    end
   end
   object RelatPanel: TPanel [3]
-    Left = 333
+    Left = 485
     Top = 140
     Width = 473
     Height = 389
@@ -2910,5 +2942,247 @@ inherited osCustomMainForm: TosCustomMainForm
   object FReportDepot: TacReportContainer
     Left = 905
     Top = 37
+  end
+  object cxStyleRepository1: TcxStyleRepository
+    Left = 272
+    Top = 104
+    PixelsPerInch = 96
+    object cxStyle1: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clBtnHighlight
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clMoneyGreen
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16311512
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clHighlight
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle5: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 15912117
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle6: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clActiveBorder
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      TextColor = clDefault
+    end
+    object cxStyle7: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clSilver
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxStyle8: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 7407872
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      TextColor = clWhite
+    end
+    object cxStyle9: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 16311512
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clNavy
+    end
+    object cxStyle10: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clBtnShadow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle11: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clWhite
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      TextColor = clDefault
+    end
+    object cxStyle12: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 9699219
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Style = []
+      TextColor = clDefault
+    end
+    object cxStyle14: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 8585215
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clBlack
+    end
+    object cxStyleBandHeader: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = clInactiveCaption
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TextColor = clBlack
+    end
+    object cxBandVersao: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 7118079
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxBandAtributo: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 12320699
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxBandValorReferencia: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxBandRecomendacaoPaciente: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 12500606
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxBandRecomendacaoColeta: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 16752543
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxStyle13: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 10354687
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxExameAlterado: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = 10790052
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+    end
+    object cxStyle15: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clYellow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+    end
+    object cxStyle16: TcxStyle
+      AssignedValues = [svColor, svFont, svTextColor]
+      Color = 9699219
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clBlack
+    end
+    object cxBandApoio: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
   end
 end
