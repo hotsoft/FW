@@ -70,12 +70,14 @@ function ValueIsEmptyNull(aValue : Variant):Boolean;
 function getDescricaoSexo(const vValor : Variant):String;
 function getDescricaoSimNao(const vValor : Variant):String;
 function getDescricaoTipoResultado(const vValor : Variant):String;
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet; onlyData: Boolean = False); overload;
+procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDataSet); overload;
 function FormataStringList(texto, delimitador: string): string;
 function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
 function Base64FromText(const text: String): string;
@@ -135,6 +137,7 @@ function LoadFromFile(const aFileName: string): string;
 Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
+function ExtractBetween(const Value, A, B: string): string;
 
 
 implementation
@@ -594,6 +597,7 @@ var
   keyboardState: TKeyboardState;
   asciiResult: Integer;
 begin
+  Result := '';
   case Key of
     VK_BACK:    Result := '[BACKSPACE]'; //backspace
     VK_RETURN:  Result := '[ENTER]'; //enter
@@ -647,7 +651,8 @@ begin
     222: Result := '~'; //~ acento
   else
     GetKeyboardState(keyboardState);
-    SetLength(Result, 10) ;
+    Result := EspacoDireita(Result,10);
+//    SetLength(Result, 10) ; //Se usar o SetLength em alguns casos o valor é inicializado com caracter estranho
     asciiResult := ToAscii(key, MapVirtualKey(key, 0), keyboardState, @Result[1], 0) ;
     case asciiResult of
       0: Result := '';
@@ -804,24 +809,29 @@ begin
 end;
 
 function GetIPAddress: string;
+type pu_long = ^u_long;
 var
-  Buffer: array[0..255] of AnsiChar;
-  RemoteHost: PHostEnt;
-  tempAddress: Integer;
-  BufferR: array[0..3] of Byte absolute tempAddress;
+  varTWSAData : TWSAData;
+  varPHostEnt : PHostEnt;
+  varTInAddr : TInAddr;
+  namebuf : Array[0..255] of ansichar;
 begin
-  Winsock.GetHostName(@Buffer, 255);
-  RemoteHost := Winsock.GetHostByName(Buffer);
-  if RemoteHost = nil then
-  begin
-    tempAddress := winsock.htonl($07000001); { 127.0.0.1 }
-  end
-  else
-  begin
-    tempAddress := longint(pointer(RemoteHost^.h_addr_list^)^);
-    tempAddress := Winsock.ntohl(tempAddress);
+  try
+    try
+    If WSAStartup($101,varTWSAData) <> 0 Then
+      Result := ''
+    Else Begin
+      gethostname(namebuf,sizeof(namebuf));
+      varPHostEnt := gethostbyname(namebuf);
+      varTInAddr.S_addr := u_long(pu_long(varPHostEnt^.h_addr_list^)^);
+      Result := string(inet_ntoa(varTInAddr));
+    End;
+    except
+      Result := '';
+    end;
+  finally
+    WSACleanup;
   end;
-  Result := Format('%d.%d.%d.%d', [BufferR[3], BufferR[2], BufferR[1], BufferR[0]]);
 end;
 
 Function GetCurrentIpList:TSTringList;
@@ -990,7 +1000,7 @@ begin
   end;
 end;
 
-procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet);
+procedure ClonarDadosClientDataSet(cdsOrigem: TClientDataSet; cdsDestino: TClientDataSet; onlyData: Boolean = False);
 var
   field : TField;
   i: Integer;
@@ -999,10 +1009,51 @@ begin
   begin
     for i := 0 to cdsOrigem.FieldCount-1 do
     begin
+      if (onlyData) and ((cdsOrigem.Fields[i]) is TDataSetField) then
+        continue;
+
       if (cdsOrigem.Fields[i]) is TMemoField then
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateTimeField then
+        field := TDateTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateField then
+        field := TDateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TSQLTimeStampField then
+        field := TSQLTimeStampField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFloatField then
+        field := TFloatField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TObjectField then
+        field := TObjectField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TGraphicField then
+        field := TGraphicField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TWideMemoField then
+        field := TWideMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TADTField then
+        field := TADTField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TArrayField then
+        field := TArrayField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDataSetField then
+        field := TDataSetField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TReferenceField then
+        field := TReferenceField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TVariantField then
+        field := TVariantField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TAggregateField then
+        field := TAggregateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBlobField then
+        field := TBlobField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFMTBCDField then
+        field := TFMTBCDField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBCDField then
+        field := TBCDField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TTimeField then
+        field := TTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TBooleanField then
+        field := TBooleanField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TCurrencyField then
+        field := TCurrencyField.Create(cdsDestino)
       else
         field := TStringField.Create(cdsDestino);
 
@@ -1019,6 +1070,57 @@ begin
     cdsDestino.CreateDataSet;
   end;
 
+
+  cdsOrigem.First;
+  while not cdsOrigem.Eof do
+  begin
+    cdsDestino.Append;
+    for i := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      if (not cdsOrigem.Fields[i].IsNull) and (cdsDestino.FindField(cdsOrigem.Fields[i].FieldName) <> nil) then
+        cdsDestino.FieldByName(cdsOrigem.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsOrigem.Fields[i].FieldName).AsString;
+    end;
+    cdsDestino.Post;
+    cdsOrigem.Next;
+  end;
+end;
+
+procedure ClonarDadosClientDataSet(cdsOrigem: TSQLDataSet; cdsDestino: TClientDataSet);
+var
+  field : TField;
+  i: Integer;
+begin
+  if cdsOrigem.Fields.Count <> cdsDestino.Fields.Count then
+  begin
+    for i := 0 to cdsOrigem.FieldCount-1 do
+    begin
+      if (cdsOrigem.Fields[i]) is TMemoField then
+        field := TMemoField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TIntegerField then
+        field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateTimeField then
+        field := TDateTimeField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TDateField then
+        field := TDateField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TSQLTimeStampField then
+        field := TSQLTimeStampField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TFloatField then
+        field := TFloatField.Create(cdsDestino)
+      else
+        field := TStringField.Create(cdsDestino);
+
+      Field.FieldKind := fkData;
+      Field.FieldName := cdsOrigem.Fields[i].FieldName;
+      Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
+      Field.Visible := cdsOrigem.Fields[i].Visible;
+      if (cdsOrigem.Fields[i] is TStringField) then
+        Field.Size := cdsOrigem.Fields[i].Size;
+      Field.DataSet := cdsDestino;
+
+    end;
+    cdsDestino.Close;
+    cdsDestino.CreateDataSet;
+  end;
 
   cdsOrigem.First;
   while not cdsOrigem.Eof do
@@ -1049,6 +1151,17 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := ' ' + Result;
+  Result := Result + Valor ;
 end;
 
 function KeyToStr(Key:Word): String;
@@ -1345,9 +1458,14 @@ var
   function Fallback: Boolean;
   var
     _FHttp: TIdHTTP;
+    _FLHandler: TIdSSLIOHandlerSocketOpenSSL;
   begin
     _FHttp := TIdHTTP.Create(AOwner);
+    _FLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_FHttp);
     try
+      _FHttp.AllowCookies := True;
+      _FHttp.IOHandler := _FLHandler;
+      _FHttp.HandleRedirects := True;
       Result := TestConnection(address);
       try
         if stream is TIdMultiPartFormDataStream  then
@@ -1363,6 +1481,7 @@ var
       end;
     finally
       FreeAndNil(_FHttp);
+      FreeAndNil(_FLHandler);
     end;
   end;
 begin
@@ -1868,6 +1987,8 @@ begin
     lUri := TIdUri.Create;
     try
       lHTTP.IOHandler := IOHandler;
+      lHTTP.HandleRedirects := True;
+      lHTTP.AllowCookies := True;
       Result := lHTTP.Get(lUri.URLEncode(url));
     finally
       FreeAndNil(IOHandler);
@@ -2179,6 +2300,21 @@ begin
       Found := FindNext(Result) <> 0;
     end;
   FindClose(Result); RemoveDir(Dir);
+end;
+
+function ExtractBetween(const Value, A, B: string): string;
+var
+  aPos, bPos: Integer;
+begin
+  result := '';
+  aPos := Pos(A, Value);
+  if aPos > 0 then begin
+    aPos := aPos + Length(A);
+    bPos := PosEx(B, Value, aPos);
+    if bPos > 0 then begin
+      result := Copy(Value, aPos, bPos - aPos);
+    end;
+  end;
 end;
 
 end.

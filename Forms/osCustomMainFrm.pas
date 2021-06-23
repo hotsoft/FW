@@ -289,7 +289,8 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm, GDIPMenu;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm, GDIPMenu,
+  StatusUnit, ParametroSistemaDataUn;
 
 {$R *.DFM}
 
@@ -387,6 +388,7 @@ begin
       tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
       tabSheet.PageControl := AbasPrincipalTS;
 
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.EditAba('ID', iID, TabSheet);
       AbasPrincipalTS.ActivePage := tabSheet;
       self.MontarMenu;
@@ -426,6 +428,7 @@ begin
   begin
     Form := FCurrentEditForm;
     Form.VisibleButtons := [vbSalvarFechar];
+    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
     if PrintAction.Enabled then
       Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
     Form.Insert;
@@ -441,6 +444,7 @@ begin
   Form := FCurrentEditForm;
   if Form <> nil then
   begin
+    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrDelete);
     Form.VisibleButtons := [vbExcluir, vbFechar];
     if Form.Delete('ID', FIdField.AsInteger) then
       ExecLastFilter;
@@ -803,6 +807,7 @@ begin
       FCurrentForm.BorderStyle := bsNone;
       FCurrentForm.Visible := true;
       tabSheet.Caption := FCurrentForm.Caption;
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrOutro);
     finally
       Screen.Cursor := crDefault;
     end;
@@ -1945,6 +1950,7 @@ begin
         TosWizForm(FCurrentForm).FTabSheet := tabSheet;
 
         //      FCurrentForm.ShowModal;
+        TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
         FCurrentForm.Parent := tabSheet;
         FCurrentForm.Align := alClient;
         FCurrentForm.BorderStyle := bsNone;
