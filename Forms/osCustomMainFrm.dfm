@@ -1553,104 +1553,32 @@ inherited osCustomMainForm: TosCustomMainForm
       OnChange = AbasPrincipalTSChange
       object TabSheet1: TTabSheet
         Caption = 'Pesquisa'
-        ExplicitLeft = 2
-        ExplicitTop = 22
-        object Grid: TwwDBGrid
-          Left = 186
-          Top = 63
-          Width = 389
-          Height = 283
-          IniAttributes.FileName = 'LabMaster.ini.ini'
-          IniAttributes.Delimiter = ';;'
-          IniAttributes.UnicodeIniFile = False
-          TitleColor = clBtnFace
-          FixedCols = 0
-          ShowHorzScrollBar = True
-          DataSource = FilterDatasource
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgWordWrap]
-          ReadOnly = True
+        object Grid: TcxGrid
+          Left = 80
+          Top = 51
+          Width = 250
+          Height = 200
           TabOrder = 0
-          TitleAlignment = taLeftJustify
-          TitleFont.Charset = DEFAULT_CHARSET
-          TitleFont.Color = clWindowText
-          TitleFont.Height = -11
-          TitleFont.Name = 'MS Sans Serif'
-          TitleFont.Style = []
-          TitleLines = 1
-          TitleButtons = True
-          OnCalcCellColors = GridCalcCellColors
-          OnTitleButtonClick = GridTitleButtonClick
-          OnDblClick = GridDblClick
-          OnKeyDown = GridKeyDown
-          OnKeyPress = GridKeyPress
-          OnCalcTitleImage = GridCalcTitleImage
-          TitleImageList = ArrowsImageList
-          PaintOptions.AlternatingRowColor = clWhite
+          object TvGrid: TcxGridDBTableView
+            OnDblClick = TvGridDblClick
+            OnKeyDown = TvGridKeyDown
+            OnKeyPress = TvGridKeyPress
+            Navigator.Buttons.CustomButtons = <>
+            DataController.DataSource = FilterDatasource
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <>
+            DataController.Summary.SummaryGroups = <>
+            OptionsData.Deleting = False
+            OptionsData.DeletingConfirmation = False
+            OptionsData.Editing = False
+            OptionsData.Inserting = False
+            OptionsSelection.CellSelect = False
+            OptionsSelection.MultiSelect = True
+          end
+          object LvGrid: TcxGridLevel
+            GridView = TvGrid
+          end
         end
-      end
-    end
-    object Grid: TcxGrid
-      Left = 192
-      Top = 39
-      Width = 251
-      Height = 146
-      Align = alCustom
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 3
-      LookAndFeel.NativeStyle = False
-      object TvGrid: TcxGridDBTableView
-        OnDblClick = TvGridDblClick
-        OnKeyDown = TvGridKeyDown
-        OnKeyPress = TvGridKeyPress
-        Navigator.Buttons.CustomButtons = <>
-        OnTopRecordIndexChanged = TvGridTopRecordIndexChanged
-        DataController.Options = []
-        DataController.Summary.DefaultGroupSummaryItems = <
-          item
-            Kind = skCount
-          end>
-        DataController.Summary.FooterSummaryItems = <
-          item
-            Kind = skCount
-            DisplayText = 'Total: '
-          end>
-        DataController.Summary.SummaryGroups = <>
-        OptionsBehavior.AlwaysShowEditor = True
-        OptionsBehavior.FocusCellOnTab = True
-        OptionsBehavior.GoToNextCellOnEnter = True
-        OptionsCustomize.DataRowSizing = True
-        OptionsData.CancelOnExit = False
-        OptionsData.Deleting = False
-        OptionsData.DeletingConfirmation = False
-        OptionsData.Inserting = False
-        OptionsSelection.CellSelect = False
-        OptionsSelection.MultiSelect = True
-        OptionsView.NoDataToDisplayInfoText = 'Sem dados para exibir'
-        OptionsView.Footer = True
-        OptionsView.GroupFooterMultiSummaries = True
-        OptionsView.GroupFooters = gfVisibleWhenExpanded
-        Styles.Background = cxStyle1
-        Styles.Content = cxStyle2
-        Styles.ContentEven = cxStyle3
-        Styles.ContentOdd = cxStyle3
-        Styles.FilterBox = cxStyle4
-        Styles.IncSearch = cxStyle10
-        Styles.Footer = cxStyle5
-        Styles.Group = cxStyle6
-        Styles.GroupByBox = cxStyle7
-        Styles.Header = cxStyle8
-        Styles.Inactive = cxStyle14
-        Styles.Indicator = cxStyle11
-        Styles.Preview = cxStyle12
-        Styles.Selection = cxStyle16
-      end
-      object LvGrid: TcxGridLevel
-        GridView = TvGrid
       end
     end
   end

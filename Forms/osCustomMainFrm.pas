@@ -19,7 +19,9 @@ uses
   acReportContainer, ppParameter, Data.DBXInterBase, System.Actions, Vcl.Samples.Spin, W7Classes, W7Buttons,
   System.UITypes, AdvSmoothMegaMenu, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxStyles, cxCustomData,
   cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
-  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid;
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, dxSkinsCore, dxSkinSeven, dxSkinSharp,
+  dxSkinSharpPlus, dxSkinSilver, dxSkinsDefaultPainters, dxSkinVisualStudio2013Light, dxSkinVS2010,
+  dxSkinWhiteprint, dxSkinXmas2008Blue, dxSkinscxPCPainter;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -146,7 +148,6 @@ type
     PrintAllToolButton: TW7ToolButton;
     AbasPrincipalTS: TPageControl;
     TabSheet1: TTabSheet;
-    Grid: TwwDBGrid;
     AdvSmoothMegaMenu: TAdvSmoothMegaMenu;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
@@ -173,9 +174,9 @@ type
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
     cxBandApoio: TcxStyle;
-    Grid: TcxGrid;
     TvGrid: TcxGridDBTableView;
     LvGrid: TcxGridLevel;
+    Grid: TcxGrid;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -2044,8 +2045,9 @@ Procedure TosCustomMainForm.IniciaGrid;
 var
   i: Integer;
 begin
-  for i := Pred(TvGrid.ColumnCount) downto 0 do
-    TvGrid.Columns[i].Destroy;
+//  for i := Pred(TvGrid.ColumnCount)-1 downto 0 do
+//    TvGrid.Columns[i].Destroy;
+  TvGrid.ClearItems;
   TvGrid.DataController.DataSource := FilterDatasource;
     TvGrid.DataController.CreateAllItems();
 end;
