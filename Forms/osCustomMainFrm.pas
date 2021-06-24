@@ -21,7 +21,7 @@ uses
   cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, dxSkinsCore, dxSkinSeven, dxSkinSharp,
   dxSkinSharpPlus, dxSkinSilver, dxSkinsDefaultPainters, dxSkinVisualStudio2013Light, dxSkinVS2010,
-  dxSkinWhiteprint, dxSkinXmas2008Blue, dxSkinscxPCPainter;
+  dxSkinWhiteprint, dxSkinXmas2008Blue, dxSkinscxPCPainter, cxCheckBox, cxDropDownEdit;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -80,7 +80,6 @@ type
     BarLargeImages: TImageList;
     BarSmallImages: TImageList;
     Panel2: TPanel;
-    ResourcePanel: TPanel;
     AdvanceAction: TAction;
     RetrocedeAction: TAction;
     ActionDataSet: TosClientDataset;
@@ -174,9 +173,9 @@ type
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
     cxBandApoio: TcxStyle;
+    Grid: TcxGrid;
     TvGrid: TcxGridDBTableView;
     LvGrid: TcxGridLevel;
-    Grid: TcxGrid;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -601,10 +600,8 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        TvGrid.DataController.BeginUpdate;
         sent := ConsultaCombo.ExecuteFilter;
         self.IniciaGrid;
-        TvGrid.DataController.EndUpdate;
         if sent = '' then
         begin
           FilterDataset.data := data;
@@ -948,8 +945,6 @@ end;
 procedure TosCustomMainForm.OnSelectResourceActionExecute(Sender: TObject);
 begin
   inherited;
-  ResourcePanel.Caption := '  ' + FCurrentResource.Name;
-
   if Trim(FCurrentResource.FilterDefName) <> '' then
   begin
     FilterDataset.Close;
@@ -1030,7 +1025,6 @@ begin
   Grid.Visible := False;
   RelatPanel.Visible := False;
   controlActions(false);
-  ResourcePanel.Visible := false;
   ConsultaCombo.ClearViews;
   if freeRes then
     FCurrentResource := nil;
@@ -1043,7 +1037,6 @@ begin
   if tipo=teRelat then
     controlActions(false);
   WebBrowser.Stop;
-  ResourcePanel.Visible := true;
 end;
 
 procedure TosCustomMainForm.PaginaInicial(Sender: TObject);
@@ -1321,7 +1314,6 @@ begin
 
   StatusBar.Panels[0].Text := '';
   StatusBar.Panels[1].Text := '';
-  ResourcePanel.Caption := 'LabMaster';
   ActionDataSet.Params.ParamByName('UserName').Value := '';
 
   FCurrentResource := nil;
@@ -1382,6 +1374,7 @@ begin
 
       // Cria o botão
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Add.Text := name;
+      AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].Height := 15;
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].Tag := Manager.Resources[i].ID;
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].OnClick := clickMenu;
 
@@ -2045,11 +2038,9 @@ Procedure TosCustomMainForm.IniciaGrid;
 var
   i: Integer;
 begin
-//  for i := Pred(TvGrid.ColumnCount)-1 downto 0 do
-//    TvGrid.Columns[i].Destroy;
+//  TvGrid.DataController.DataSource := FilterDatasource;
   TvGrid.ClearItems;
-  TvGrid.DataController.DataSource := FilterDatasource;
-    TvGrid.DataController.CreateAllItems();
+  TvGrid.DataController.CreateAllItems();
 end;
 
 initialization

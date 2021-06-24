@@ -1,7 +1,6 @@
 inherited osCustomMainForm: TosCustomMainForm
   Left = 233
   Top = 311
-  ActiveControl = ResourcePanel
   Caption = 'osCustomMainForm'
   ClientHeight = 645
   ClientWidth = 1008
@@ -199,59 +198,45 @@ inherited osCustomMainForm: TosCustomMainForm
     TabOrder = 2
     object Splitter1: TSplitter
       Left = 141
-      Top = 33
+      Top = 0
       Width = 4
-      Height = 554
+      Height = 587
       ExplicitLeft = 165
+      ExplicitTop = 33
       ExplicitHeight = 556
     end
     object WebBrowser: TWebBrowser
       Left = 145
-      Top = 33
+      Top = 0
       Width = 863
-      Height = 554
+      Height = 587
       Align = alClient
-      TabOrder = 1
+      TabOrder = 0
       ExplicitLeft = 185
+      ExplicitTop = 33
       ExplicitWidth = 823
       ExplicitHeight = 556
       ControlData = {
-        4C00000032590000423900000000000000000000000000000000000000000000
+        4C00000032590000AB3C00000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
         2B2E12620A000000000000004C0000000114020000000000C000000000000046
         8000000000000000000000000000000000000000000000000000000000000000
         00000000000000000100000000000000000000000000000000000000}
     end
-    object ResourcePanel: TPanel
-      Left = 0
-      Top = 0
-      Width = 1008
-      Height = 33
-      Align = alTop
-      Alignment = taLeftJustify
-      BevelOuter = bvNone
-      Caption = '  Recurso'
-      Color = clGray
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clCaptionText
-      Font.Height = -13
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 0
-    end
     object Panel1: TPanel
       Left = 0
-      Top = 33
+      Top = 0
       Width = 141
-      Height = 554
+      Height = 587
       Align = alLeft
-      TabOrder = 2
+      TabOrder = 1
+      ExplicitTop = 33
+      ExplicitHeight = 554
       object TreeView1: TTreeView
         Left = 1
         Top = 1
         Width = 44
-        Height = 531
+        Height = 564
         Align = alLeft
         Color = clBtnFace
         HotTrack = True
@@ -265,10 +250,11 @@ inherited osCustomMainForm: TosCustomMainForm
         Visible = False
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
+        ExplicitHeight = 531
       end
       object EdtPesquisa: TEdit
         Left = 1
-        Top = 532
+        Top = 565
         Width = 139
         Height = 21
         Align = alBottom
@@ -277,12 +263,13 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
+        ExplicitTop = 532
       end
       object AdvSmoothMegaMenu: TAdvSmoothMegaMenu
         Left = 45
         Top = 1
         Width = 95
-        Height = 531
+        Height = 564
         OpenMenusOnClick = True
         AutoOpenMenus = False
         DefaultMenuContentFill.Color = 15984090
@@ -1540,40 +1527,81 @@ inherited osCustomMainForm: TosCustomMainForm
         Transparent = True
         Version = '1.3.5.2'
         Align = alClient
+        ExplicitHeight = 531
       end
     end
     object AbasPrincipalTS: TPageControl
       Left = 145
-      Top = 33
+      Top = 0
       Width = 863
-      Height = 554
+      Height = 587
       ActivePage = TabSheet1
       Align = alClient
-      TabOrder = 3
+      TabOrder = 2
       OnChange = AbasPrincipalTSChange
+      ExplicitTop = 33
+      ExplicitHeight = 554
       object TabSheet1: TTabSheet
         Caption = 'Pesquisa'
+        ExplicitHeight = 526
         object Grid: TcxGrid
-          Left = 80
-          Top = 51
-          Width = 250
-          Height = 200
+          Left = 24
+          Top = 20
+          Width = 338
+          Height = 187
+          Align = alCustom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 0
+          LookAndFeel.NativeStyle = False
           object TvGrid: TcxGridDBTableView
             OnDblClick = TvGridDblClick
             OnKeyDown = TvGridKeyDown
             OnKeyPress = TvGridKeyPress
             Navigator.Buttons.CustomButtons = <>
             DataController.DataSource = FilterDatasource
-            DataController.Summary.DefaultGroupSummaryItems = <>
-            DataController.Summary.FooterSummaryItems = <>
+            DataController.Options = [dcoImmediatePost]
+            DataController.Summary.DefaultGroupSummaryItems = <
+              item
+                Kind = skCount
+              end>
+            DataController.Summary.FooterSummaryItems = <
+              item
+                Kind = skCount
+                DisplayText = 'Total: '
+              end>
             DataController.Summary.SummaryGroups = <>
+            OptionsBehavior.AlwaysShowEditor = True
+            OptionsBehavior.FocusCellOnTab = True
+            OptionsBehavior.GoToNextCellOnEnter = True
+            OptionsData.CancelOnExit = False
             OptionsData.Deleting = False
             OptionsData.DeletingConfirmation = False
             OptionsData.Editing = False
             OptionsData.Inserting = False
             OptionsSelection.CellSelect = False
             OptionsSelection.MultiSelect = True
+            OptionsView.Footer = True
+            OptionsView.GroupFooterMultiSummaries = True
+            OptionsView.GroupFooters = gfVisibleWhenExpanded
+            Styles.Background = cxStyle1
+            Styles.Content = cxStyle2
+            Styles.ContentEven = cxStyle3
+            Styles.ContentOdd = cxStyle3
+            Styles.FilterBox = cxStyle4
+            Styles.IncSearch = cxStyle10
+            Styles.Footer = cxStyle5
+            Styles.Group = cxStyle6
+            Styles.GroupByBox = cxStyle7
+            Styles.Header = cxStyle8
+            Styles.Inactive = cxStyle14
+            Styles.Indicator = cxStyle11
+            Styles.Preview = cxStyle12
+            Styles.Selection = cxStyle16
           end
           object LvGrid: TcxGridLevel
             GridView = TvGrid
