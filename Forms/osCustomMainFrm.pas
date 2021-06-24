@@ -421,6 +421,8 @@ begin
       TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.EditAba('ID', iID, TabSheet);
       AbasPrincipalTS.ActivePage := tabSheet;
+      AbasPrincipalTS.ActivePage.Visible := False;
+      AbasPrincipalTS.ActivePage.Visible := True;
       self.MontarMenu;
       {if Form.IsModified then
       begin
@@ -600,8 +602,15 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        sent := ConsultaCombo.ExecuteFilter;
-        self.IniciaGrid;
+        //self.IniciaGrid;
+        FilterDataset.DisableControls;
+        try
+          TvGrid.ClearItems;
+          sent := ConsultaCombo.ExecuteFilter;
+          TvGrid.DataController.CreateAllItems();
+        finally
+          FilterDataset.EnableControls;
+        end;
         if sent = '' then
         begin
           FilterDataset.data := data;
@@ -642,16 +651,19 @@ end;
 
 procedure TosCustomMainForm.FilterDatasetAfterScroll(DataSet: TDataSet);
 begin
-  inherited;
-  StatusBar.Panels[0].Text := Format('%d/%d', [FilterDataset.RecNo, FilterDataset.RecordCount]);
-  OnCheckActionsAction.Execute;
+  if not FilterDataset.ControlsDisabled then
+  begin
+    inherited;
+    StatusBar.Panels[0].Text := Format('%d/%d', [FilterDataset.RecNo, FilterDataset.RecordCount]);
+    OnCheckActionsAction.Execute;
 
-  // Toda vez que um registro for selecionado manualmente pelo usuário a string
-  // de busca incremental é esvaziada. Quando o método de busca estiver rolando
-  // o dataset a variável IncrementalSearchScrolling será ligada para informar
-  // este método
-  if not IncrementalSearchScrolling then
-    CurrentSearchString := '';
+    // Toda vez que um registro for selecionado manualmente pelo usuário a string
+    // de busca incremental é esvaziada. Quando o método de busca estiver rolando
+    // o dataset a variável IncrementalSearchScrolling será ligada para informar
+    // este método
+    if not IncrementalSearchScrolling then
+      CurrentSearchString := '';
+  end;
 end;
 
 function TosCustomMainForm.GetSelectedList: TStringList;
@@ -1366,6 +1378,7 @@ begin
         noPai := TreeView1.Items.Add(nil, sDomain);
         AdvSmoothMegaMenu.MenuItems.Add;
         AdvSmoothMegaMenu.MenuItems[CountNoPai].Caption := '<b>'+sDomain+'</b>';
+        AdvSmoothMegaMenu.MenuItems[CountNoPai].Height := 25;
         AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.TearOff := False;
         AdvSmoothMegaMenu.MenuItems[CountNoPai].CaptionLocation := mlCenterLeft;
         AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.DropDownLocation := ddRightCenterBottom;
@@ -1598,7 +1611,8 @@ begin
   else
   begin
     TForm(AbasPrincipalTS.ActivePage.Controls[0]).Menu := nil;
-    self.Menu := TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') as TMainMenu;
+    if TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') <> nil then
+      self.Menu := TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') as TMainMenu;
   end;
 end;
 

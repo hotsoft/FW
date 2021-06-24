@@ -159,7 +159,6 @@ begin
     self.BorderStyle := bsNone;
     self.Visible := true;
     pTabSheet.Caption := self.Caption;
-
     //ShowModal;
   finally
     //Screen.Cursor := crDefault;
