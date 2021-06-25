@@ -2,25 +2,24 @@ inherited osCustomEditForm: TosCustomEditForm
   Left = 40
   Top = 351
   Caption = 'osCustomEditForm'
-  ClientHeight = 297
+  ClientHeight = 317
   ClientWidth = 457
   Menu = MainMenu
   OldCreateOrder = True
   OnCloseQuery = FormCloseQuery
   ExplicitWidth = 473
-  ExplicitHeight = 356
+  ExplicitHeight = 376
   PixelsPerInch = 96
   TextHeight = 13
   object MainControlBar: TControlBar [0]
     Left = 0
-    Top = 0
+    Top = 23
     Width = 457
     Height = 30
     Align = alTop
     AutoDrag = False
     AutoSize = True
     TabOrder = 0
-    ExplicitTop = 14
     object ControlBarPanel: TPanel
       Left = 11
       Top = 2
@@ -93,9 +92,17 @@ inherited osCustomEditForm: TosCustomEditForm
       end
     end
   end
+  object MenuPadraoPanel: TPanel [1]
+    Left = 0
+    Top = 0
+    Width = 457
+    Height = 23
+    Align = alTop
+    TabOrder = 1
+  end
   inherited ActionList: TosActionList
-    Left = 184
-    Top = 40
+    Left = 216
+    Top = 200
     inherited OnCheckActionsAction: TAction
       OnExecute = OnCheckActionsActionExecute
     end
@@ -160,14 +167,14 @@ inherited osCustomEditForm: TosCustomEditForm
       Caption = '&Imprimir'
     end
   end
-  object MasterDataSource: TDataSource [2]
+  object MasterDataSource: TDataSource [3]
     OnDataChange = MasterDataSourceDataChange
-    Left = 248
-    Top = 40
+    Left = 280
+    Top = 200
   end
   inherited ImageList: TImageList
-    Left = 216
-    Top = 40
+    Left = 248
+    Top = 200
     Bitmap = {
       494C010101000500040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
@@ -309,8 +316,8 @@ inherited osCustomEditForm: TosCustomEditForm
       000000000000}
   end
   object MainMenu: TMainMenu
-    Left = 104
-    Top = 64
+    Left = 128
+    Top = 192
     object Arquivo1: TMenuItem
       Caption = '&Arquivo'
       object Novo1: TMenuItem
@@ -348,6 +355,22 @@ inherited osCustomEditForm: TosCustomEditForm
       end
       object ndice1: TMenuItem
         Action = IndexAction
+      end
+    end
+  end
+  object MenuPadraoPopup: TPopupMenu
+    Left = 248
+    Top = 88
+    object A1: TMenuItem
+      Caption = 'Arquivo'
+      object N3: TMenuItem
+        Caption = '&Novo'
+      end
+    end
+    object E1: TMenuItem
+      Caption = 'Edi'#231#227'o'
+      object Desfazeralteraes2: TMenuItem
+        Caption = '&Desfazer altera'#231#245'es'
       end
     end
   end

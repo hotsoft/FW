@@ -263,7 +263,7 @@ type
     procedure SetEditForm(const Value: TosCustomEditForm);
     procedure SetActionDblClick(const Value: TAction);
     function GetSelectedList: TStringList;
-    function CreateCurrentForm: TForm;
+    function CreateCurrentForm: TosForm;
     function CreateCurrentEditForm: TosCustomEditForm;
     function CreateCurrentDatamodule: TDatamodule;
     function CreateCurrentReport: TacCustomReport;
@@ -296,7 +296,7 @@ type
   public
     FCurrentEditForm: TosCustomEditForm;
     FCurrentDatamodule: TDatamodule;
-    FCurrentForm: TForm;
+    FCurrentForm: TosForm;
     property superUserName: string read FSuperUserName;
     property superUserLogged: boolean read FSuperUserLogged;
     constructor Create(AOwner: TComponent); override;
@@ -1008,7 +1008,7 @@ begin
   ShowMessage(SelectedList.Text);
 end;
 
-function TosCustomMainForm.CreateCurrentForm: TForm;
+function TosCustomMainForm.CreateCurrentForm: TosForm;
 var
   x: TosFormClass;
 begin
@@ -1840,6 +1840,7 @@ begin
         FCurrentForm.Align := alClient;
         FCurrentForm.BorderStyle := bsNone;
         FCurrentForm.Visible := true;
+        FCurrentForm.EditAba(TabSheet);
         tabSheet.Caption := FCurrentForm.Caption;
         AbasPrincipalTS.ActivePage := tabSheet;
         self.MontarMenu;

@@ -230,8 +230,6 @@ inherited osCustomMainForm: TosCustomMainForm
       Height = 587
       Align = alLeft
       TabOrder = 1
-      ExplicitTop = 33
-      ExplicitHeight = 554
       object TreeView1: TTreeView
         Left = 1
         Top = 1
@@ -250,7 +248,6 @@ inherited osCustomMainForm: TosCustomMainForm
         Visible = False
         OnChange = TreeView1Change
         OnCustomDrawItem = TreeView1CustomDrawItem
-        ExplicitHeight = 531
       end
       object EdtPesquisa: TEdit
         Left = 1
@@ -263,7 +260,6 @@ inherited osCustomMainForm: TosCustomMainForm
         OnChange = EdtPesquisaChange
         OnEnter = EdtPesquisaEnter
         OnKeyDown = EdtPesquisaKeyDown
-        ExplicitTop = 532
       end
       object AdvSmoothMegaMenu: TAdvSmoothMegaMenu
         Left = 45
@@ -1527,7 +1523,6 @@ inherited osCustomMainForm: TosCustomMainForm
         Transparent = True
         Version = '1.3.5.2'
         Align = alClient
-        ExplicitHeight = 531
       end
     end
     object AbasPrincipalTS: TPageControl
@@ -1539,11 +1534,8 @@ inherited osCustomMainForm: TosCustomMainForm
       Align = alClient
       TabOrder = 2
       OnChange = AbasPrincipalTSChange
-      ExplicitTop = 33
-      ExplicitHeight = 554
       object TabSheet1: TTabSheet
         Caption = 'Pesquisa'
-        ExplicitHeight = 526
         object Grid: TcxGrid
           Left = 24
           Top = 20

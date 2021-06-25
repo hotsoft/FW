@@ -32,6 +32,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function EditAba(pTabSheet: TTabSheet): boolean;
   published
     property Operacoes: TOperacoes read FOperacoes write SetOperacoes;
   end;
@@ -132,6 +133,21 @@ begin
     if (aContainer.Components[i] is TWinControl) then
       AddControlsToWhiteListByContainer(TWinControl(aContainer.Components[i]));
   end;
+end;
+
+function TosForm.EditAba(pTabSheet: TTabSheet): boolean;
+begin
+  Screen.Cursor := crHourglass;
+
+  OnCheckActionsAction.Execute;
+  Screen.Cursor := crDefault;
+
+  FTabSheet := pTabSheet;
+  self.Parent := pTabSheet;
+  self.Align := alClient;
+  self.BorderStyle := bsNone;
+  self.Visible := true;
+  pTabSheet.Caption := self.Caption;
 end;
 
 

@@ -9,7 +9,7 @@ uses
   ToolWin, ExtCtrls, osActionList, osClientDataset, provider, osUtils,
   Grids, Wwdbigrd, Wwdbgrid, wwdbdatetimepicker, wwrcdpnl, Mask, wwdbedit, wwriched,
   osComboSearch, osDBDualTree, wwDBSpin, wwDBNavigator, wwDBcomb, wwDBlook, DBGrids,
-  System.Actions, System.UITypes, AdvSmoothMegaMenu;
+  System.Actions, System.UITypes;
 
 type
   TFormMode      = (fmEdit, fmInsert, fmView, fmDelete);
@@ -52,6 +52,12 @@ type
     ExcluirButton: TSpeedButton;
     FecharButton: TSpeedButton;
     PararButton: TSpeedButton;
+    MenuPadraoPanel: TPanel;
+    MenuPadraoPopup: TPopupMenu;
+    A1: TMenuItem;
+    E1: TMenuItem;
+    N3: TMenuItem;
+    Desfazeralteraes2: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure SaveCloseActionExecute(Sender: TObject);
@@ -105,7 +111,8 @@ type
     function canInsert: boolean; virtual;
   end;
 
-  TosFormClass = class of TForm;
+  TosFormClass = class of TosForm;
+
   TosCustomEditFormClass = class of TosCustomEditForm;
 
 var
@@ -156,7 +163,7 @@ begin
     FTabSheet := pTabSheet;
     self.Parent := pTabSheet;
     self.Align := alClient;
-    self.BorderStyle := bsNone;
+    //self.BorderStyle := bsNone;
     self.Visible := true;
     pTabSheet.Caption := self.Caption;
     //ShowModal;
