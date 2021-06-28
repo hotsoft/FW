@@ -1,7 +1,6 @@
 inherited RecursoEditForm: TRecursoEditForm
   Left = 448
   Top = 172
-  VertScrollBar.Range = 0
   ActiveControl = DescricaoDominioCombo
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -9,6 +8,8 @@ inherited RecursoEditForm: TRecursoEditForm
   Caption = 'Cadastro de Recursos'
   ClientHeight = 443
   ClientWidth = 478
+  ExplicitWidth = 492
+  ExplicitHeight = 480
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel [0]
@@ -60,6 +61,7 @@ inherited RecursoEditForm: TRecursoEditForm
   end
   inherited MainControlBar: TControlBar
     Width = 478
+    ExplicitWidth = 478
   end
   object NomeEdit: TDBEdit [7]
     Left = 60
@@ -207,18 +209,22 @@ inherited RecursoEditForm: TRecursoEditForm
     object AcoesTabSheet: TTabSheet
       Caption = '&2 A'#231#245'es'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object AcaoGrid: TwwDBGrid
         Left = 0
         Top = 0
         Width = 453
         Height = 181
-        DisableThemes = False
         Selected.Strings = (
           'NOME'#9'15'#9'Nome'#9'F'
           'NOMECOMPONENTE'#9'20'#9'Componente'#9'F'
           'DESCRICAO'#9'35'#9'Descri'#231#227'o'#9'F'
           'INDICEIMAGEM'#9'6'#9'Imagem'#9#9)
         IniAttributes.Delimiter = ';;'
+        IniAttributes.UnicodeIniFile = False
         TitleColor = clBtnFace
         FixedCols = 0
         ShowHorzScrollBar = True
@@ -283,10 +289,6 @@ inherited RecursoEditForm: TRecursoEditForm
   end
   inherited ImageList: TImageList
     Left = 244
-  end
-  inherited MainMenu: TMainMenu
-    Left = 212
-    Top = 0
   end
   object RecursoClientDataSource: TosClientDataset
     Aggregates = <>

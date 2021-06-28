@@ -274,6 +274,7 @@ type
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
     procedure clickMenu(Sender: TObject);
+    function FindTabSheet(NomeForm: String; var vIndex: Integer): Boolean;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -451,22 +452,28 @@ end;
 procedure TosCustomMainForm.NewActionExecute(Sender: TObject);
 var
   Form: TosCustomEditForm;
+  vIndex: Integer;
 begin
   inherited;
   if FCurrentEditForm.canInsert then
   begin
-    tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
-    tabSheet.PageControl := AbasPrincipalTS;
+    Form := CreateCurrentEditForm;
+    if self.FindTabSheet(Form.Caption + ' - Novo', vIndex) then
+      AbasPrincipalTS.ActivePageIndex := vIndex
+    else
+    begin
+      tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      tabSheet.PageControl := AbasPrincipalTS;
 
-    Form := FCurrentEditForm;
-    Form.VisibleButtons := [vbSalvarFechar];
-    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
-    if PrintAction.Enabled then
-      Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
-    Form.InsertAba(tabSheet);
-    tabSheet.Caption := Form.Caption;
-    AbasPrincipalTS.ActivePage := tabSheet;
-    //ExecLastFilter;
+      Form.VisibleButtons := [vbSalvarFechar, vbFechar];
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
+      if PrintAction.Enabled then
+        Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
+      Form.InsertAba(tabSheet);
+      tabSheet.Caption := Form.Caption + ' - Novo';
+      AbasPrincipalTS.ActivePage := tabSheet;
+      //ExecLastFilter;
+    end;
   end;
 end;
 
@@ -618,6 +625,7 @@ begin
           ConsultaCombo.ConfigFields(ConsultaCombo.ItemIndex);
         end;
       end;
+      TabSheet1.Caption := 'Pesquisa - ' + FCurrentResource.Name;
       FIDField := FilterDataset.Fields.FindField('ID');
       CheckMultiSelection;
 
@@ -2019,6 +2027,23 @@ begin
     id := field.DataSet.fieldByName('id').AsInteger;
     if FModifiedList.IndexOf(IntToStr(id)) <> -1  then
       AFont.Style := [fsItalic, fsBold];
+  end;
+end;
+
+function TosCustomMainForm.FindTabSheet(NomeForm: String; var vIndex: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  vIndex := 0;
+  for I := 0 to Pred(AbasPrincipalTS.PageCount) do
+  begin
+    if AbasPrincipalTS.Pages[I].Caption = NomeForm then
+    begin
+      vIndex := I;
+      Result := True;
+      Break;
+    end;
   end;
 end;
 

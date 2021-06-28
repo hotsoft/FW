@@ -7,9 +7,8 @@ inherited FilterDefEditForm: TFilterDefEditForm
   Caption = 'Defini'#231#227'o de Filtros'
   ClientHeight = 501
   ClientWidth = 496
-  ExplicitTop = -195
   ExplicitWidth = 520
-  ExplicitHeight = 568
+  ExplicitHeight = 548
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel [0]
@@ -145,6 +144,10 @@ inherited FilterDefEditForm: TFilterDefEditForm
     object TabSheet2: TTabSheet
       Caption = '&Atributos'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object edAtributos: TDBMemo
         Left = 0
         Top = 0
@@ -168,6 +171,10 @@ inherited FilterDefEditForm: TFilterDefEditForm
     object TabSheet3: TTabSheet
       Caption = '&Express'#245'es Default'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object edExpression: TDBMemo
         Left = 0
         Top = 0
@@ -191,6 +198,10 @@ inherited FilterDefEditForm: TFilterDefEditForm
     object TabSheet4: TTabSheet
       Caption = '&Restri'#231#245'es usu'#225'rio'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object edRestricoes: TDBMemo
         Left = 0
         Top = 0
@@ -217,6 +228,10 @@ inherited FilterDefEditForm: TFilterDefEditForm
     object TabSheet5: TTabSheet
       Caption = '&Ordena'#231#227'o'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label6: TLabel
         Left = 8
         Top = 149
@@ -362,10 +377,6 @@ inherited FilterDefEditForm: TFilterDefEditForm
   end
   inherited ImageList: TImageList
     Left = 276
-  end
-  inherited MainMenu: TMainMenu
-    Left = 240
-    Top = 4
   end
   object cdsEdit: TosClientDataset
     Aggregates = <>

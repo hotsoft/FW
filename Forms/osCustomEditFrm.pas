@@ -198,12 +198,9 @@ begin
   FFormMode := fmInsert;
   CheckMasterDataset;
 
-  with FMasterDataset do
-  begin
-    Params.ParamByName('ID').AsInteger := -1; // Para não trazer dados no open
-    Open;
-    Insert;
-  end;
+  FMasterDataset.Params.ParamByName('ID').AsInteger := -1; // Para não trazer dados no open
+  FMasterDataset.Open;
+  FMasterDataset.Insert;
 
   OnCheckActionsAction.Execute;
   Screen.Cursor := crDefault;
@@ -211,9 +208,8 @@ begin
   FTabSheet := pTabSheet;
   self.Parent := pTabSheet;
   self.Align := alClient;
-  //self.BorderStyle := bsNone;
+  self.BorderStyle := bsNone;
   self.Visible := true;
-  pTabSheet.Caption := self.Caption;
 
   FKeyValues := FMasterDataset.IDField.Value;
 end;
