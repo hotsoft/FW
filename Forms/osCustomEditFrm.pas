@@ -371,8 +371,11 @@ procedure TosCustomEditForm.CloseActionExecute(Sender: TObject);
 begin
   inherited;
   Close;
-  FTabSheet.PageControl.SelectNextPage(True);
-  FreeAndNil(FTabSheet);
+  if FTabSheet <> nil then
+  begin
+    FTabSheet.PageControl.SelectNextPage(True);
+    FreeAndNil(FTabSheet);
+  end;
 end;
 
 procedure TosCustomEditForm.SaveNewActionExecute(Sender: TObject);
