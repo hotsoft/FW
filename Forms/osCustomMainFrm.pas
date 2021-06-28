@@ -21,7 +21,7 @@ uses
   cxFilter, cxData, cxDataStorage, cxEdit, cxNavigator, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid, dxSkinsCore, dxSkinSeven, dxSkinSharp,
   dxSkinSharpPlus, dxSkinSilver, dxSkinsDefaultPainters, dxSkinVisualStudio2013Light, dxSkinVS2010,
-  dxSkinWhiteprint, dxSkinXmas2008Blue, dxSkinscxPCPainter, cxCheckBox, cxDropDownEdit;
+  dxSkinWhiteprint, dxSkinXmas2008Blue, dxSkinscxPCPainter, cxCheckBox, cxDropDownEdit, AdvGlassButton;
 
 type
   TDatamoduleClass = class of TDatamodule;
@@ -31,17 +31,10 @@ type
 
   TosCustomMainForm = class(TosForm)
     MainMenu: TMainMenu;
-    ControlBar: TControlBar;
     Sair: TMenuItem;
     Arquivo: TMenuItem;
     Editar: TMenuItem;
     Ajuda: TMenuItem;
-    MainToolbar: TToolBar;
-    NewToolButton: TToolButton;
-    EditToolButton: TToolButton;
-    DeleteToolButton: TToolButton;
-    ViewToolButton: TToolButton;
-    PrintToolButton: TToolButton;
     StatusBar: TStatusBar;
     FilterDatasource: TDataSource;
     FilterDataset: TosClientDataset;
@@ -86,7 +79,6 @@ type
     OnSelectResourceAction: TAction;
     ActionDataSetNOMECOMPONENTE: TStringField;
     WebBrowser: TWebBrowser;
-    PaginaInicialToolButton: TToolButton;
     Exibir: TMenuItem;
     ExibirPaginaInicial: TMenuItem;
     ArrowsImageList: TImageList;
@@ -114,15 +106,7 @@ type
     ppHeaderBand1: TppHeaderBand;
     ppDetailBand1: TppDetailBand;
     ppFooterBand1: TppFooterBand;
-    MainImageList: TImageList;
     SQLConnection: TSQLConnection;
-    ConsultaPanel: TPanel;
-    ConsultaLabel: TLabel;
-    EditarTodosButton: TSpeedButton;
-    tbrFilter: TToolBar;
-    FilterButton: TToolButton;
-    ConsultaCombo: TosComboFilter;
-    SearchEdit: TEdit;
     Backup1: TMenuItem;
     EfetuarBackupemarquivolocal1: TMenuItem;
     SaveBackupDialog: TSaveDialog;
@@ -144,7 +128,6 @@ type
     TreeView1: TTreeView;
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
-    PrintAllToolButton: TW7ToolButton;
     AbasPrincipalTS: TPageControl;
     TabSheet1: TTabSheet;
     AdvSmoothMegaMenu: TAdvSmoothMegaMenu;
@@ -176,6 +159,24 @@ type
     Grid: TcxGrid;
     TvGrid: TcxGridDBTableView;
     LvGrid: TcxGridLevel;
+    MainFormBotoesPanel: TPanel;
+    MainFormBotoesPanel2: TPanel;
+    AdvGlassButton1: TAdvGlassButton;
+    AdvGlassButton2: TAdvGlassButton;
+    AdvGlassButton3: TAdvGlassButton;
+    AdvGlassButton4: TAdvGlassButton;
+    AdvGlassButton5: TAdvGlassButton;
+    PrintAllToolButton: TAdvGlassButton;
+    SeparadorPanel1: TPanel;
+    AdvGlassButton7: TAdvGlassButton;
+    MainFormBotoesPanel3: TPanel;
+    ConsultaLabel: TLabel;
+    ConsultaCombo: TosComboFilter;
+    AdvGlassButton8: TAdvGlassButton;
+    Action1: TAction;
+    Panel4: TPanel;
+    MainFormBotoesPanel4: TPanel;
+    EditarTodosButton: TAdvGlassButton;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -273,7 +274,6 @@ type
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
     procedure clickMenu(Sender: TObject);
-    procedure IniciaGrid;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -604,7 +604,6 @@ begin
         ReplaceReportSQLPrint
       else
       begin
-        //self.IniciaGrid;
         FilterDataset.DisableControls;
         try
           TvGrid.ClearItems;
@@ -837,7 +836,7 @@ begin
      // FCurrentForm.ShowModal;
       FCurrentForm.Parent := tabSheet;
       FCurrentForm.Align := alClient;
-      FCurrentForm.BorderStyle := bsNone;
+      FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
       tabSheet.Caption := FCurrentForm.Caption;
       TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrOutro);
@@ -1771,7 +1770,7 @@ begin
       //      FCurrentForm.ShowModal;
       FCurrentForm.Parent := tabSheet;
       FCurrentForm.Align := alClient;
-      FCurrentForm.BorderStyle := bsNone;
+      FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
       FCurrentForm.EditAba(TabSheet);
       tabSheet.Caption := FCurrentForm.Caption;
@@ -1854,7 +1853,7 @@ begin
         TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
         FCurrentForm.Parent := tabSheet;
         FCurrentForm.Align := alClient;
-        FCurrentForm.BorderStyle := bsNone;
+        FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
         FCurrentForm.Visible := true;
         tabSheet.Caption := FCurrentForm.Caption;
         AbasPrincipalTS.ActivePage := tabSheet;
@@ -2027,15 +2026,6 @@ end;
 function TosCustomMainForm.getLoginFormClass: TLoginFormClass;
 begin
   result := TosCustomLoginForm;
-end;
-
-Procedure TosCustomMainForm.IniciaGrid;
-var
-  i: Integer;
-begin
-//  TvGrid.DataController.DataSource := FilterDatasource;
-  TvGrid.ClearItems;
-  TvGrid.DataController.CreateAllItems();
 end;
 
 initialization
