@@ -226,7 +226,6 @@ type
       var DefaultDraw: Boolean);
     procedure EdtPesquisaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EdtPesquisaEnter(Sender: TObject);
-    procedure AbasPrincipalTSChange(Sender: TObject);
     procedure TvGridDblClick(Sender: TObject);
     procedure TvGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TvGridKeyPress(Sender: TObject; var Key: Char);
@@ -274,7 +273,6 @@ type
     procedure adjustReportZoom;
     procedure SetOnEditForm(const Value: TOnEditForm);
     procedure clickMenu(Sender: TObject);
-    procedure MontarMenu;
     procedure IniciaGrid;
   protected
     FCurrentTemplate: TMemoryStream;
@@ -423,7 +421,6 @@ begin
       AbasPrincipalTS.ActivePage := tabSheet;
       AbasPrincipalTS.ActivePage.Visible := False;
       AbasPrincipalTS.ActivePage.Visible := True;
-      self.MontarMenu;
       {if Form.IsModified then
       begin
         FModifiedList.Add(FilterDatasource.DataSet.fieldByName('id').AsString);
@@ -458,13 +455,18 @@ begin
   inherited;
   if FCurrentEditForm.canInsert then
   begin
+    tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+    tabSheet.PageControl := AbasPrincipalTS;
+
     Form := FCurrentEditForm;
     Form.VisibleButtons := [vbSalvarFechar];
     TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
     if PrintAction.Enabled then
       Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
-    Form.Insert;
-    ExecLastFilter;
+    Form.InsertAba(tabSheet);
+    tabSheet.Caption := Form.Caption;
+    AbasPrincipalTS.ActivePage := tabSheet;
+    //ExecLastFilter;
   end;
 end;
 
@@ -1598,24 +1600,6 @@ begin
   AdvanceAction.Enabled := enabled;
 end;
 
-procedure TosCustomMainForm.AbasPrincipalTSChange(Sender: TObject);
-begin
-  inherited;
-  self.MontarMenu
-end;
-
-procedure TosCustomMainForm.MontarMenu;
-begin
-  if AbasPrincipalTS.ActivePage = TabSheet1 then
-    self.Menu := MainMenu
-  else
-  begin
-    TForm(AbasPrincipalTS.ActivePage.Controls[0]).Menu := nil;
-    if TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') <> nil then
-      self.Menu := TForm(AbasPrincipalTS.ActivePage.Controls[0]).findcomponent('MainMenu') as TMainMenu;
-  end;
-end;
-
 procedure TosCustomMainForm.adjustReportZoom;
 var
   liPercentage: Integer;
@@ -1806,7 +1790,6 @@ begin
       FCurrentEditForm := CreateCurrentEditForm;
       FCurrentEditForm.Visible := False;
       AbasPrincipalTS.ActivePageIndex := 0;
-      self.MontarMenu;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
@@ -1835,15 +1818,14 @@ begin
         TosWizForm(FCurrentForm).pgcWizard.ActivePageIndex := 0;
       end;
 
-        //      FCurrentForm.ShowModal;
-        FCurrentForm.Parent := tabSheet;
-        FCurrentForm.Align := alClient;
-        FCurrentForm.BorderStyle := bsNone;
-        FCurrentForm.Visible := true;
-        FCurrentForm.EditAba(TabSheet);
-        tabSheet.Caption := FCurrentForm.Caption;
-        AbasPrincipalTS.ActivePage := tabSheet;
-        self.MontarMenu;
+      //      FCurrentForm.ShowModal;
+      FCurrentForm.Parent := tabSheet;
+      FCurrentForm.Align := alClient;
+      FCurrentForm.BorderStyle := bsNone;
+      FCurrentForm.Visible := true;
+      FCurrentForm.EditAba(TabSheet);
+      tabSheet.Caption := FCurrentForm.Caption;
+      AbasPrincipalTS.ActivePage := tabSheet;
     finally
       Screen.Cursor := crDefault;
     end;
@@ -1893,7 +1875,6 @@ begin
       FCurrentEditForm := CreateCurrentEditForm;
       FCurrentEditForm.Visible := False;
       AbasPrincipalTS.ActivePageIndex := 0;
-      self.MontarMenu;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
@@ -1927,7 +1908,6 @@ begin
         FCurrentForm.Visible := true;
         tabSheet.Caption := FCurrentForm.Caption;
         AbasPrincipalTS.ActivePage := tabSheet;
-        self.MontarMenu
     finally
       Screen.Cursor := crDefault;
     end;

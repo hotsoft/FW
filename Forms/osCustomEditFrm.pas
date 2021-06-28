@@ -24,28 +24,14 @@ type
     MainControlBar: TControlBar;
     ControlBarPanel: TPanel;
     SalvarFecharButton: TSpeedButton;
-    MainMenu: TMainMenu;
-    Arquivo1: TMenuItem;
-    Novo: TMenuItem;
     SaveAction: TAction;
     SaveCloseAction: TAction;
     NewAction: TAction;
-    N: TMenuItem;
-    Salvar: TMenuItem;
-    SalvareFechar: TMenuItem;
-    N2111: TMenuItem;
     CloseAction: TAction;
-    Fechar: TMenuItem;
     SaveNewAction: TAction;
-    SalvareNovo: TMenuItem;
-    Edio1: TMenuItem;
-    Ajuda1: TMenuItem;
     CancelUpdatesAction: TAction;
-    Desfazeralteraes: TMenuItem;
     ContentAction: TAction;
     IndexAction: TAction;
-    Contedo1: TMenuItem;
-    ndice1: TMenuItem;
     DeleteAction: TAction;
     ImprimirAction: TAction;
     ImprimirButton: TSpeedButton;
@@ -105,6 +91,7 @@ type
     continue: boolean;
     constructor Create(AOwner: TComponent); override;
     function Insert: boolean; virtual;
+    function InsertAba(pTabSheet: TTabSheet): boolean; virtual;
     function Edit(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
     function EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet): boolean;
     function View(const KeyFields: string; const KeyValues: Variant; PClose: boolean = True; deleting: boolean = false): boolean; virtual;
@@ -170,7 +157,7 @@ begin
     FTabSheet := pTabSheet;
     self.Parent := pTabSheet;
     self.Align := alClient;
-    //self.BorderStyle := bsNone;
+    self.BorderStyle := bsNone;
     self.Visible := true;
     pTabSheet.Caption := self.Caption;
     //ShowModal;
@@ -203,6 +190,32 @@ begin
     FMasterDataset.Close;
     Result := (ModalResult = mrOK);
   end;
+end;
+
+function TosCustomEditForm.InsertAba(pTabSheet: TTabSheet): boolean;
+begin
+  Screen.Cursor := crHourglass;
+  FFormMode := fmInsert;
+  CheckMasterDataset;
+
+  with FMasterDataset do
+  begin
+    Params.ParamByName('ID').AsInteger := -1; // Para não trazer dados no open
+    Open;
+    Insert;
+  end;
+
+  OnCheckActionsAction.Execute;
+  Screen.Cursor := crDefault;
+
+  FTabSheet := pTabSheet;
+  self.Parent := pTabSheet;
+  self.Align := alClient;
+  //self.BorderStyle := bsNone;
+  self.Visible := true;
+  pTabSheet.Caption := self.Caption;
+
+  FKeyValues := FMasterDataset.IDField.Value;
 end;
 
 function TosCustomEditForm.View(const KeyFields: string; const KeyValues: Variant; PClose: boolean =true; deleting: boolean = false): boolean;
