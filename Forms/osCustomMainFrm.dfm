@@ -1593,6 +1593,7 @@ inherited osCustomMainForm: TosCustomMainForm
             Styles.Indicator = cxStyle11
             Styles.Preview = cxStyle12
             Styles.Selection = cxStyle16
+            OnColumnHeaderClick = TvGridColumnHeaderClick
           end
           object LvGrid: TcxGridLevel
             GridView = TvGrid

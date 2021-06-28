@@ -194,7 +194,6 @@ type
     procedure PaginaInicial(Sender: TObject);
     procedure GridCalcTitleImage(Sender: TObject; Field: TField;
       var TitleImageAttributes: TwwTitleImageAttributes);
-    procedure GridTitleButtonClick(Sender: TObject; AFieldName: String);
     procedure FilterDatasetBeforeClose(DataSet: TDataSet);
     procedure PrintFilterActionExecute(Sender: TObject);
     procedure LoginActionExecute(Sender: TObject);
@@ -230,6 +229,7 @@ type
     procedure TvGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure TvGridKeyPress(Sender: TObject; var Key: Char);
     procedure TvGridTopRecordIndexChanged(Sender: TObject);
+    procedure TvGridColumnHeaderClick(Sender: TcxGridTableView; AColumn: TcxGridColumn);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -1103,56 +1103,6 @@ begin
     TitleImageAttributes.ImageIndex := -1;
 end;
 
-procedure TosCustomMainForm.GridTitleButtonClick(Sender: TObject;
-  AFieldName: String);
-var
-  Field: TField;
-  IndexOptions: TIndexOptions;
-begin
-  inherited;
-  // Considera-se inválido o buffer da string de busca incremental quando um
-  // novo field é selecionado para ordenação
-  CurrentSearchString := '';
-
-  // Obtém o Field correspondente do DataSet (FieldByName retorna uma exceção
-  // caso o field não seja encontrado. Todavia isso não deve acontecer, uma vez
-  // que este evento será disparado apenas quando o dataset estiver aberto e com
-  // fields válidos)
-  Field := TvGrid.DataController.DataSource.DataSet.FieldByName(AFieldName); //Grid.DataSource.DataSet.FieldByName(AFieldName);
-  // Se o usuário clicou no mesmo field de antes então...
-  if Field = SortField then
-    // ... muda o sentido da seta
-    AscendingSort := not AscendingSort
-  else
-  // Senão se o Field é diferente então...
-  begin
-    // ... define o novo field e redesenha o grid para remover as setas das
-    // outras colunas
-    SortField := Field;
-    AscendingSort := True;
-    //Grid.RedrawGrid;
-  end;
-
-
-
-  // Apaga o índice atual
-  if FilterDataset.IndexFieldCount > 0 then
-    FilterDataset.DeleteIndex(SortIndexName);
-
-  // Define as opções do índice para não-sensível à caixa e ordenação ascendente
-  // ou descendente, de acordo com a seleção atual
-  if AscendingSort then
-    IndexOptions := [ixCaseInsensitive]
-  else
-    IndexOptions := [ixDescending, ixCaseInsensitive];
-  // Cria o índice no field selecionado
-  FilterDataset.AddIndex(SortIndexName, AFieldName, IndexOptions);
-
-  // Define o nome do índice e ordena novamente o dataset (caso já seja aquele
-  // o nome do índice)
-  FilterDataset.IndexName := SortIndexName;
-end;
-
 procedure TosCustomMainForm.FilterDatasetBeforeClose(DataSet: TDataSet);
 begin
   inherited;
@@ -1935,6 +1885,56 @@ begin
 end;
 
 
+
+procedure TosCustomMainForm.TvGridColumnHeaderClick(Sender: TcxGridTableView; AColumn: TcxGridColumn);
+var
+  Field: TField;
+  IndexOptions: TIndexOptions;
+begin
+  inherited;
+  // Considera-se inválido o buffer da string de busca incremental quando um
+  // novo field é selecionado para ordenação
+  CurrentSearchString := '';
+
+  // Obtém o Field correspondente do DataSet (FieldByName retorna uma exceção
+  // caso o field não seja encontrado. Todavia isso não deve acontecer, uma vez
+  // que este evento será disparado apenas quando o dataset estiver aberto e com
+  // fields válidos)
+  Field := TvGrid.DataController.DataSource.DataSet.FieldByName(TcxGridDBColumn(AColumn).DataBinding.FieldName ); //Grid.DataSource.DataSet.FieldByName(AFieldName);
+  // Se o usuário clicou no mesmo field de antes então...
+  if Field = SortField then
+    // ... muda o sentido da seta
+    AscendingSort := not AscendingSort
+  else
+  // Senão se o Field é diferente então...
+  begin
+    // ... define o novo field e redesenha o grid para remover as setas das
+    // outras colunas
+    SortField := Field;
+    AscendingSort := True;
+    //Grid.RedrawGrid;
+  end;
+
+
+
+  // Apaga o índice atual
+  if FilterDataset.IndexFieldCount > 0 then
+    FilterDataset.DeleteIndex(SortIndexName);
+
+  // Define as opções do índice para não-sensível à caixa e ordenação ascendente
+  // ou descendente, de acordo com a seleção atual
+  if AscendingSort then
+    IndexOptions := [ixCaseInsensitive]
+  else
+    IndexOptions := [ixDescending, ixCaseInsensitive];
+  // Cria o índice no field selecionado
+  FilterDataset.AddIndex(SortIndexName, TcxGridDBColumn(AColumn).DataBinding.FieldName, IndexOptions);
+
+  // Define o nome do índice e ordena novamente o dataset (caso já seja aquele
+  // o nome do índice)
+  FilterDataset.IndexName := SortIndexName;
+
+end;
 
 procedure TosCustomMainForm.TvGridDblClick(Sender: TObject);
 begin
