@@ -2,13 +2,13 @@ inherited osCustomEditForm: TosCustomEditForm
   Left = 40
   Top = 351
   Caption = 'osCustomEditForm'
-  ClientHeight = 417
+  ClientHeight = 437
   ClientWidth = 457
   Menu = MainMenu
   OldCreateOrder = True
   OnCloseQuery = FormCloseQuery
   ExplicitWidth = 473
-  ExplicitHeight = 476
+  ExplicitHeight = 496
   PixelsPerInch = 96
   TextHeight = 13
   object MainControlBar: TControlBar [0]
@@ -20,7 +20,6 @@ inherited osCustomEditForm: TosCustomEditForm
     AutoDrag = False
     AutoSize = True
     TabOrder = 0
-    ExplicitTop = 23
     object ControlBarPanel: TPanel
       Left = 11
       Top = 2
@@ -451,10 +450,52 @@ inherited osCustomEditForm: TosCustomEditForm
       000000000000}
   end
   object MainMenu: TMainMenu
-    Left = 128
-    Top = 192
+    Left = 352
+    Top = 112
     object Arquivo1: TMenuItem
       Caption = '&Arquivo'
+      object Novo: TMenuItem
+        Action = NewAction
+      end
+      object N: TMenuItem
+        Caption = '-'
+      end
+      object Salvar: TMenuItem
+        Action = SaveAction
+      end
+      object SalvareFechar: TMenuItem
+        Action = SaveCloseAction
+      end
+      object SalvareNovo: TMenuItem
+        Action = SaveNewAction
+      end
+      object N2111: TMenuItem
+        Caption = '-'
+      end
+      object Fechar: TMenuItem
+        Action = CloseAction
+      end
+    end
+    object Edio1: TMenuItem
+      Caption = '&Edi'#231#227'o'
+      object Desfazeralteraes: TMenuItem
+        Action = CancelUpdatesAction
+      end
+    end
+    object Ajuda1: TMenuItem
+      Caption = 'Aj&uda'
+      object Contedo1: TMenuItem
+        Action = ContentAction
+      end
+      object ndice1: TMenuItem
+        Action = IndexAction
+      end
+    end
+  end
+  object MenuPadraoPopup: TPopupMenu
+    Left = 424
+    object A1: TMenuItem
+      Caption = 'Arquivo'
       object Novo1: TMenuItem
         Action = NewAction
       end
@@ -477,52 +518,9 @@ inherited osCustomEditForm: TosCustomEditForm
         Action = CloseAction
       end
     end
-    object Edio1: TMenuItem
-      Caption = '&Edi'#231#227'o'
-      object Desfazeralteraes1: TMenuItem
-        Action = CancelUpdatesAction
-      end
-    end
-    object Ajuda1: TMenuItem
-      Caption = 'Aj&uda'
-      object Contedo1: TMenuItem
-        Action = ContentAction
-      end
-      object ndice1: TMenuItem
-        Action = IndexAction
-      end
-    end
-  end
-  object MenuPadraoPopup: TPopupMenu
-    Left = 248
-    Top = 88
-    object A1: TMenuItem
-      Caption = 'Arquivo'
-      object N3: TMenuItem
-        Action = NewAction
-      end
-      object N4: TMenuItem
-        Caption = '-'
-      end
-      object N5: TMenuItem
-        Action = SaveAction
-      end
-      object Salvar2: TMenuItem
-        Action = SaveCloseAction
-      end
-      object S1: TMenuItem
-        Action = SaveNewAction
-      end
-      object N6: TMenuItem
-        Caption = '-'
-      end
-      object F1: TMenuItem
-        Action = CloseAction
-      end
-    end
     object E1: TMenuItem
       Caption = 'Edi'#231#227'o'
-      object Desfazeralteraes2: TMenuItem
+      object Desfazeralteraes1: TMenuItem
         Action = CancelUpdatesAction
       end
     end
