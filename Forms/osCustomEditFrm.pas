@@ -52,12 +52,18 @@ type
     ExcluirButton: TSpeedButton;
     FecharButton: TSpeedButton;
     PararButton: TSpeedButton;
-    MenuPadraoPanel: TPanel;
     MenuPadraoPopup: TPopupMenu;
     A1: TMenuItem;
     E1: TMenuItem;
     N3: TMenuItem;
     Desfazeralteraes2: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    Salvar2: TMenuItem;
+    S1: TMenuItem;
+    N6: TMenuItem;
+    F1: TMenuItem;
+    PopUpPardaoButton: TSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure SaveCloseActionExecute(Sender: TObject);
@@ -71,6 +77,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure PararButtonClick(Sender: TObject);
     procedure MasterDataSourceDataChange(Sender: TObject; Field: TField);
+    procedure PopUpPardaoButtonClick(Sender: TObject);
   private
     FDatamodule: TDatamodule;
     FInitialControl: TWinControl;
@@ -243,6 +250,14 @@ end;
 procedure TosCustomEditForm.SetExternalCDS(const Value: TosClientDataset);
 begin
   FMasterDataset := Value;
+end;
+
+procedure TosCustomEditForm.PopUpPardaoButtonClick(Sender: TObject);
+var
+  pnt: TPoint;
+begin
+  if GetCursorPos(pnt) then
+    MenuPadraoPopup.Popup(pnt.X, pnt.Y);
 end;
 
 procedure TosCustomEditForm.MasterDatasetAfterEdit(DataSet: TDataSet);
