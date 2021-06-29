@@ -402,7 +402,10 @@ var
   Form: TosCustomEditForm;
 begin
   inherited;
-  Form := CreateCurrentEditForm;
+  if FCurrentEditForm <> nil then
+    Form := FCurrentEditForm
+  else
+    Form := CreateCurrentEditForm;
   if Assigned(Form) then
   begin
     if not Form.Showing then

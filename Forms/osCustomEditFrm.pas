@@ -78,6 +78,7 @@ type
     FFormMode: TFormMode;
     FExternalCDS: TosClientDataset;
     FIsModified: boolean;
+
     procedure ControlButtons;
     procedure MasterDatasetAfterEdit(DataSet: TDataSet); virtual;
     procedure CheckMasterDataset;
@@ -100,9 +101,9 @@ type
     property FormMode: TFormMode read FFormMode write FFormMode;
     property ExternalCDS: TosClientDataset read FExternalCDS write SetExternalCDS;
     property IsModified: boolean read FIsModified;
-    property Datamodule: TDatamodule read FDatamodule write SetDatamodule;
     property VisibleButtons: TVisibleButtons read FVisibleButtons write FVisibleButtons;
     function canInsert: boolean; virtual;
+    property Datamodule: TDatamodule read FDatamodule write SetDatamodule;
   end;
 
   TosFormClass = class of TosForm;

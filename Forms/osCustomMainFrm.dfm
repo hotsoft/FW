@@ -4,6 +4,7 @@ inherited osCustomMainForm: TosCustomMainForm
   Caption = 'osCustomMainForm'
   ClientHeight = 645
   ClientWidth = 1008
+  KeyPreview = True
   Menu = MainMenu
   Visible = True
   WindowState = wsMaximized

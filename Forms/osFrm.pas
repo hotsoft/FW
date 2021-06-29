@@ -13,6 +13,16 @@ type
   TWhiteList = class(TObjectList<TComponent>)
   end;
 
+  TWinControlEx = class(TWinControl)
+  private
+
+  protected
+    procedure KeyPress(var Key: Char); override;
+  public
+    procedure SetFocus; override;
+  end;
+
+
   TosForm = class(TForm)
     ActionList: TosActionList;
     OnCheckActionsAction: TAction;
@@ -150,6 +160,15 @@ begin
   pTabSheet.Caption := self.Caption;
 end;
 
+procedure TWinControlex.KeyPress(var Key: Char);
+begin
+  inherited;
+end;
 
+procedure TWinControlEx.SetFocus;
+begin
+  inherited;
+
+end;
 
 end.
