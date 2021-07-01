@@ -29,6 +29,7 @@ type
     ImageList: TImageList;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FOperacoes: TOperacoes;
     procedure SetOperacoes(const Value: TOperacoes);
@@ -80,6 +81,15 @@ end;
 procedure TosForm.SetOperacoes(const Value: TOperacoes);
 begin
   FOperacoes := Value;
+end;
+
+procedure TosForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if FTabSheet <> nil then
+  begin
+    FTabSheet.PageControl.SelectNextPage(True);
+    FreeAndNil(FTabSheet);
+  end;
 end;
 
 procedure TosForm.FormCreate(Sender: TObject);

@@ -9,7 +9,7 @@ uses
   ToolWin, ExtCtrls, osActionList, osClientDataset, provider, osUtils,
   Grids, Wwdbigrd, Wwdbgrid, wwdbdatetimepicker, wwrcdpnl, Mask, wwdbedit, wwriched,
   osComboSearch, osDBDualTree, wwDBSpin, wwDBNavigator, wwDBcomb, wwDBlook, DBGrids,
-  System.Actions, System.UITypes;
+  System.Actions, System.UITypes, osAppResources;
 
 type
   TFormMode      = (fmEdit, fmInsert, fmView, fmDelete);
@@ -18,6 +18,8 @@ type
   TVisibleButton  = (vbSalvarFechar, vbImprimir, vbExcluir, vbFechar, vbParar);
 
   TVisibleButtons = set of TVisibleButton;
+
+  TDatamoduleClass = class of TDatamodule;
 
   TosCustomEditForm = class(TosForm)
     MasterDataSource: TDataSource;
@@ -71,6 +73,7 @@ type
     procedure SetExternalCDS(const Value: TosClientDataset);
     procedure SetDatamodule(const Value: TDatamodule);
     function GetKeyValues: Variant;
+    function CreateCurrentDatamodule(FCurrentResource: TosAppResource): TDatamodule;
 
   protected
     FMasterDataset: TosClientDataset;
@@ -94,7 +97,7 @@ type
     function Insert: boolean; virtual;
     function InsertAba(pTabSheet: TTabSheet): boolean; virtual;
     function Edit(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
-    function EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet): boolean;
+    function EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
     function View(const KeyFields: string; const KeyValues: Variant; PClose: boolean = True; deleting: boolean = false): boolean; virtual;
     function Delete(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
     property CurrentKeyValues: Variant read GetKeyValues;
@@ -141,11 +144,12 @@ begin
   end;
 end;
 
-function TosCustomEditForm.EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet): boolean;
+function TosCustomEditForm.EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
 begin
   try
     Screen.Cursor := crHourglass;
     FFormMode := fmEdit;
+    self.Datamodule := self.CreateCurrentDatamodule(FCurrentResource);
     CheckMasterDataset;
 
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
@@ -167,6 +171,16 @@ begin
     //FMasterDataset.Close;
     //Result := (ModalResult = mrOK);
   end;
+end;
+
+function TosCustomEditForm.CreateCurrentDatamodule(FCurrentResource: TosAppResource): TDatamodule;
+begin
+  if (FCurrentResource.ResType in [rtEdit, rtReport, rtOther]) and
+    (Assigned(FCurrentResource.DataClass)) then
+    Result := TDatamoduleClass(FCurrentResource.DataClass).Create(Self)
+  else
+    Result := nil;
+//    raise Exception.CreateFmt('Datamodule %s não registrado', [FCurrentResource.DataClassName]);
 end;
 
 function TosCustomEditForm.Insert: boolean;

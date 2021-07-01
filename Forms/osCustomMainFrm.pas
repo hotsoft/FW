@@ -402,10 +402,7 @@ var
   Form: TosCustomEditForm;
 begin
   inherited;
-  if FCurrentEditForm <> nil then
-    Form := FCurrentEditForm
-  else
-    Form := CreateCurrentEditForm;
+  Form := CreateCurrentEditForm;
   if Assigned(Form) then
   begin
     if not Form.Showing then
@@ -421,7 +418,7 @@ begin
       tabSheet.PageControl := AbasPrincipalTS;
 
       TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
-      Form.EditAba('ID', iID, TabSheet);
+      Form.EditAba('ID', iID, TabSheet, FCurrentResource);
       AbasPrincipalTS.ActivePage := tabSheet;
       AbasPrincipalTS.ActivePage.Visible := False;
       AbasPrincipalTS.ActivePage.Visible := True;
@@ -458,13 +455,17 @@ var
   vIndex: Integer;
 begin
   inherited;
-  if FCurrentEditForm.canInsert then
+  Form := CreateCurrentEditForm;
+  if self.FindTabSheet(Form.Caption + ' - Novo', vIndex) then
   begin
-    Form := CreateCurrentEditForm;
-    if self.FindTabSheet(Form.Caption + ' - Novo', vIndex) then
-      AbasPrincipalTS.ActivePageIndex := vIndex
-    else
+    AbasPrincipalTS.ActivePageIndex := vIndex;
+    FreeAndNil(Form);
+  end
+  else
+  begin
+    if Form.canInsert then
     begin
+      //Form := CreateCurrentEditForm;
       tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
       tabSheet.PageControl := AbasPrincipalTS;
 
@@ -809,10 +810,10 @@ begin
     FCurrentDatamodule := CreateCurrentDatamodule;
 
     // Libera o form corrente
-    if Assigned(FCurrentEditForm) then
-      FreeAndNil(FCurrentEditForm);
-    if Assigned(FCurrentForm) then
-      FreeAndNil(FCurrentForm);
+    //if Assigned(FCurrentEditForm) then
+    //  FreeAndNil(FCurrentEditForm);
+    //if Assigned(FCurrentForm) then
+    //  FreeAndNil(FCurrentForm);
 
     // Limpa o Template corrente
     FCurrentTemplate.Clear;
@@ -827,9 +828,9 @@ begin
     else if FCurrentResource.ResType = rtEdit then
     begin
       FActionDblClick := EditAction;
-      FCurrentEditForm := CreateCurrentEditForm;
-      if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
-        FCurrentEditForm.Datamodule := FCurrentDatamodule;
+      //FCurrentEditForm := CreateCurrentEditForm;
+      //if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
+      //  FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
     else if FCurrentResource.ResType = rtOther then
       FCurrentForm := CreateCurrentForm;
@@ -1728,14 +1729,14 @@ begin
     FCurrentResource := NewResource;
     Manager.currentResource := FCurrentResource;
     // Libera o datamodule associado
-    FCurrentDatamodule.Free;
-    FCurrentDatamodule := CreateCurrentDatamodule;
+    //FCurrentDatamodule.Free;
+    //FCurrentDatamodule := CreateCurrentDatamodule;
 
     // Libera o form corrente
-  //  if Assigned(FCurrentEditForm) then
-  //    FreeAndNil(FCurrentEditForm);
-  //  if Assigned(FCurrentForm) then
-  //    FreeAndNil(FCurrentForm);
+    if Assigned(FCurrentEditForm) then
+      FreeAndNil(FCurrentEditForm);
+    //if Assigned(FCurrentForm) then
+    //  FreeAndNil(FCurrentForm);
 
     // Limpa o Template corrente
     FCurrentTemplate.Clear;
@@ -1748,10 +1749,10 @@ begin
     begin
       FActionDblClick := EditAction;
       FCurrentEditForm := CreateCurrentEditForm;
-      FCurrentEditForm.Visible := False;
+      //FCurrentEditForm.Visible := False;
       AbasPrincipalTS.ActivePageIndex := 0;
-      if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
-        FCurrentEditForm.Datamodule := FCurrentDatamodule;
+      //if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
+      //  FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
     else if FCurrentResource.ResType = rtOther then
     begin
@@ -1769,7 +1770,7 @@ begin
     try
       CheckActionsExecute(self);
       if FCurrentForm is TosCustomEditForm then
-        (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
+        (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar, vbFechar];
 
 
       if FCurrentForm is TosWizForm then
