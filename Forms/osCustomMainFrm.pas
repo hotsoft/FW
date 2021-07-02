@@ -129,7 +129,7 @@ type
     EdtPesquisa: TEdit;
     Splitter1: TSplitter;
     AbasPrincipalTS: TPageControl;
-    TabSheet1: TTabSheet;
+    PesquisaTS: TTabSheet;
     AdvSmoothMegaMenu: TAdvSmoothMegaMenu;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
@@ -156,9 +156,6 @@ type
     cxStyle15: TcxStyle;
     cxStyle16: TcxStyle;
     cxBandApoio: TcxStyle;
-    Grid: TcxGrid;
-    TvGrid: TcxGridDBTableView;
-    LvGrid: TcxGridLevel;
     MainFormBotoesPanel: TPanel;
     MainFormBotoesPanel2: TPanel;
     AdvGlassButton1: TAdvGlassButton;
@@ -177,6 +174,10 @@ type
     Panel4: TPanel;
     MainFormBotoesPanel4: TPanel;
     EditarTodosButton: TAdvGlassButton;
+    Panel5: TPanel;
+    Grid: TcxGrid;
+    TvGrid: TcxGridDBTableView;
+    LvGrid: TcxGridLevel;
     procedure EditActionExecute(Sender: TObject);
     procedure ViewActionExecute(Sender: TObject);
     procedure NewActionExecute(Sender: TObject);
@@ -632,7 +633,7 @@ begin
           ConsultaCombo.ConfigFields(ConsultaCombo.ItemIndex);
         end;
       end;
-      TabSheet1.Caption := 'Pesquisa - ' + FCurrentResource.Name;
+      PesquisaTS.Caption := 'Pesquisa - ' + FCurrentResource.Name;
       FIDField := FilterDataset.Fields.FindField('ID');
       CheckMultiSelection;
 
@@ -854,6 +855,7 @@ begin
       FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
       tabSheet.Caption := FCurrentForm.Caption;
+      PesquisaTS.Caption := 'Pesquisa';
       TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrOutro);
     finally
       Screen.Cursor := crDefault;
@@ -1800,6 +1802,7 @@ begin
       FCurrentForm.Align := alClient;
       FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
+      PesquisaTS.Caption := 'Pesquisa';
       FCurrentForm.EditAba(TabSheet);
       self.HabilitaBotoesTop;
       tabSheet.Caption := FCurrentForm.Caption;

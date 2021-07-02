@@ -1375,12 +1375,27 @@ inherited osCustomMainForm: TosCustomMainForm
       Top = 34
       Width = 863
       Height = 592
-      ActivePage = TabSheet1
+      ActivePage = PesquisaTS
       Align = alClient
       TabOrder = 2
       OnChange = AbasPrincipalTSChange
-      object TabSheet1: TTabSheet
+      object PesquisaTS: TTabSheet
         Caption = 'Pesquisa'
+        object Panel5: TPanel
+          Left = 0
+          Top = 0
+          Width = 855
+          Height = 564
+          Align = alClient
+          Caption = 'Selecione o recurso no menu para pesquisar'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
         object Grid: TcxGrid
           Left = 24
           Top = 20
@@ -1393,7 +1408,7 @@ inherited osCustomMainForm: TosCustomMainForm
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 0
+          TabOrder = 1
           LookAndFeel.NativeStyle = False
           object TvGrid: TcxGridDBTableView
             OnDblClick = TvGridDblClick
