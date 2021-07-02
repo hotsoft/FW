@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Vcl.ComCtrls,
-  ActnList, osUtils, ImgList, osActionList, System.Generics.Collections, System.Actions {$IFDEF VER320} , System.ImageList {$ENDIF};
+  ActnList, osUtils, ImgList, osActionList, System.Generics.Collections, provider, osAppResources,
+  System.Actions {$IFDEF VER320} , System.ImageList {$ENDIF};
 
 type
   TOperacao  = (oInserir, oEditar, oExcluir, oVisualizar, oImprimir);
@@ -15,13 +16,13 @@ type
 
   TWinControlEx = class(TWinControl)
   private
-
   protected
     procedure KeyPress(var Key: Char); override;
   public
     procedure SetFocus; override;
   end;
 
+  TDatamoduleClass = class of TDatamodule;
 
   TosForm = class(TForm)
     ActionList: TosActionList;
@@ -32,7 +33,10 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FOperacoes: TOperacoes;
+    FDatamodule: TDatamodule;
     procedure SetOperacoes(const Value: TOperacoes);
+    function CreateCurrentDatamodule(FCurrentResource: TosAppResource): TDatamodule;
+    procedure SetDatamodule(const Value: TDatamodule);
   protected
     FTabSheet: TTabSheet;
     FWhiteList: TWhiteList;
@@ -40,10 +44,11 @@ type
     procedure EnableWinControlComponents(aWinControl: TWinControl);
     procedure AddControlsToWhiteListByContainer(aContainer: TWinControl);
     function GetWhiteList: TWhiteList;
+    property Datamodule: TDatamodule read FDatamodule write SetDatamodule;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function EditAba(pTabSheet: TTabSheet): boolean;
+    function EditAba(pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
   published
     property Operacoes: TOperacoes read FOperacoes write SetOperacoes;
   end;
@@ -85,6 +90,8 @@ end;
 
 procedure TosForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  if FDatamodule <> nil then
+    FreeAndNil(FDatamodule);
   if FTabSheet <> nil then
   begin
     FTabSheet.PageControl.SelectNextPage(True);
@@ -155,10 +162,10 @@ begin
   end;
 end;
 
-function TosForm.EditAba(pTabSheet: TTabSheet): boolean;
+function TosForm.EditAba(pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
 begin
+  self.Datamodule := self.CreateCurrentDatamodule(FCurrentResource);
   Screen.Cursor := crHourglass;
-
   OnCheckActionsAction.Execute;
   Screen.Cursor := crDefault;
 
@@ -168,6 +175,27 @@ begin
   self.BorderStyle := bsNone;
   self.Visible := true;
   pTabSheet.Caption := self.Caption;
+end;
+
+function TosForm.CreateCurrentDatamodule(FCurrentResource: TosAppResource): TDatamodule;
+begin
+  if (FCurrentResource.ResType in [rtEdit, rtReport, rtOther]) and
+    (Assigned(FCurrentResource.DataClass)) then
+    Result := TDatamoduleClass(FCurrentResource.DataClass).Create(Self)
+  else
+    Result := nil;
+//    raise Exception.CreateFmt('Datamodule %s não registrado', [FCurrentResource.DataClassName]);
+end;
+
+procedure TosForm.SetDatamodule(const Value: TDatamodule);
+var
+  Provider: TCustomProvider;
+begin
+  if Value <> FDatamodule then
+  begin
+    FDatamodule := Value;
+    Provider := TCustomProvider(GetComponentByName(FDatamodule, 'MasterProvider', TCustomProvider));
+  end;
 end;
 
 procedure TWinControlex.KeyPress(var Key: Char);

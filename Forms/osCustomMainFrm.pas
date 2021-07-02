@@ -1803,7 +1803,7 @@ begin
       FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
       PesquisaTS.Caption := 'Pesquisa';
-      FCurrentForm.EditAba(TabSheet);
+      FCurrentForm.EditAba(TabSheet, FCurrentResource);
       self.HabilitaBotoesTop;
       tabSheet.Caption := FCurrentForm.Caption;
       AbasPrincipalTS.ActivePage := tabSheet;

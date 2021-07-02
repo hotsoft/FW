@@ -1476,6 +1476,8 @@ inherited osCustomMainForm: TosCustomMainForm
         Height = 32
         Align = alLeft
         BevelOuter = bvNone
+        DoubleBuffered = False
+        ParentDoubleBuffered = False
         TabOrder = 0
         object AdvGlassButton1: TAdvGlassButton
           Left = 0
