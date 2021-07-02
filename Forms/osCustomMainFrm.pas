@@ -231,6 +231,7 @@ type
     procedure TvGridKeyPress(Sender: TObject; var Key: Char);
     procedure TvGridTopRecordIndexChanged(Sender: TObject);
     procedure TvGridColumnHeaderClick(Sender: TcxGridTableView; AColumn: TcxGridColumn);
+    procedure AbasPrincipalTSChange(Sender: TObject);
   private
     FNewFilter: boolean;
     FUserName: string;
@@ -275,6 +276,7 @@ type
     procedure SetOnEditForm(const Value: TOnEditForm);
     procedure clickMenu(Sender: TObject);
     function FindTabSheet(NomeForm: String; var vIndex: Integer): Boolean;
+    procedure HabilitaBotoesTop;
   protected
     FCurrentTemplate: TMemoryStream;
     FCurrentResource: TosAppResource;
@@ -422,6 +424,7 @@ begin
       AbasPrincipalTS.ActivePage := tabSheet;
       AbasPrincipalTS.ActivePage.Visible := False;
       AbasPrincipalTS.ActivePage.Visible := True;
+      self.HabilitaBotoesTop;
       {if Form.IsModified then
       begin
         FModifiedList.Add(FilterDatasource.DataSet.fieldByName('id').AsString);
@@ -1561,6 +1564,19 @@ begin
   AdvanceAction.Enabled := enabled;
 end;
 
+procedure TosCustomMainForm.AbasPrincipalTSChange(Sender: TObject);
+begin
+  inherited;
+  self.HabilitaBotoesTop;
+end;
+
+procedure TosCustomMainForm.HabilitaBotoesTop;
+begin
+  MainFormBotoesPanel2.Enabled := AbasPrincipalTS.ActivePageIndex = 0;
+  MainFormBotoesPanel3.Enabled := AbasPrincipalTS.ActivePageIndex = 0;
+  MainFormBotoesPanel4.Enabled := AbasPrincipalTS.ActivePageIndex = 0;
+end;
+
 procedure TosCustomMainForm.adjustReportZoom;
 var
   liPercentage: Integer;
@@ -1785,6 +1801,7 @@ begin
       FCurrentForm.BorderStyle := TFormBorderStyle(0); //BsNone
       FCurrentForm.Visible := true;
       FCurrentForm.EditAba(TabSheet);
+      self.HabilitaBotoesTop;
       tabSheet.Caption := FCurrentForm.Caption;
       AbasPrincipalTS.ActivePage := tabSheet;
     finally

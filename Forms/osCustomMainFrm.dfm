@@ -1378,6 +1378,7 @@ inherited osCustomMainForm: TosCustomMainForm
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 2
+      OnChange = AbasPrincipalTSChange
       object TabSheet1: TTabSheet
         Caption = 'Pesquisa'
         object Grid: TcxGrid
