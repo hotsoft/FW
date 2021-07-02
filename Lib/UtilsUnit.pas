@@ -138,7 +138,7 @@ Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
-
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
 
 implementation
 
@@ -2315,6 +2315,19 @@ begin
       result := Copy(Value, aPos, bPos - aPos);
     end;
   end;
+end;
+
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Length(Element) - 1 do
+    if Valor = Element[I] then
+    begin
+      Result := True;
+      break
+    end;
 end;
 
 end.
