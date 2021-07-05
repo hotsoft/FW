@@ -74,7 +74,6 @@ type
     procedure SetDatamodule(const Value: TDatamodule);
     function GetKeyValues: Variant;
     function CreateCurrentDatamodule(FCurrentResource: TosAppResource): TDatamodule;
-
   protected
     FMasterDataset: TosClientDataset;
     FKeyValues: variant;
@@ -95,11 +94,12 @@ type
     continue: boolean;
     constructor Create(AOwner: TComponent); override;
     function Insert: boolean; virtual;
-    function InsertAba(pTabSheet: TTabSheet): boolean; virtual;
+    function InsertAba(pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean; virtual;
     function Edit(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
     function EditAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
     function View(const KeyFields: string; const KeyValues: Variant; PClose: boolean = True; deleting: boolean = false): boolean; virtual;
     function Delete(const KeyFields: string; const KeyValues: Variant): boolean; virtual;
+    procedure DeleteAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet; FCurrentResource: TosAppResource);
     property CurrentKeyValues: Variant read GetKeyValues;
     property FormMode: TFormMode read FFormMode write FFormMode;
     property ExternalCDS: TosClientDataset read FExternalCDS write SetExternalCDS;
@@ -207,10 +207,11 @@ begin
   end;
 end;
 
-function TosCustomEditForm.InsertAba(pTabSheet: TTabSheet): boolean;
+function TosCustomEditForm.InsertAba(pTabSheet: TTabSheet; FCurrentResource: TosAppResource): boolean;
 begin
   Screen.Cursor := crHourglass;
   FFormMode := fmInsert;
+  self.Datamodule := self.CreateCurrentDatamodule(FCurrentResource);
   CheckMasterDataset;
 
   FMasterDataset.Params.ParamByName('ID').AsInteger := -1; // Para não trazer dados no open
@@ -225,6 +226,7 @@ begin
   self.Align := alClient;
   self.BorderStyle := bsNone;
   self.Visible := true;
+  pTabSheet.Caption := self.Caption + ' - Novo';
 
   FKeyValues := FMasterDataset.IDField.Value;
 end;
@@ -339,6 +341,28 @@ begin
     end; // if
   end; // for
   ControlBarPanel.Width := PosLeft;
+end;
+
+procedure TosCustomEditForm.DeleteAba(const KeyFields: string; const KeyValues: Variant; pTabSheet: TTabSheet; FCurrentResource: TosAppResource);
+begin
+  Screen.Cursor := crHourglass;
+  FFormMode := fmDelete;
+  self.Datamodule := self.CreateCurrentDatamodule(FCurrentResource);
+  CheckMasterDataset;
+
+  ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
+  FMasterDataset.close;
+  FMasterDataset.Open;
+
+  OnCheckActionsAction.Execute;
+  Screen.Cursor := crDefault;
+
+  FTabSheet := pTabSheet;
+  self.Parent := pTabSheet;
+  self.Align := alClient;
+  self.BorderStyle := bsNone;
+  self.Visible := true;
+  pTabSheet.Caption := self.Caption + ' - Excluir';
 end;
 
 function TosCustomEditForm.Delete(const KeyFields: string; const KeyValues: Variant): boolean;
@@ -559,9 +583,23 @@ begin
 end;
 
 procedure TosCustomEditForm.DeleteActionExecute(Sender: TObject);
+var
+  Erro: Boolean;
 begin
   inherited;
-  ModalResult := mrOk;
+  Erro := False;
+  FMasterDataset.Delete;
+  try
+    FMasterDataset.ApplyUpdates(0);
+  except
+    Erro := True;
+    MessageDlg('Erro ao excluir registro.', mtWarning, [mbOK], 0);
+  end;
+  if not Erro then
+  begin
+    FMasterDataset.Close;
+    self.Close;
+  end;
 end;
 
 procedure TosCustomEditForm.ReconcileError(DataSet: TCustomClientDataSet;

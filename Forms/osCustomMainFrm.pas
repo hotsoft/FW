@@ -419,12 +419,12 @@ begin
 
       tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
       tabSheet.PageControl := AbasPrincipalTS;
-
-      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.EditAba('ID', iID, TabSheet, FCurrentResource);
       AbasPrincipalTS.ActivePage := tabSheet;
       AbasPrincipalTS.ActivePage.Visible := False;
       AbasPrincipalTS.ActivePage.Visible := True;
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
+
       self.HabilitaBotoesTop;
       {if Form.IsModified then
       begin
@@ -477,8 +477,7 @@ begin
       TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
       if PrintAction.Enabled then
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
-      Form.InsertAba(tabSheet);
-      tabSheet.Caption := Form.Caption + ' - Novo';
+      Form.InsertAba(tabSheet, FCurrentResource);
       AbasPrincipalTS.ActivePage := tabSheet;
       //ExecLastFilter;
     end;
@@ -488,15 +487,33 @@ end;
 procedure TosCustomMainForm.DeleteActionExecute(Sender: TObject);
 var
   Form: TosCustomEditForm;
+  vIndex: Integer;
 begin
   inherited;
-  Form := FCurrentEditForm;
-  if Form <> nil then
+  Form := CreateCurrentEditForm;
+  if self.FindTabSheet(Form.Caption + ' - Excluir', vIndex) then
   begin
-    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrDelete);
-    Form.VisibleButtons := [vbExcluir, vbFechar];
-    if Form.Delete('ID', FIdField.AsInteger) then
-      ExecLastFilter;
+    AbasPrincipalTS.ActivePageIndex := vIndex;
+    FreeAndNil(Form);
+    ShowMessage('Permitido apenas uma tela de exclusão ao mesmo tempo.' + #13#10 + 'Verifique se é o registro correto a ser excluído');
+  end
+  else
+  begin
+    if Assigned(Form) then
+    begin
+      tabSheet := TTabSheet.Create(AbasPrincipalTS) ;
+      tabSheet.PageControl := AbasPrincipalTS;
+      Form.VisibleButtons := [vbExcluir, vbFechar];
+      Form.DeleteAba('ID', FIdField.AsInteger, TabSheet, FCurrentResource);
+      AbasPrincipalTS.ActivePage := tabSheet;
+      AbasPrincipalTS.ActivePage.Visible := False;
+      AbasPrincipalTS.ActivePage.Visible := True;
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrDelete);
+
+      self.HabilitaBotoesTop;
+      //if Form.Delete('ID', FIdField.AsInteger) then
+      //  ExecLastFilter;
+    end;
   end;
 end;
 
