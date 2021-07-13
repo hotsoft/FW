@@ -282,7 +282,8 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, StatusUnit,
+  ParametroSistemaDataUn;
 
 {$R *.DFM}
 
@@ -376,6 +377,8 @@ begin
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
       if assigned(Self.FOnEditForm) then
         Self.FOnEditForm(Form);
+
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.Edit('ID', iID);
       if Form.IsModified then
       begin
@@ -413,6 +416,7 @@ begin
   begin
     Form := FCurrentEditForm;
     Form.VisibleButtons := [vbSalvarFechar];
+    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrInsert);
     if PrintAction.Enabled then
       Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
     Form.Insert;
@@ -428,6 +432,7 @@ begin
   Form := FCurrentEditForm;
   if Form <> nil then
   begin
+    TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrDelete);
     Form.VisibleButtons := [vbExcluir, vbFechar];
     if Form.Delete('ID', FIdField.AsInteger) then
       ExecLastFilter;
@@ -781,6 +786,8 @@ begin
       CheckActionsExecute(self);
       if FCurrentForm is TosCustomEditForm then
         (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
+
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrOutro);
       FCurrentForm.ShowModal;
     finally
       Screen.Cursor := crDefault;
@@ -1631,6 +1638,7 @@ begin
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
       if assigned(Self.FOnEditForm) then
         Self.FOnEditForm(Form);
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.Edit('ID', iID);
       if Form.IsModified then
       begin
@@ -1804,6 +1812,8 @@ begin
       CheckActionsExecute(self);
       if FCurrentForm is TosCustomEditForm then
         (FCurrentForm as TosCustomEditForm).VisibleButtons := [vbSalvarFechar];
+
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       FCurrentForm.ShowModal;
     finally
       Screen.Cursor := crDefault;

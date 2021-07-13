@@ -77,6 +77,7 @@ function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
 function Base64FromText(const text: String): string;
@@ -138,6 +139,7 @@ procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
 function FormataNome(sNome: String): string;
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
 
 
 implementation
@@ -824,7 +826,7 @@ begin
       gethostname(namebuf,sizeof(namebuf));
       varPHostEnt := gethostbyname(namebuf);
       varTInAddr.S_addr := u_long(pu_long(varPHostEnt^.h_addr_list^)^);
-      Result := inet_ntoa(varTInAddr);
+      Result := string(inet_ntoa(varTInAddr));
     End;
     except
       Result := '';
@@ -1151,6 +1153,17 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := ' ' + Result;
+  Result := Result + Valor ;
 end;
 
 function KeyToStr(Key:Word): String;
@@ -2323,6 +2336,20 @@ begin
   for i := 0 to Length(excecao)-1 do
     result:= StringReplace(result,excecao[i],excecao[i],[rfReplaceAll, rfIgnoreCase]);
 end;
+
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Length(Element) - 1 do
+    if Valor = Element[I] then
+    begin
+      Result := True;
+      break
+    end;
+end;
+
 
 end.
 
