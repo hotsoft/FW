@@ -139,6 +139,7 @@ procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
 function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
 
 implementation
 
@@ -2328,6 +2329,13 @@ begin
       Result := True;
       break
     end;
+end;
+
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
+begin
+  Result := '';
+  if jsonObject.Get(campo) <> nil then
+    Result := jsonObject.Get(campo).JsonValue.Value;
 end;
 
 end.
