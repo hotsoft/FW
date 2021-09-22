@@ -670,13 +670,15 @@ function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange): C
 var
   LFactor: Extended;
   rmOrig: TFPURoundingMode;
+  Valor: real;
 begin
   rmOrig := GetRoundMode();
   if rmOrig <> rmNearest then
     SetRoundMode(rmNearest);
 
+  Valor := AValue; //Faz o cast pra float
   LFactor := IntPower(10, ADigit);
-  Result := Round(AValue / LFactor) * LFactor;
+  Result := Round(Valor / LFactor) * LFactor;
 
   if rmOrig <> rmNearest then
     SetRoundMode(rmOrig);
