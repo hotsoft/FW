@@ -1277,7 +1277,8 @@ begin
                               cds.FieldByName('ReportClassName').AsString,
                               cds.FieldByName('NomeDominio').AsString,
                               cds.FieldByName('IndiceImagem').AsInteger,
-                              cds.FieldByName('IDTipoRecurso').AsInteger);
+                              cds.FieldByName('IDTipoRecurso').AsInteger,
+                              cds.FieldByName('IDRecurso').AsInteger);
           cds.Next;
         end;
       finally
@@ -1374,10 +1375,8 @@ begin
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].Height := 20;
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].Tag := Manager.Resources[i].ID;
       AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].OnClick := clickMenu;
-
       if name = 'Parâmetros do Sistema' then
         AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items[AdvSmoothMegaMenu.MenuItems[CountNoPai].Menu.Sections[0].Items.Count-1].ImageIndex := 4;
-
 
       no := TreeView1.Items.AddChild(noPai, name);
       no.ImageIndex := ImageIndex;
