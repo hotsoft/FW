@@ -1640,6 +1640,7 @@ begin
         Form.VisibleButtons := Form.VisibleButtons + [vbImprimir];
       if assigned(Self.FOnEditForm) then
         Self.FOnEditForm(Form);
+      TParametroSistemaData.RegistrarUsoRecurso(FCurrentResource.Name, rrEdit);
       Form.Edit('ID', iID);
       if Form.IsModified then
       begin

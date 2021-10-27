@@ -139,6 +139,7 @@ procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
 function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
 
 implementation
 
@@ -670,13 +671,15 @@ function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange): C
 var
   LFactor: Extended;
   rmOrig: TFPURoundingMode;
+  Valor: real;
 begin
   rmOrig := GetRoundMode();
   if rmOrig <> rmNearest then
     SetRoundMode(rmNearest);
 
+  Valor := AValue; //Faz o cast pra float
   LFactor := IntPower(10, ADigit);
-  Result := Round(AValue / LFactor) * LFactor;
+  Result := Round(Valor / LFactor) * LFactor;
 
   if rmOrig <> rmNearest then
     SetRoundMode(rmOrig);
@@ -2328,6 +2331,13 @@ begin
       Result := True;
       break
     end;
+end;
+
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
+begin
+  Result := '';
+  if jsonObject.Get(campo) <> nil then
+    Result := jsonObject.Get(campo).JsonValue.Value;
 end;
 
 end.
