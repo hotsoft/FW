@@ -35,7 +35,7 @@ var
 implementation
 
 uses osReportUtils, acCustomSQLMainDataUn, osFrm, acCustomParametroSistemaDataUn,
-  acCustomReportUn, ReportUn;
+  acCustomReportUn, ReportUn, ParametroSistemaDataUn, StatusUnit;
 
 {$R *.dfm}
 
@@ -74,6 +74,7 @@ begin
   qry := acCustomSQLMainData.GetQuery;
   try
     qry.sql.Text := 'SELECT ' +
+                    ' R.Titulo, '+
                     ' RB.Name as TemplateName, '+
                     ' F.Name as NomeFiltro, ' +
                     ' R.ClasseImpressora, ' +
@@ -83,6 +84,7 @@ begin
                     ' R.MargemDireita, ' +
                     ' R.AlturaPapel, ' +
                     ' R.LarguraPapel, ' +
+                    ' R.Titulo, ' +
                     ' R.Orientation, R.tipoSaida ' +
                     ' FROM Relatorio R ' +
                     ' LEFT JOIN XFilterDef F ' +
@@ -110,100 +112,102 @@ begin
       config.margemDireita := qry.fieldByName('margemDireita').AsInteger;
     if not qry.fieldByName('tipoSaida').IsNull then
       config.tipoSaida := qry.fieldByName('tipoSaida').AsString;
+
+    config.NomeRelatorio := TemplateName;
+    stream := TMemoryStream.Create;
+    getTemplateByName(TemplateName, stream);
+
+    if FilterName <> '' then
+    begin
+      ComboFilter.ClearViews;
+      ComboFilter.FilterDefName := FilterName;
+      ComboFilter.GetViews();
+
+      srchForm := TCustomSearchForm.Create(application);
+      with srchForm do
+      begin
+        FilterDefName := filterName;
+        srchForm.DataProvider := acCustomSQLMainData.prvFilter;
+        Execute('',3,toRetornarQuery);
+        where := GetExpressions;
+        order := getOrder;
+
+        if ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text <> '' then
+        begin
+          if where = '' then
+            where := ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text
+          else
+            where := where + ' AND ' +
+              ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text;
+
+        end;
+        replaceReportSQLAddParam(report, stream, sqlResult.Text, Trim(where), Trim(order));
+        free;
+      end;
+    end
+    else
+      Report.Template.LoadFromStream(stream);
+
+
+    report.Units := utMillimeters;
+    if config.nomeImpressora<>'' then
+      report.PrinterSetup.PrinterName :=
+        config.nomeImpressora;
+    if config.orientation = 1 then
+      report.PrinterSetup.Orientation := poPortrait;
+    if config.orientation = 2 then
+      report.PrinterSetup.Orientation := poLandscape;
+
+    if config.alturaPapel <> -1 then
+      Report.PrinterSetup.PaperHeight := config.alturaPapel;
+    if config.larguraPapel <> -1 then
+      Report.PrinterSetup.PaperWidth := config.larguraPapel;
+    if config.margemInferior <> -1 then
+      Report.PrinterSetup.MarginBottom := config.margemInferior;
+    if config.margemEsquerda <> -1 then
+      Report.PrinterSetup.MarginLeft := config.margemEsquerda;
+    if config.margemDireita <> -1 then
+      Report.PrinterSetup.MarginRight := config.margemDireita;
+    if config.margemSuperior <> -1 then
+      Report.PrinterSetup.MarginTop := config.margemSuperior;
+
+    if config.tipoSaida <> TSTela then
+    begin
+      if config.tipoSaida = TSPDF then extensao := 'pdf';
+      if config.tipoSaida = TSTexto then extensao := 'txt';
+      if FTextFileName = '' then
+        if not PromptForFileName(FTextFileName, '*.' + extensao, extensao,
+          '', '', true) then
+          exit;
+
+      report.AllowPrintToFile := True;
+      report.TextFileName := FTextFileName;
+      report.ShowPrintDialog := false;
+
+      if config.tipoSaida = TSPDF then
+        report.DeviceType := 'PDF';
+
+      if config.tipoSaida = TSTexto then
+        report.DeviceType := 'TextFile';
+    end;
+
+     updateContadorImpressao := MainData.GetQuery;
+    try
+      updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
+                              ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
+                              ' DATAULTIMAIMPRESSAO = '
+                              + QuotedStr(FormatDateTime('dd.mm.yyyy', MainData.GetServerDatetime)) +
+                              ' WHERE ITEM_ID = ' + IntToStr(getTemplateIDByName(TemplateName));
+      updateContadorImpressao.ExecSQL;
+    finally
+      acCustomSQLMainData.FreeQuery(updateContadorImpressao);
+    end;
+
+    TParametroSistemaData.RegistrarUsoRecurso(Config.NomeRelatorio, rrRelatorio);
+    report.Print;
   finally
     acCustomSQLMainData.FreeQuery(qry);
   end;
-  stream := TMemoryStream.Create;
-  getTemplateByName(TemplateName, stream);
-
-  if FilterName <> '' then
-  begin
-    ComboFilter.ClearViews;
-    ComboFilter.FilterDefName := FilterName;
-    ComboFilter.GetViews();
-
-    srchForm := TCustomSearchForm.Create(application);
-    with srchForm do
-    begin
-      FilterDefName := filterName;
-      srchForm.DataProvider := acCustomSQLMainData.prvFilter;
-      Execute('',3,toRetornarQuery);
-      where := GetExpressions;
-      order := getOrder;
-
-      if ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text <> '' then
-      begin
-        if where = '' then
-          where := ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text
-        else
-          where := where + ' AND ' +
-            ConsultaCombo.GetExprList(ConsultaCombo.Items.IndexOf(ConsultaCombo.Text)).Text;
-
-      end;
-      replaceReportSQLAddParam(report, stream, sqlResult.Text, Trim(where), Trim(order));
-      free;
-    end;
-  end
-  else
-    Report.Template.LoadFromStream(stream);
-
-
-  report.Units := utMillimeters;
-  if config.nomeImpressora<>'' then
-    report.PrinterSetup.PrinterName :=
-      config.nomeImpressora;
-  if config.orientation = 1 then
-    report.PrinterSetup.Orientation := poPortrait;
-  if config.orientation = 2 then
-    report.PrinterSetup.Orientation := poLandscape;
-
-  if config.alturaPapel <> -1 then
-    Report.PrinterSetup.PaperHeight := config.alturaPapel;
-  if config.larguraPapel <> -1 then
-    Report.PrinterSetup.PaperWidth := config.larguraPapel;
-  if config.margemInferior <> -1 then
-    Report.PrinterSetup.MarginBottom := config.margemInferior;
-  if config.margemEsquerda <> -1 then
-    Report.PrinterSetup.MarginLeft := config.margemEsquerda;
-  if config.margemDireita <> -1 then
-    Report.PrinterSetup.MarginRight := config.margemDireita;
-  if config.margemSuperior <> -1 then
-    Report.PrinterSetup.MarginTop := config.margemSuperior;
-
-  if config.tipoSaida <> TSTela then
-  begin
-    if config.tipoSaida = TSPDF then extensao := 'pdf';
-    if config.tipoSaida = TSTexto then extensao := 'txt';
-    if FTextFileName = '' then
-      if not PromptForFileName(FTextFileName, '*.' + extensao, extensao,
-        '', '', true) then
-        exit;
-
-    report.AllowPrintToFile := True;
-    report.TextFileName := FTextFileName;
-    report.ShowPrintDialog := false;
-
-    if config.tipoSaida = TSPDF then
-      report.DeviceType := 'PDF';
-
-    if config.tipoSaida = TSTexto then
-      report.DeviceType := 'TextFile';
-  end;
-
-   updateContadorImpressao := MainData.GetQuery;
-  try
-    updateContadorImpressao.SQL.Text := 'UPDATE rb_item '+
-                            ' SET FREQUENCIAUSO = FREQUENCIAUSO+1, '+
-                            ' DATAULTIMAIMPRESSAO = '
-                            + QuotedStr(FormatDateTime('dd.mm.yyyy', MainData.GetServerDatetime)) +
-                            ' WHERE ITEM_ID = ' + IntToStr(getTemplateIDByName(TemplateName));
-    updateContadorImpressao.ExecSQL;
-  finally
-    acCustomSQLMainData.FreeQuery(updateContadorImpressao);
-  end;
-
-  report.Print;
-
 end;
 
 procedure TImprimirRelatorioForm.ImprimirTemplate(templateName: string);

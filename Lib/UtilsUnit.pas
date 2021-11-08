@@ -77,6 +77,7 @@ function ApenasNumeros(const valor : String) : String;
 function ApenasLetrasNumeros(nStr:String): String;
 function ZeraEsquerda(const Valor:String; const Tamanho:Integer): String;
 function EspacoDireita(Valor: String; const Tamanho: Integer): String;
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
 function KeyToStr(Key:Word): String;
 function Base64FromBinary(const FileName: String): string;
 function Base64FromText(const text: String): string;
@@ -137,7 +138,8 @@ Function FileIsOpen(const FileName : TFileName) : Boolean;
 procedure UpdateProxy(dir: string);
 procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
-
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
 
 implementation
 
@@ -669,13 +671,15 @@ function RoundToCurrency(const AValue: Currency; const ADigit: TRoundToRange): C
 var
   LFactor: Extended;
   rmOrig: TFPURoundingMode;
+  Valor: real;
 begin
   rmOrig := GetRoundMode();
   if rmOrig <> rmNearest then
     SetRoundMode(rmNearest);
 
+  Valor := AValue; //Faz o cast pra float
   LFactor := IntPower(10, ADigit);
-  Result := Round(AValue / LFactor) * LFactor;
+  Result := Round(Valor / LFactor) * LFactor;
 
   if rmOrig <> rmNearest then
     SetRoundMode(rmOrig);
@@ -1150,6 +1154,17 @@ begin
   for I:=Length(Valor)+1 to Tamanho do
     Result := Result + ' ';  
   Result := Valor + Result ;
+end;
+
+function EspacoEsquerda(Valor: String; const Tamanho: Integer): String;
+var
+  I : Integer ;
+begin
+  Result := '' ;
+  Valor := Trim(Valor);
+  for I:=Length(Valor)+1 to Tamanho do
+    Result := ' ' + Result;
+  Result := Result + Valor ;
 end;
 
 function KeyToStr(Key:Word): String;
@@ -2303,6 +2318,26 @@ begin
       result := Copy(Value, aPos, bPos - aPos);
     end;
   end;
+end;
+
+function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Length(Element) - 1 do
+    if Valor = Element[I] then
+    begin
+      Result := True;
+      break
+    end;
+end;
+
+function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
+begin
+  Result := '';
+  if jsonObject.Get(campo) <> nil then
+    Result := jsonObject.Get(campo).JsonValue.Value;
 end;
 
 end.

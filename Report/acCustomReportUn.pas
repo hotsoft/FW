@@ -26,6 +26,7 @@ type
     margemDireita: double;
     tipoSaida: string;
     IDTemplate: integer;
+    NomeRelatorio: string;
   end;
 
   TAdendo = record
@@ -77,8 +78,7 @@ type
     beforePrint: TNotifyEvent;
     adendos: TAdendos;
 
-    function getTemplate(id: integer; stream: TMemoryStream;
-      var config: TConfigImpressao): boolean; virtual;
+    function getTemplate(id: integer; stream: TMemoryStream;  var config: TConfigImpressao): boolean; virtual;
     procedure linkEvents; virtual;
     function casosEspeciais(valorOriginal: string): string; virtual;
     procedure ajustarAdendos; virtual;
@@ -113,7 +113,7 @@ const
 implementation
 
 uses acCustomSQLMainDataUn, osReportUtils, acCustomRelatorioDataUn, Dialogs,
-  acCustomParametroSistemaDataUn, osErrorHandler;
+  acCustomParametroSistemaDataUn, osErrorHandler, StatusUnit, ParametroSistemaDataUn;
 
 {$R *.dfm}
 
@@ -167,7 +167,7 @@ begin
       idTemplate := acCustomRelatorioData.getTemplateConfigForUser(ClassName, config);
       if idTemplate <> -1 then
       begin
-        if getTemplateByID(idTemplate, stream) then
+        if getTemplateByID(idTemplate, stream, config) then
           if stream.Size<>0 then
           begin
             encontrou := true;
@@ -188,6 +188,7 @@ begin
     if not(encontrou) then
     begin
       getTemplateByName(ClassName, stream);
+      config.NomeRelatorio := ClassName;
       if acCustomParametroSistemaData <> nil then
         config.nomeImpressora := acCustomParametroSistemaData.getNomeImpressoraClasse('LASER');
       if stream.size<>0 then
@@ -327,6 +328,8 @@ begin
     else
       Report.Print;
     updateContadorImpressao := MainData.GetQuery;
+
+    TParametroSistemaData.RegistrarUsoRecurso(Config.NomeRelatorio, rrRelatorio);
     try
      if idTemplate = 0 then
       idTemplate := config.IDTemplate;
