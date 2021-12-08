@@ -554,20 +554,19 @@ begin
   Total_dias:= FDias;
   Ano := StrToInt(FormatDateTime('YY', DataNascimento));
   Ano2 := StrToInt(FormatDateTime('YYYY', DataNascimento));
+  Mes := StrToInt(FormatDateTime('MM', DataNascimento));
+  mesano:= Mes;
+  if mes > 2 then
+    Inc(Ano2);
+
   while Total_dias >= DaysInAYear(Ano2) do
   begin
-    if (IsLeapYear(Ano2)) and (Count = 1) then
-    begin
-      Total_dias := Total_dias + 1;
-    end;
     Total_dias := Total_dias - DaysInAYear(Ano2);
     Ano := Ano + 1;
     Ano2 := Ano2 + 1;
     inc(count);
   end;
-  
-  Mes := StrToInt(FormatDateTime('MM', DataNascimento));
-  mesano:= Mes;
+
   while Total_dias > 28 do
   begin
       if Total_dias >= DaysInAMonth(Ano, Mes) then
