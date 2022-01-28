@@ -33,7 +33,7 @@ type
 
 implementation
 
-uses DB, osMD5;
+uses DB, osMD5, StatusUnit;
 
 constructor TLoginUsuario.create;
 begin
@@ -167,6 +167,11 @@ begin
           MessageDlg('Senha incorreta.', mtError, [mbOK], 0);
           LoginForm.FocusedControl := LoginForm.PasswordEdit;
           Inc(ErrorCount);
+        end
+        else if query.FieldByName('Status').AsString <> stuAtivo then
+        begin
+          MessageDlg('Usuário Inativo.', mtError, [mbOK], 0);
+          LoginForm.FocusedControl := LoginForm.UsernameEdit;
         end
         else
         begin
