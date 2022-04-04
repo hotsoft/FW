@@ -546,9 +546,7 @@ var
   ano, ano2: Integer;
   dataNascimento: TDateTime;
   Total_dias: Real;
-  Count: Integer;
 begin
-  Count:= 1;
   DataNascimento:= FdataReferencia - Fdias;
 
   Total_dias:= FDias;
@@ -564,7 +562,6 @@ begin
     Total_dias := Total_dias - DaysInAYear(Ano2);
     Ano := Ano + 1;
     Ano2 := Ano2 + 1;
-    inc(count);
   end;
 
   while Total_dias > 28 do
