@@ -58,6 +58,7 @@ procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function LocalIp: string;
 function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
+procedure MakeRounded(Control: TWinControl);
 
 implementation
 
@@ -850,6 +851,23 @@ begin
     end;
   finally
     CloseHandle(FSnapshotHandle);
+  end;
+end;
+
+procedure MakeRounded(Control: TWinControl);
+var
+  R: TRect;
+  Rgn: HRGN;
+begin
+  with Control do
+  begin
+    R := ClientRect;
+    rgn := CreateRoundRectRgn(R.Left, R.Top, R.Right, R.Bottom, 20, 20);
+    Perform(EM_GETRECT, 0, lParam(@r));
+    InflateRect(r, - 10, - 10);
+    Perform(EM_SETRECTNP, 0, lParam(@r));
+    SetWindowRgn(Handle, rgn, True);
+    Invalidate;
   end;
 end;
 
