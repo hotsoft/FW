@@ -1074,17 +1074,20 @@ begin
   end;
 
 
-  cdsOrigem.First;
-  while not cdsOrigem.Eof do
+  if cdsOrigem.State <> dsInactive then
   begin
-    cdsDestino.Append;
-    for i := 0 to cdsOrigem.FieldCount-1 do
+    cdsOrigem.First;
+    while not cdsOrigem.Eof do
     begin
-      if (not cdsOrigem.Fields[i].IsNull) and (cdsDestino.FindField(cdsOrigem.Fields[i].FieldName) <> nil) then
-        cdsDestino.FieldByName(cdsOrigem.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsOrigem.Fields[i].FieldName).AsString;
+      cdsDestino.Append;
+      for i := 0 to cdsOrigem.FieldCount-1 do
+      begin
+        if (not cdsOrigem.Fields[i].IsNull) and (cdsDestino.FindField(cdsOrigem.Fields[i].FieldName) <> nil) then
+          cdsDestino.FieldByName(cdsOrigem.Fields[i].FieldName).AsString := cdsOrigem.FieldByName(cdsOrigem.Fields[i].FieldName).AsString;
+      end;
+      cdsDestino.Post;
+      cdsOrigem.Next;
     end;
-    cdsDestino.Post;
-    cdsOrigem.Next;
   end;
 end;
 
