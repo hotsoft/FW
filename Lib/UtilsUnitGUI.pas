@@ -680,7 +680,6 @@ var
   WasOK: Boolean;
   Buffer: array[0..255] of AnsiChar;
   BytesRead: Cardinal;
-  WorkDir: string;
   Handle: Boolean;
 begin
   Result := '';
@@ -712,7 +711,7 @@ begin
           if BytesRead > 0 then
           begin
             Buffer[BytesRead] := #0;
-            Result := Result + Buffer;
+            Result := Result + String(Buffer);
           end;
         until not WasOK or (BytesRead = 0);
         WaitForSingleObject(PI.hProcess, INFINITE);
