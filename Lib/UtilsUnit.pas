@@ -2202,18 +2202,26 @@ procedure SaveToFile(const aFilename, aContent: string);
 var
   FileStream: TFileStream;
   _FH: NativeUInt;
+  FFileLock: THandle;
 begin
-  if not FileExists(aFilename) then
-    _FH := fmCreate
-  else
-    _FH := fmOpenReadWrite;
-
-  FileStream := TFileStream.Create(aFileName, _FH, fmShareDenyNone);
+  FFileLock := CreateMutex(nil, False, 'UtilsUnit_FileLock');
+  WaitForSingleObject(FFileLock, INFINITE);
   try
-    FileStream.Seek(0, soFromEnd);
-    FileStream.WriteBuffer(Pointer(aContent)^, (Length(aContent) * szChar));
+    if not FileExists(aFilename) then
+      _FH := fmCreate
+    else
+      _FH := fmOpenReadWrite;
+
+    FileStream := TFileStream.Create(aFileName, _FH, fmShareDenyNone);
+    try
+      FileStream.Seek(0, soFromEnd);
+      FileStream.WriteBuffer(Pointer(aContent)^, (Length(aContent) * szChar));
+    finally
+      FileStream.Free;
+    end;
   finally
-    FileStream.Free;
+    ReleaseMutex(FFileLock);
+    CloseHandle(FFileLock);
   end;
 end;
 
