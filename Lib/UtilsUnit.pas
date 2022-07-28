@@ -2144,6 +2144,9 @@ begin
   if aURL.ToLower.Contains('https') then
   begin
     IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_http);
+    IOHandler.SSLOptions.Method := sslvSSLv23;
+    IOHandler.SSLOptions.Mode := sslmUnassigned;
+    IOHandler.SSLOptions.SSLVersions := [sslvSSLv2,sslvSSLv3,sslvTLSv1,sslvTLSv1_1,sslvTLSv1_2];
     _http.IOHandler := IOHandler;
   end;
   try
