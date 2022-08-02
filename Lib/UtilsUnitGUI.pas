@@ -445,13 +445,16 @@ begin
   Result := EmptyStr;
   AlteradoCDS.DisableControls;
   try
-    // Verifica Registros Excluidos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
-      'Exclusão: ');
+    if OriginalCDS <> nil then
+    begin
+      // Verifica Registros Excluidos
+      Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
+        'Exclusão: ');
 
-    // Verifica Registros Incluídos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
-      'Inclusão: ');
+      // Verifica Registros Incluídos
+      Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
+        'Inclusão: ');
+    end;
   finally
     AlteradoCDS.EnableControls;
   end;
@@ -467,28 +470,31 @@ var
 begin
   Result := EmptyStr;
   _Str := TStringList.Create;
-  try
-    OriginalCDS.First;
-    while not OriginalCDS.Eof do
-    begin
-      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+  if OriginalCDS <> nil then
+  begin
+    try
+      OriginalCDS.First;
+      while not OriginalCDS.Eof do
       begin
-        if Length(aCampoDescricao) > 0 then
+        if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
         begin
-          aMsgReg := EmptyStr;
-          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          if Length(aCampoDescricao) > 0 then
           begin
-            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
-            if _valor <> EmptyStr then
-              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+            aMsgReg := EmptyStr;
+            for nRegCol := 0 to Length(aCampoDescricao)-1 do
+            begin
+              _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+              if _valor <> EmptyStr then
+                _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+            end;
           end;
+          Result := Result + #13 + sDescricao + _Str.CommaText;
         end;
-        Result := Result + #13 + sDescricao + _Str.CommaText;
+        OriginalCDS.Next;
       end;
-      OriginalCDS.Next;
+    finally
+      FreeAndNil(_Str);
     end;
-  finally
-    FreeAndNil(_Str);
   end;
 end;
 
