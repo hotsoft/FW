@@ -60,6 +60,7 @@ function LocalIp: string;
 function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 procedure MakeRounded(Control: TWinControl);
+function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
 
 implementation
 
@@ -755,7 +756,6 @@ end;
 function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
 var
   IdTCP: TIdTCPClient;
-  msg: string;
 begin
   Result := False;
   try
@@ -770,7 +770,6 @@ begin
       begin
         IdTCP.IOHandler.WriteLn(aMessage);
         IdTCP.IOHandler.ReadTimeout := 500;
-        msg := IdTCP.IOHandler.Readln;
       end;
 
     finally
