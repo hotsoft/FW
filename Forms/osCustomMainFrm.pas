@@ -320,8 +320,8 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm, GDIPMenu,
-  StatusUnit, ParametroSistemaDataUn;
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, StatusUnit,
+  ParametroSistemaDataUn, LogDataUn;
 
 {$R *.DFM}
 
@@ -1248,6 +1248,9 @@ begin
       FUsername := LoginForm.UsernameEdit.Text;
 
       acCustomSQLMainData.GetUserInfo(FUserName);
+
+      if LogData <> nil then
+        LogData.setUsuarioLogado(acCustomSQLMainData.IDUsuario);
 
       StatusBar.Panels[1].Text := FUsername;
       cds.Params.Clear;

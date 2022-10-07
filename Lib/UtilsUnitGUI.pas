@@ -60,6 +60,7 @@ function LocalIp: string;
 function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : Boolean;
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 procedure MakeRounded(Control: TWinControl);
+function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
 
 implementation
 
@@ -445,13 +446,16 @@ begin
   Result := EmptyStr;
   AlteradoCDS.DisableControls;
   try
-    // Verifica Registros Excluidos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
-      'Exclusão: ');
+    if OriginalCDS <> nil then
+    begin
+      // Verifica Registros Excluidos
+      Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(OriginalCDS, AlteradoCDS, sCampoChave, aCampoDescricao,
+        'Exclusão: ');
 
-    // Verifica Registros Incluídos
-    Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
-      'Inclusão: ');
+      // Verifica Registros Incluídos
+      Result := Result + CriarMsgLogCDSNotLocateOrigemDestino(AlteradoCDS, OriginalCDS, sCampoChave, aCampoDescricao,
+        'Inclusão: ');
+    end;
   finally
     AlteradoCDS.EnableControls;
   end;
@@ -467,28 +471,31 @@ var
 begin
   Result := EmptyStr;
   _Str := TStringList.Create;
-  try
-    OriginalCDS.First;
-    while not OriginalCDS.Eof do
-    begin
-      if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
+  if OriginalCDS <> nil then
+  begin
+    try
+      OriginalCDS.First;
+      while not OriginalCDS.Eof do
       begin
-        if Length(aCampoDescricao) > 0 then
+        if not AlteradoCDS.Locate(sCampoChave, OriginalCDS.FieldByName(sCampoChave).AsVariant, []) then
         begin
-          aMsgReg := EmptyStr;
-          for nRegCol := 0 to Length(aCampoDescricao)-1 do
+          if Length(aCampoDescricao) > 0 then
           begin
-            _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
-            if _valor <> EmptyStr then
-              _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+            aMsgReg := EmptyStr;
+            for nRegCol := 0 to Length(aCampoDescricao)-1 do
+            begin
+              _valor := getCampoSemRTF(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).AsString);
+              if _valor <> EmptyStr then
+                _Str.Add(OriginalCDS.FieldByName(aCampoDescricao[nRegCol]).DisplayLabel + ': '+ _valor);
+            end;
           end;
+          Result := Result + #13 + sDescricao + _Str.CommaText;
         end;
-        Result := Result + #13 + sDescricao + _Str.CommaText;
+        OriginalCDS.Next;
       end;
-      OriginalCDS.Next;
+    finally
+      FreeAndNil(_Str);
     end;
-  finally
-    FreeAndNil(_Str);
   end;
 end;
 
@@ -649,18 +656,24 @@ var
   tmpStartupInfo: TStartupInfo;
   tmpProgram: String;
   CreationFlags: Cardinal;
+  nHwnd: Hwnd;
 begin
   tmpProgram := trim(aCommando);
   FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
   with tmpStartupInfo do
   begin
     cb := SizeOf(TStartupInfo);
-    wShowWindow := SW_HIDE;
+
+    if ShowWindow then
+      wShowWindow := SW_SHOWMINNOACTIVE
+    else
+      wShowWindow := SW_HIDE;
   end;
   if ShowWindow then
     CreationFlags := NORMAL_PRIORITY_CLASS
   else
     CreationFlags := CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE;
+
   if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CreationFlags,
     nil, nil, tmpStartupInfo, aProcessInformation) then
     Result := True
@@ -669,6 +682,8 @@ begin
     Result := False;
     RaiseLastOSError;
   end;
+  nHwnd := FindWindow ('Spartacus', '');
+  SendMessage(nHwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0)
 end;
 
 function GetDosOutput(CommandLine: string): string;
@@ -749,7 +764,6 @@ end;
 function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
 var
   IdTCP: TIdTCPClient;
-  msg: string;
 begin
   Result := False;
   try
@@ -764,7 +778,6 @@ begin
       begin
         IdTCP.IOHandler.WriteLn(aMessage);
         IdTCP.IOHandler.ReadTimeout := 500;
-        msg := IdTCP.IOHandler.Readln;
       end;
 
     finally
