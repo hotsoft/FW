@@ -320,7 +320,7 @@ var
 implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
-  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, StatusUnit,
+  osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, osWizFrm, GDIPMenu, StatusUnit,
   ParametroSistemaDataUn, LogDataUn;
 
 {$R *.DFM}
