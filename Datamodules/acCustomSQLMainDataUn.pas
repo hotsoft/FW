@@ -108,7 +108,7 @@ var
 
 implementation
 
-uses EscolhaConexaoFormUn;
+uses EscolhaConexaoFormUn, acStrUtils;
 
 {$R *.dfm}
 
@@ -356,8 +356,25 @@ begin
       for i := 0 to Count - 1 do
       begin
         sName := Names[i];
-        SQLConnection.Params.Values[sName] := Values[sName];
-        SQLConnectionMeta.Params.Values[sName] := Values[sName];
+        if UpperCase(sName) = 'PASSWORD' then
+        begin
+          if Copy(Values[sName], Values[sName].Length - 1, 2) = '==' then   // == indica que a senha esta criptografada
+          begin
+            SQLConnection.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+            SQLConnectionMeta.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+          end
+          else
+          begin
+            //Altera o arquivo para salvar a senha criptografada
+            Values[sName] := simpleCrypt(Values[sName]) + '==';
+            SaveToFile(selectParamsFileName);
+          end;
+        end
+        else
+        begin
+          SQLConnection.Params.Values[sName] := Values[sName];
+          SQLConnectionMeta.Params.Values[sName] := Values[sName];
+        end;
       end;
       if SQLConnectionMeta.Params.Values['DataBaseMeta']<>'' then
         SQLConnectionMeta.Params.Values['Database'] :=
