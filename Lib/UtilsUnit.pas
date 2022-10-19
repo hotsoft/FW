@@ -1019,6 +1019,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
@@ -1060,10 +1062,11 @@ begin
       else
         field := TStringField.Create(cdsDestino);
 
-      Field.FieldKind := fkData;
+      Field.FieldKind := cdsOrigem.Fields[i].FieldKind;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
+      Field.ProviderFlags := cdsOrigem.Fields[i].ProviderFlags;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1104,6 +1107,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
@@ -1115,10 +1120,11 @@ begin
       else
         field := TStringField.Create(cdsDestino);
 
-      Field.FieldKind := fkData;
+      Field.FieldKind := cdsOrigem.Fields[i].FieldKind;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
+      Field.ProviderFlags := cdsOrigem.Fields[i].ProviderFlags;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
