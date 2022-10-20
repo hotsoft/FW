@@ -49,7 +49,7 @@ type
     SQLConnectionMeta: TosSQLConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
-    
+
   protected
     BD: string;
     FQueryList: TObjectList;
@@ -61,6 +61,8 @@ type
     FApelidoUsuario: String;
     FRefreshTableList: TRefreshTableList;
     FProfile: string;
+    FSenhaFirebird: string;
+    FUsuarioFirebird: string;
     function selectParamsFileName: string;
 
   public
@@ -365,10 +367,18 @@ begin
           end
           else
           begin
+            SQLConnection.Params.Values[sName] := Values[sName];
+            SQLConnectionMeta.Params.Values[sName] := Values[sName];
+
             //Altera o arquivo para salvar a senha criptografada
             Values[sName] := simpleCrypt(Values[sName]) + '==';
             SaveToFile(selectParamsFileName);
           end;
+          FSenhaFirebird := SQLConnection.Params.Values[sName];
+        end
+        else if UpperCase(sName) = 'USER_NAME' then
+        begin
+          FUsuarioFirebird := Values[sName]
         end
         else
         begin
