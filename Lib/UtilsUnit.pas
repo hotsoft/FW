@@ -1062,11 +1062,10 @@ begin
       else
         field := TStringField.Create(cdsDestino);
 
-      Field.FieldKind := cdsOrigem.Fields[i].FieldKind;
+      Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
-      Field.ProviderFlags := cdsOrigem.Fields[i].ProviderFlags;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
@@ -1120,11 +1119,10 @@ begin
       else
         field := TStringField.Create(cdsDestino);
 
-      Field.FieldKind := cdsOrigem.Fields[i].FieldKind;
+      Field.FieldKind := fkData;
       Field.FieldName := cdsOrigem.Fields[i].FieldName;
       Field.DisplayLabel := cdsOrigem.Fields[i].DisplayLabel;
       Field.Visible := cdsOrigem.Fields[i].Visible;
-      Field.ProviderFlags := cdsOrigem.Fields[i].ProviderFlags;
       if (cdsOrigem.Fields[i] is TStringField) then
         Field.Size := cdsOrigem.Fields[i].Size;
       Field.DataSet := cdsDestino;
