@@ -371,8 +371,11 @@ begin
             SQLConnectionMeta.Params.Values[sName] := Values[sName];
 
             //Altera o arquivo para salvar a senha criptografada
-            Values[sName] := simpleCrypt(Values[sName]) + '==';
-            SaveToFile(selectParamsFileName);
+            if (UpperCase(extractfilename(application.exename)) = 'LABMASTER.EXE') or (UpperCase(extractfilename(application.exename)) = 'LABPLUS.EXE') then
+            begin
+              Values[sName] := simpleCrypt(Values[sName]) + '==';
+              SaveToFile(selectParamsFileName);
+            end;
           end;
           FSenhaFirebird := SQLConnection.Params.Values[sName];
         end
