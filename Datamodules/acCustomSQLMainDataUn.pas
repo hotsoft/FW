@@ -379,14 +379,12 @@ begin
           end;
           FSenhaFirebird := SQLConnection.Params.Values[sName];
         end
-        else if UpperCase(sName) = 'USER_NAME' then
-        begin
-          FUsuarioFirebird := Values[sName]
-        end
         else
         begin
           SQLConnection.Params.Values[sName] := Values[sName];
           SQLConnectionMeta.Params.Values[sName] := Values[sName];
+          if UpperCase(sName) = 'USER_NAME' then
+            FUsuarioFirebird := Values[sName]
         end;
       end;
       if SQLConnectionMeta.Params.Values['DataBaseMeta']<>'' then
