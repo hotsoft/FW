@@ -49,7 +49,7 @@ type
     SQLConnectionMeta: TosSQLConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
-    
+
   protected
     BD: string;
     FQueryList: TObjectList;
@@ -61,6 +61,8 @@ type
     FApelidoUsuario: String;
     FRefreshTableList: TRefreshTableList;
     FProfile: string;
+    FSenhaFirebird: string;
+    FUsuarioFirebird: string;
     function selectParamsFileName: string;
 
   public
@@ -108,7 +110,7 @@ var
 
 implementation
 
-uses EscolhaConexaoFormUn;
+uses EscolhaConexaoFormUn, acStrUtils;
 
 {$R *.dfm}
 
@@ -356,8 +358,36 @@ begin
       for i := 0 to Count - 1 do
       begin
         sName := Names[i];
-        SQLConnection.Params.Values[sName] := Values[sName];
-        SQLConnectionMeta.Params.Values[sName] := Values[sName];
+        if UpperCase(sName) = 'PASSWORD' then
+        begin
+          if Copy(Values[sName], Values[sName].Length - 1, 2) = '==' then   // == indica que a senha esta criptografada
+          begin
+            SQLConnection.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+            SQLConnectionMeta.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+          end
+          else
+          begin
+            SQLConnection.Params.Values[sName] := Values[sName];
+            SQLConnectionMeta.Params.Values[sName] := Values[sName];
+
+            //Altera o arquivo para salvar a senha criptografada
+            if (UpperCase(extractfilename(application.exename)) = 'LABMASTER.EXE') or (UpperCase(extractfilename(application.exename)) = 'LABPLUS.EXE') then
+            begin
+              Values[sName] := simpleCrypt(Values[sName]) + '==';
+              SaveToFile(selectParamsFileName);
+            end;
+          end;
+          FSenhaFirebird := SQLConnection.Params.Values[sName];
+        end
+        else if UpperCase(sName) = 'USER_NAME' then
+        begin
+          FUsuarioFirebird := Values[sName]
+        end
+        else
+        begin
+          SQLConnection.Params.Values[sName] := Values[sName];
+          SQLConnectionMeta.Params.Values[sName] := Values[sName];
+        end;
       end;
       if SQLConnectionMeta.Params.Values['DataBaseMeta']<>'' then
         SQLConnectionMeta.Params.Values['Database'] :=

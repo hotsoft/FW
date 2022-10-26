@@ -656,18 +656,24 @@ var
   tmpStartupInfo: TStartupInfo;
   tmpProgram: String;
   CreationFlags: Cardinal;
+  nHwnd: Hwnd;
 begin
   tmpProgram := trim(aCommando);
   FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
   with tmpStartupInfo do
   begin
     cb := SizeOf(TStartupInfo);
-    wShowWindow := SW_HIDE;
+
+    if ShowWindow then
+      wShowWindow := SW_SHOWMINNOACTIVE
+    else
+      wShowWindow := SW_HIDE;
   end;
   if ShowWindow then
     CreationFlags := NORMAL_PRIORITY_CLASS
   else
     CreationFlags := CREATE_NO_WINDOW or CREATE_DEFAULT_ERROR_MODE;
+
   if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CreationFlags,
     nil, nil, tmpStartupInfo, aProcessInformation) then
     Result := True
@@ -676,6 +682,8 @@ begin
     Result := False;
     RaiseLastOSError;
   end;
+  nHwnd := FindWindow ('Spartacus', '');
+  SendMessage(nHwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0)
 end;
 
 function GetDosOutput(CommandLine: string): string;
