@@ -1019,6 +1019,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
@@ -1104,6 +1106,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
