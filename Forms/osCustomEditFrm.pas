@@ -489,7 +489,15 @@ begin
   if (E.ErrorCode=1) and (UpdateKind=ukDelete) then
     MessageDlg('Não é possível excluir este registro pois existem dados no sistema que dependem dele.', mtError, [mbOK], 0)
   else
-    ShowMessage('Erro no clientDataSet com a mensagem: ' + quotedStr(E.message));
+  begin
+    if Pos( 'deadlock', E.message) > 0 then
+    begin
+      ShowMessage('Esse registro esta sendo atualizado (sincronizado) pelo Híbrido ou outro usuário, salve novamente e verifique se as alterações foram aplicadas corretamente');
+      Action := raCorrect;
+    end
+    else
+      ShowMessage('Erro no clientDataSet com a mensagem: ' + quotedStr(E.message));
+  end;
 end;
 
 procedure TosCustomEditForm.FormCreate(Sender: TObject);
