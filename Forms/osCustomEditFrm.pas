@@ -360,13 +360,16 @@ end;
 
 procedure TosCustomEditForm.CheckChanges;
 begin
-  if (FMasterDataset.ChangeCount > 0) or //(FMasterDataset.UpdateStatus=usModified) or
-      (fmasterdataset.state in [dsEdit, dsInsert]) then
-
-     if (MessageDlg('Os dados foram alterados. Salvar antes de sair?', mtConfirmation,
-    [mbYes, mbNo], 0) = mrYes) then
+  if FMasterDataset <> nil then
   begin
-    SaveAction.Execute;
+    if (FMasterDataset.ChangeCount > 0) or //(FMasterDataset.UpdateStatus=usModified) or
+        (fmasterdataset.state in [dsEdit, dsInsert]) then
+
+       if (MessageDlg('Os dados foram alterados. Salvar antes de sair?', mtConfirmation,
+      [mbYes, mbNo], 0) = mrYes) then
+    begin
+      SaveAction.Execute;
+    end;
   end;
 end;
 
