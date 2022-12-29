@@ -1788,6 +1788,8 @@ begin
     if Assigned(FCurrentForm) then
       FreeAndNil(FCurrentForm);
 
+    OnSelectResourceAction.Execute;
+
     // Limpa o Template corrente
     FCurrentTemplate.Clear;
 
@@ -1797,7 +1799,10 @@ begin
     end
     else if FCurrentResource.ResType = rtEdit then
     begin
-      FActionDblClick := EditAction;
+      if EditAction.Enabled then
+        FActionDblClick := EditAction
+      else if ViewAction.Enabled then
+        FActionDblClick := ViewAction;
       FCurrentEditForm := CreateCurrentEditForm;
       if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
         FCurrentEditForm.Datamodule := FCurrentDatamodule;
@@ -1805,7 +1810,7 @@ begin
     else if FCurrentResource.ResType = rtOther then
       FCurrentForm := CreateCurrentForm;
 
-    OnSelectResourceAction.Execute;
+
   end;
 
   if FCurrentResource.ResType = rtOther then
