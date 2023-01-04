@@ -210,9 +210,12 @@ end;
 procedure TosCustomEditForm.MasterDatasetAfterEdit(DataSet: TDataSet);
 begin
   inherited;
-  SaveAction.Enabled := True;
-  SaveCloseAction.Enabled := True;
-  SaveNewAction.Enabled := oInserir in Operacoes;
+  if not (FormMode in [fmView, fmDelete]) then
+  begin
+    SaveAction.Enabled := True;
+    SaveCloseAction.Enabled := True;
+    SaveNewAction.Enabled := oInserir in Operacoes;
+  end;
 end;
 
 procedure TosCustomEditForm.FormShow(Sender: TObject);
