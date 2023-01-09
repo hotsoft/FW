@@ -546,6 +546,14 @@ begin
   if ComponentNotFound or ComponentIsNotAction then
     raise Exception.Create(ExceptionMsg + 'Contate o administrador.');
   checkOperations;
+
+  if FCurrentResource.ResType = rtEdit then
+  begin
+    if EditAction.Enabled then
+      FActionDblClick := EditAction
+    else if ViewAction.Enabled then
+      FActionDblClick := ViewAction;
+  end;
 end;
 
 procedure TosCustomMainForm.FilterActionExecute(Sender: TObject);

@@ -170,7 +170,7 @@ begin
       FFormMode := fmView;
     CheckMasterDataset;
 
-    FMasterDataset.ReadOnly := True;
+    //FMasterDataset.ReadOnly := True;
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
     FMasterDataset.Close;
     FMasterDataset.Open;
@@ -210,9 +210,12 @@ end;
 procedure TosCustomEditForm.MasterDatasetAfterEdit(DataSet: TDataSet);
 begin
   inherited;
-  SaveAction.Enabled := True;
-  SaveCloseAction.Enabled := True;
-  SaveNewAction.Enabled := oInserir in Operacoes;
+  if not (FormMode in [fmView, fmDelete]) then
+  begin
+    SaveAction.Enabled := True;
+    SaveCloseAction.Enabled := True;
+    SaveNewAction.Enabled := oInserir in Operacoes;
+  end;
 end;
 
 procedure TosCustomEditForm.FormShow(Sender: TObject);
@@ -377,7 +380,8 @@ procedure TosCustomEditForm.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   inherited;
-  CheckChanges;
+  if FormMode <> fmView then
+    CheckChanges;
 end;
 
 procedure TosCustomEditForm.NewActionExecute(Sender: TObject);
