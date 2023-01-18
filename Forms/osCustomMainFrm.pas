@@ -1183,6 +1183,8 @@ begin
         begin
           FSuperUserLogged := true;
           LoginCorrect := True;
+          if LogData <> nil then
+            LogData.ClasseClientDataset.Filtered := False;
           Break;
         end;
       end;
