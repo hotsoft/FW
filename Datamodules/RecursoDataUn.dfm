@@ -1,8 +1,6 @@
 object RecursoData: TRecursoData
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 674
-  Top = 148
   Height = 491
   Width = 305
   object MasterDataSet: TosSQLDataSet
@@ -11,7 +9,7 @@ object RecursoData: TRecursoData
       ' Descricao,'#13#10'  FilterDefName,'#13#10'  DataClassName,'#13#10'  ResClassName,' +
       #13#10'  ReportClassName,'#13#10'  IndiceImagem,'#13#10'  NumOrdem,'#13#10'  habilitaEd' +
       'itarTodos,'#13#10'  forcaReExecucaoFiltro'#13#10'FROM '#13#10'  Recurso'#13#10'WHERE'#13#10'  ' +
-      'IDRecurso=:ID'#13#10
+      'IDRecurso=:ID'
     MaxBlobSize = 32
     Params = <
       item
@@ -109,7 +107,7 @@ object RecursoData: TRecursoData
       '.IdGrupo'#13#10'  INNER JOIN Recurso R'#13#10'    ON D.IdRecurso = R.IdRecur' +
       'so'#13#10'  INNER JOIN Dominio Dom'#13#10'    ON R.IdDominio = Dom.IdDominio' +
       #13#10'WHERE'#13#10'   UPPER(U.Apelido) LIKE UPPER(:UserName)'#13#10'ORDER BY'#13#10'  ' +
-      'Dom.Descricao,'#13#10'  R.Nome'#13#10
+      'Dom.Descricao,'#13#10'  R.Nome'
     MaxBlobSize = 32
     Params = <
       item
@@ -131,7 +129,7 @@ object RecursoData: TRecursoData
     CommandText = 
       'select'#13#10'  DESCRICAO,'#13#10'  IDACAO,'#13#10'  IDRECURSO,'#13#10'  INDICEIMAGEM,'#13#10 +
       '  NOME,'#13#10'  NOMECOMPONENTE'#13#10'from'#13#10'  ACAO'#13#10'where'#13#10'  IDRECURSO = :I' +
-      'DRECURSO'#13#10
+      'DRECURSO'
     DataSource = MasterDataSource
     MaxBlobSize = 32
     Params = <
@@ -175,7 +173,7 @@ object RecursoData: TRecursoData
       'IdGrupo = D.IdGrupo'#13#10'  JOIN Recurso R'#13#10'    ON D.IdRecurso = R.Id' +
       'Recurso'#13#10'  JOIN Acao A'#13#10'    ON D.IdAcao = A.IdAcao'#13#10'WHERE'#13#10'  UPP' +
       'ER(U.Apelido) LIKE UPPER(:UserName)'#13#10'  AND UPPER(R.Nome) = UPPER' +
-      '(:NomeRecurso)'#13#10
+      '(:NomeRecurso)'
     MaxBlobSize = 32
     Params = <
       item
@@ -204,8 +202,8 @@ object RecursoData: TRecursoData
   end
   object UsuarioDataSet: TosSQLDataSet
     CommandText = 
-      'SELECT'#13#10'  Apelido,'#13#10'  Nome,'#13#10'  Senha,'#13#10'  Status'#13#10'FROM'#13#10'  Usuario' +
-      #13#10'WHERE'#13#10'  UPPER(Apelido) = UPPER(:Username)'#13#10
+      'SELECT'#13#10'  Apelido,'#13#10'  Nome,'#13#10'  Senha,'#13#10'  Status,'#13#10'  DataSenha'#13#10'F' +
+      'ROM'#13#10'  Usuario'#13#10'WHERE'#13#10'  UPPER(Apelido) = UPPER(:Username)'
     MaxBlobSize = 32
     Params = <
       item
@@ -233,6 +231,9 @@ object RecursoData: TRecursoData
       FieldName = 'STATUS'
       FixedChar = True
       Size = 1
+    end
+    object UsuarioDataSetDATASENHA: TDateField
+      FieldName = 'DATASENHA'
     end
   end
   object UsuarioProvider: TosSQLDataSetProvider

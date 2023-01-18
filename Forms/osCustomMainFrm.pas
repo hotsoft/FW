@@ -201,6 +201,8 @@ type
   private
     FNewFilter: boolean;
     FUserName: string;
+    FUserDataSenha: TDateTime;
+    FUserSenha: string;
     FEditForm: TosCustomEditForm;
     FActionDblClick: TAction;
     FSelectedList: TStringListExt;
@@ -265,6 +267,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property UserName: string read FUserName;
+    property UserDataSenha: TDateTime read FUserDataSenha;
+    property UserSenha: String read FUserSenha;
     property ActionDblClick: TAction read FActionDblClick write SetActionDblClick;
     procedure ExecLastFilter;
     function getReportByResource(name: string; stream: TMemoryStream): boolean;
@@ -1210,7 +1214,11 @@ begin
           Inc(ErrorCount);
         end
         else
+        begin
           LoginCorrect := True;
+          FUserDataSenha := cdsUsuario.FieldByName('DataSenha').AsDateTime;
+          FUserSenha := cdsUsuario.FieldByName('Senha').AsString;
+        end;
       finally
         cdsUsuario.Close;
       end;
