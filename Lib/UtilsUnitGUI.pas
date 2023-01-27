@@ -53,7 +53,7 @@ function GetTaskHandle(const ATaskName : string; var FTaskName: String; var FPid
   var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer) : HWND;
 procedure ExecuteAndWait(const aCommando: string);
 function Execute(const aCommando: string; const ShowWindow: boolean; var aProcessInformation: TProcessInformation): boolean;
-function GetDosOutput(CommandLine: string): string;
+function GetDosOutput(outPut: TMemo; CommandLine: string): string;
 procedure WaitProcess(const aProcessInformation: TProcessInformation; aCheckIsAlive: boolean; aThreadId: TThreadID; const aPort: integer);
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 function LocalIp: string;
@@ -686,7 +686,7 @@ begin
   SendMessage(nHwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0)
 end;
 
-function GetDosOutput(CommandLine: string): string;
+function GetDosOutput(outPut: TMemo; CommandLine: string): String;
 var
   SA: TSecurityAttributes;
   SI: TStartupInfo;
@@ -697,7 +697,6 @@ var
   BytesRead: Cardinal;
   Handle: Boolean;
 begin
-  Result := '';
   with SA do begin
     nLength := SizeOf(SA);
     bInheritHandle := True;
@@ -718,15 +717,18 @@ begin
     Handle := CreateProcess(nil, PChar(CommandLine),
                             nil, nil, True, 0, nil,
                             nil, SI, PI);
+    Application.BringToFront;
     CloseHandle(StdOutPipeWrite);
     if Handle then
       try
         repeat
           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
-          if BytesRead > 0 then
+          if WasOK and (BytesRead > 0) then
           begin
             Buffer[BytesRead] := #0;
-            Result := Result + String(Buffer);
+            outPut.SelStart := outPut.GetTextLen;
+            outPut.SelLength := 0;
+            outPut.SelText := Buffer;
           end;
         until not WasOK or (BytesRead = 0);
         WaitForSingleObject(PI.hProcess, INFINITE);
