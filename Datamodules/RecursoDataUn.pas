@@ -42,6 +42,7 @@ type
     MasterDataSetHABILITAEDITARTODOS: TStringField;
     MasterDataSetFORCAREEXECUCAOFILTRO: TStringField;
     UsuarioDataSetSTATUS: TStringField;
+    UsuarioDataSetDATASENHA: TDateField;
     procedure DataModuleCreate(Sender: TObject);
   private
 
