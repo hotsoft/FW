@@ -1911,9 +1911,7 @@ begin
       FCurrentForm := CreateCurrentForm;
     end;
 
-
-
-  end;
+  // end;
 
   if FCurrentResource.ResType = rtOther then
   begin
