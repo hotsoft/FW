@@ -47,6 +47,7 @@ type
     FilterQuery: TosSQLDataSet;
     SQLMonitor: TSQLMonitor;
     SQLConnectionMeta: TosSQLConnection;
+    SQLConnectionArquivos: TSQLConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
 
@@ -78,6 +79,7 @@ type
     function GetNetUserName: string;
 
     function GetQuery(meta: boolean = false): TosSQLQuery;
+    function GetQueryArquivo: TosSQLQuery;
     procedure FreeQuery(Query: TosSQLQuery);
 
     function GetServerDate(aConnection: TSQLConnection=nil): TDatetime;
@@ -388,8 +390,16 @@ begin
         end;
       end;
       if SQLConnectionMeta.Params.Values['DataBaseMeta']<>'' then
-        SQLConnectionMeta.Params.Values['Database'] :=
-          SQLConnectionMeta.Params.Values['DatabaseMeta'];
+        SQLConnectionMeta.Params.Values['Database'] := SQLConnectionMeta.Params.Values['DatabaseMeta'];
+
+      //Conexão com o banco de arquivos
+      if FileExists(ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb') then
+      begin
+        SQLConnectionArquivos.Params := SQLConnection.Params;
+        SQLConnectionArquivos.Params.Values['database'] := ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb';
+        SQLConnectionArquivos.Params.Values['PASSWORD'] := SQLConnection.Params.Values['PASSWORD'];
+        SQLConnectionArquivos.Connected := True;
+      end;
     finally
       Free;
     end;
@@ -416,6 +426,12 @@ begin
     Result.SQLConnection := SQLConnectionMeta
   else
     Result.SQLConnection := SQLConnection;
+end;
+
+function TacCustomSQLMainData.GetQueryArquivo: TosSQLQuery;
+begin
+  Result := TosSQLQuery.Create(Self);
+  Result.SQLConnection := SQLConnectionArquivos;
 end;
 
 procedure TacCustomSQLMainData.FreeQuery(Query: TosSQLQuery);
