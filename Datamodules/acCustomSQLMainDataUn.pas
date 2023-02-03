@@ -47,9 +47,10 @@ type
     FilterQuery: TosSQLDataSet;
     SQLMonitor: TSQLMonitor;
     SQLConnectionMeta: TosSQLConnection;
+    SQLConnectionArquivos: TSQLConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
-    
+
   protected
     BD: string;
     FQueryList: TObjectList;
@@ -61,6 +62,8 @@ type
     FApelidoUsuario: String;
     FRefreshTableList: TRefreshTableList;
     FProfile: string;
+    FSenhaFirebird: string;
+    FUsuarioFirebird: string;
     function selectParamsFileName: string;
 
   public
@@ -76,6 +79,7 @@ type
     function GetNetUserName: string;
 
     function GetQuery(meta: boolean = false): TosSQLQuery;
+    function GetQueryArquivo: TosSQLQuery;
     procedure FreeQuery(Query: TosSQLQuery);
 
     function GetServerDate(aConnection: TSQLConnection=nil): TDatetime;
@@ -108,7 +112,7 @@ var
 
 implementation
 
-uses EscolhaConexaoFormUn;
+uses EscolhaConexaoFormUn, acStrUtils;
 
 {$R *.dfm}
 
@@ -356,12 +360,46 @@ begin
       for i := 0 to Count - 1 do
       begin
         sName := Names[i];
-        SQLConnection.Params.Values[sName] := Values[sName];
-        SQLConnectionMeta.Params.Values[sName] := Values[sName];
+        if UpperCase(sName) = 'PASSWORD' then
+        begin
+          if Copy(Values[sName], Values[sName].Length - 1, 2) = '==' then   // == indica que a senha esta criptografada
+          begin
+            SQLConnection.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+            SQLConnectionMeta.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
+          end
+          else
+          begin
+            SQLConnection.Params.Values[sName] := Values[sName];
+            SQLConnectionMeta.Params.Values[sName] := Values[sName];
+
+            //Altera o arquivo para salvar a senha criptografada
+            if (UpperCase(extractfilename(application.exename)) = 'LABMASTER.EXE') or (UpperCase(extractfilename(application.exename)) = 'LABPLUS.EXE') then
+            begin
+              Values[sName] := simpleCrypt(Values[sName]) + '==';
+              SaveToFile(selectParamsFileName);
+            end;
+          end;
+          FSenhaFirebird := SQLConnection.Params.Values[sName];
+        end
+        else
+        begin
+          SQLConnection.Params.Values[sName] := Values[sName];
+          SQLConnectionMeta.Params.Values[sName] := Values[sName];
+          if UpperCase(sName) = 'USER_NAME' then
+            FUsuarioFirebird := Values[sName]
+        end;
       end;
       if SQLConnectionMeta.Params.Values['DataBaseMeta']<>'' then
-        SQLConnectionMeta.Params.Values['Database'] :=
-          SQLConnectionMeta.Params.Values['DatabaseMeta'];
+        SQLConnectionMeta.Params.Values['Database'] := SQLConnectionMeta.Params.Values['DatabaseMeta'];
+
+      //Conexão com o banco de arquivos
+      if FileExists(ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb') then
+      begin
+        SQLConnectionArquivos.Params := SQLConnection.Params;
+        SQLConnectionArquivos.Params.Values['database'] := ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb';
+        SQLConnectionArquivos.Params.Values['PASSWORD'] := SQLConnection.Params.Values['PASSWORD'];
+        SQLConnectionArquivos.Connected := True;
+      end;
     finally
       Free;
     end;
@@ -388,6 +426,12 @@ begin
     Result.SQLConnection := SQLConnectionMeta
   else
     Result.SQLConnection := SQLConnection;
+end;
+
+function TacCustomSQLMainData.GetQueryArquivo: TosSQLQuery;
+begin
+  Result := TosSQLQuery.Create(Self);
+  Result.SQLConnection := SQLConnectionArquivos;
 end;
 
 procedure TacCustomSQLMainData.FreeQuery(Query: TosSQLQuery);

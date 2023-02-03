@@ -97,17 +97,17 @@ object RecursoData: TRecursoData
   end
   object RecursosUsuarioDataSet: TosSQLDataSet
     CommandText = 
-      'SELECT DISTINCT'#13#10'  R.IdRecurso,'#13#10'  R.Nome,'#13#10'  R.Descricao,'#13#10'  R.' +
-      'FilterDefName,'#13#10'  R.ResClassName,'#13#10'  R.DataClassName,'#13#10'  R.Repor' +
-      'tClassName,'#13#10'  R.IDTipoRecurso,'#13#10'  R.NumOrdem OrdemRecurso,'#13#10'  R' +
-      '.IndiceImagem IndiceImagem,'#13#10'  Dom.Descricao NomeDominio,'#13#10'  Dom' +
-      '.NumOrdem OrdemDominio'#13#10'FROM'#13#10'  Usuario U'#13#10'  INNER JOIN GrupoUsu' +
-      'ario GU'#13#10'    ON U.IdUsuario = GU.IdUsuario'#13#10'  INNER JOIN Grupo G' +
-      #13#10'    ON GU.IdGrupo = G.IdGrupo'#13#10'  INNER JOIN DireitoUso D'#13#10'    ' +
-      'ON G.IdGrupo = D.IdGrupo'#13#10'  INNER JOIN Recurso R'#13#10'    ON D.IdRec' +
-      'urso = R.IdRecurso'#13#10'  INNER JOIN Dominio Dom'#13#10'    ON R.IdDominio' +
-      ' = Dom.IdDominio'#13#10'WHERE'#13#10'   UPPER(U.Apelido) LIKE UPPER(:UserNam' +
-      'e)'#13#10'ORDER BY'#13#10'  Dom.Descricao,'#13#10'  R.Nome'
+      'SELECT DISTINCT'#13#10' R.IdRecurso, '#13#10' R.Nome,'#13#10'  R.Descricao,'#13#10'  R.FilterDefName,'#13#10 +
+      '  R.ResClassName,'#13#10'  R.DataClassName,'#13#10'  R.ReportClassName,'#13#10'  R' +
+      '.IDTipoRecurso,'#13#10'  R.NumOrdem OrdemRecurso,'#13#10'  R.IndiceImagem In' +
+      'diceImagem,'#13#10'  Dom.Descricao NomeDominio,'#13#10'  Dom.NumOrdem OrdemD' +
+      'ominio'#13#10'FROM'#13#10'  Usuario U'#13#10'  INNER JOIN GrupoUsuario GU'#13#10'    ON ' +
+      'U.IdUsuario = GU.IdUsuario'#13#10'  INNER JOIN Grupo G'#13#10'    ON GU.IdGr' +
+      'upo = G.IdGrupo'#13#10'  INNER JOIN DireitoUso D'#13#10'    ON G.IdGrupo = D' +
+      '.IdGrupo'#13#10'  INNER JOIN Recurso R'#13#10'    ON D.IdRecurso = R.IdRecur' +
+      'so'#13#10'  INNER JOIN Dominio Dom'#13#10'    ON R.IdDominio = Dom.IdDominio' +
+      #13#10'WHERE'#13#10'   UPPER(U.Apelido) LIKE UPPER(:UserName)'#13#10'ORDER BY'#13#10'  ' +
+      'Dom.Descricao,'#13#10'  R.Nome'
     MaxBlobSize = 32
     Params = <
       item
@@ -202,8 +202,8 @@ object RecursoData: TRecursoData
   end
   object UsuarioDataSet: TosSQLDataSet
     CommandText = 
-      'SELECT'#13#10'  Apelido,'#13#10'  Nome,'#13#10'  Senha,'#13#10'  Status'#13#10'FROM'#13#10'  Usuario' +
-      #13#10'WHERE'#13#10'  UPPER(Apelido) = UPPER(:Username)'
+      'SELECT'#13#10'  Apelido,'#13#10'  Nome,'#13#10'  Senha,'#13#10'  Status,'#13#10'  DataSenha'#13#10'F' +
+      'ROM'#13#10'  Usuario'#13#10'WHERE'#13#10'  UPPER(Apelido) = UPPER(:Username)'
     MaxBlobSize = 32
     Params = <
       item
@@ -231,6 +231,9 @@ object RecursoData: TRecursoData
       FieldName = 'STATUS'
       FixedChar = True
       Size = 1
+    end
+    object UsuarioDataSetDATASENHA: TDateField
+      FieldName = 'DATASENHA'
     end
   end
   object UsuarioProvider: TosSQLDataSetProvider

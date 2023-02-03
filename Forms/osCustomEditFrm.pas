@@ -241,7 +241,7 @@ begin
       FFormMode := fmView;
     CheckMasterDataset;
 
-    FMasterDataset.ReadOnly := True;
+    //FMasterDataset.ReadOnly := True;
     ParseParams(FMasterDataset.Params, KeyFields, KeyValues);
     FMasterDataset.Close;
     FMasterDataset.Open;
@@ -289,9 +289,12 @@ end;
 procedure TosCustomEditForm.MasterDatasetAfterEdit(DataSet: TDataSet);
 begin
   inherited;
-  SaveAction.Enabled := True;
-  SaveCloseAction.Enabled := True;
-  SaveNewAction.Enabled := oInserir in Operacoes;
+  if not (FormMode in [fmView, fmDelete]) then
+  begin
+    SaveAction.Enabled := True;
+    SaveCloseAction.Enabled := True;
+    SaveNewAction.Enabled := oInserir in Operacoes;
+  end;
 end;
 
 procedure TosCustomEditForm.FormShow(Sender: TObject);
@@ -466,13 +469,16 @@ end;
 
 procedure TosCustomEditForm.CheckChanges;
 begin
-  if (FMasterDataset.ChangeCount > 0) or //(FMasterDataset.UpdateStatus=usModified) or
-      (fmasterdataset.state in [dsEdit, dsInsert]) then
-
-     if (MessageDlg('Os dados foram alterados. Salvar antes de sair?', mtConfirmation,
-    [mbYes, mbNo], 0) = mrYes) then
+  if FMasterDataset <> nil then
   begin
-    SaveAction.Execute;
+    if (FMasterDataset.ChangeCount > 0) or //(FMasterDataset.UpdateStatus=usModified) or
+        (fmasterdataset.state in [dsEdit, dsInsert]) then
+
+       if (MessageDlg('Os dados foram alterados. Salvar antes de sair?', mtConfirmation,
+      [mbYes, mbNo], 0) = mrYes) then
+    begin
+      SaveAction.Execute;
+    end;
   end;
 end;
 
@@ -480,7 +486,8 @@ procedure TosCustomEditForm.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   inherited;
-  CheckChanges;
+  if FormMode <> fmView then
+    CheckChanges;
 end;
 
 procedure TosCustomEditForm.NewActionExecute(Sender: TObject);
