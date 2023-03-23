@@ -514,11 +514,13 @@ begin
   if Pos( 'deadlock', LowerCase(E.message)) > 0 then
   begin
     ShowMessage('Esse registro esta sendo atualizado (sincronizado) pelo Híbrido ou outro usuário, salve novamente e verifique se as alterações foram aplicadas corretamente');
+    Sleep(2000);
     Action := daRetry;
   end
   else
   begin
     ShowMessage('Erro no Delete do clientDataSet com a mensagem: ' + quotedStr(E.message));
+    Sleep(2000);
     Action := daRetry;
   end;
 end;
