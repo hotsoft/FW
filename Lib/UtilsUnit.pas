@@ -1019,6 +1019,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
@@ -1104,6 +1106,8 @@ begin
         field := TMemoField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TIntegerField then
         field := TIntegerField.Create(cdsDestino)
+      else if (cdsOrigem.Fields[i]) is TLargeIntField then
+        field := TLargeIntField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateTimeField then
         field := TDateTimeField.Create(cdsDestino)
       else if (cdsOrigem.Fields[i]) is TDateField then
@@ -2144,6 +2148,9 @@ begin
   if aURL.ToLower.Contains('https') then
   begin
     IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_http);
+    IOHandler.SSLOptions.Method := sslvSSLv23;
+    IOHandler.SSLOptions.Mode := sslmUnassigned;
+    IOHandler.SSLOptions.SSLVersions := [sslvSSLv2,sslvSSLv3,sslvTLSv1,sslvTLSv1_1,sslvTLSv1_2];
     _http.IOHandler := IOHandler;
   end;
   try
