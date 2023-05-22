@@ -728,7 +728,7 @@ begin
             Buffer[BytesRead] := #0;
             outPut.SelStart := outPut.GetTextLen;
             outPut.SelLength := 0;
-            outPut.SelText := Buffer;
+            outPut.SelText := String(Buffer);
           end;
         until not WasOK or (BytesRead = 0);
         WaitForSingleObject(PI.hProcess, INFINITE);

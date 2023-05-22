@@ -745,7 +745,7 @@ begin
   try
     qry := TosSQLQuery.Create(nil);
     qry.SQLConnection := conn;
-    qry.SQL.Text := 'select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE';
+    qry.SQL.Text := 'select LOCALTIMESTAMP as DataHoraServidor from RDB$DATABASE';
     qry.Open;
     Result := qry.FieldByName('DataHoraServidor').AsDatetime;
   finally
