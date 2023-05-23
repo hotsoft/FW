@@ -484,7 +484,7 @@ begin
       Query.SQLConnection := aConnection;
 
     try
-      Query.SQL.Add('select LOCALTIMESTAMP as DataHoraServidor from RDB$DATABASE');
+      Query.SQL.Add('select CURRENT_TIMESTAMP as DataHoraServidor from RDB$DATABASE');
       Query.Open;
       Result := Query.Fields[0].AsDatetime;
       Query.Close;
