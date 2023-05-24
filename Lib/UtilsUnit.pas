@@ -4,7 +4,7 @@ interface
 
 uses
   {$IFDEF VER250}IBServices,{$ENDIF}{$IFDEF VER320}IBX.IBServices,{$ENDIF}
-  INIFiles, System.Zip, System.IOUtils, StrUtils,
+  INIFiles, System.Zip, System.IOUtils, StrUtils, IdSSLOpenSSL,
   Classes, Math, RegExpr, DB, DBClient, Winapi.PsApi,
   osSQLConnection, osSQLQuery, WinSock, Soap.EncdDecd, Vcl.Imaging.PngImage, Vcl.Imaging.Jpeg, TlHelp32,
   Vcl.Imaging.GifImg, WinSpool, Winapi.Windows, System.SysUtils,  IdHashSHA,
@@ -21,9 +21,10 @@ type
     class function GeraHashPCMed(linha: string): string;
   end;
 
-const 
-  sMODELOMSGLOG = #13+#13+'Campo %s alterado.'+#13+'De: %s'+#13+'Para: %s';  
+const
+  sMODELOMSGLOG = #13+#13+'Campo %s alterado.'+#13+'De: %s'+#13+'Para: %s';
   szChar = SizeOf(Char);
+  AllSSLVersions = [sslvSSLv2, sslvSSLv23, sslvSSLv3, sslvTLSv1,sslvTLSv1_1,sslvTLSv1_2];
 
 function isDigitOrControl(Key: char): boolean;
 function RemoveAcento(Str:String): String;
@@ -143,7 +144,7 @@ function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
 
 implementation
 
-uses DateUtils, Variants, StatusUnit, IdSSLOpenSSL, IdMultipartFormData, IdExceptionCore, IdStack,
+uses DateUtils, Variants, StatusUnit, IdMultipartFormData, IdExceptionCore, IdStack,
   IdHash, IdHashMessageDigest, IdGlobal, IdURI, ParametroSistemaDataUn;
 
 
@@ -2150,7 +2151,7 @@ begin
     IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(_http);
     IOHandler.SSLOptions.Method := sslvSSLv23;
     IOHandler.SSLOptions.Mode := sslmUnassigned;
-    IOHandler.SSLOptions.SSLVersions := [sslvSSLv2,sslvSSLv3,sslvTLSv1,sslvTLSv1_1,sslvTLSv1_2];
+    IOHandler.SSLOptions.SSLVersions := AllSSLVersions;
     _http.IOHandler := IOHandler;
   end;
   try
