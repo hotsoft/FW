@@ -565,9 +565,9 @@ begin
       nil, nil,
       StartInfo,
       ProcInfo);
+  finally
     CloseHandle(ProcInfo.hProcess);
     CloseHandle(ProcInfo.hThread);
-  finally
     SleepEx(SleepInterval, False);
     FrmMensagem.Close;
     FrmMensagem.Release;
@@ -634,20 +634,23 @@ begin
     wShowWindow := SW_HIDE;
   end;
 
-  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
-    nil, nil, tmpStartupInfo, tmpProcessInformation) then
-  begin
-    // loop every 10 ms
-    while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
+  try
+    if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+      nil, nil, tmpStartupInfo, tmpProcessInformation) then
     begin
-      Application.ProcessMessages;
+      // loop every 10 ms
+      while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
+      begin
+        Application.ProcessMessages;
+      end;
+    end
+    else
+    begin
+      RaiseLastOSError;
     end;
+  finally
     CloseHandle(tmpProcessInformation.hProcess);
     CloseHandle(tmpProcessInformation.hThread);
-  end
-  else
-  begin
-    RaiseLastOSError;
   end;
 end;
 
@@ -737,7 +740,10 @@ begin
         CloseHandle(PI.hProcess);
       end;
   finally
-    CloseHandle(StdOutPipeRead);
+    if StdOutPipeRead > 0 then
+      CloseHandle(StdOutPipeRead);
+    if StdOutPipeWrite > 0 then
+      CloseHandle(StdOutPipeWrite);
   end;
 end;
 
@@ -812,8 +818,8 @@ end;
 
 procedure CloseProcess(const aProcessInformation: TProcessInformation);
 begin
-  CloseHandle(aProcessInformation.hProcess);
-  CloseHandle(aProcessInformation.hThread);
+  GlobalFree(aProcessInformation.hProcess);
+  GlobalFree(aProcessInformation.hThread);
 end;
 
 function GetSystemInfo: string;
@@ -882,14 +888,19 @@ begin
   dwResult := nil;
   try
     AppHandle:= UtilsUnitGui.GetTaskHandle(Aplicacao, FTaskName, FPid, FProcessa, FHWND, iListOfProcess);
-    if AppHandle <> 0 then
-    begin
-      ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
-       SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
-      if ValorRetorno > 0 then
-        Result := True
-      else
-        Result := False;
+    try
+      if AppHandle <> 0 then
+      begin
+        ValorRetorno:= SendMessageTimeout(AppHandle, WM_NULL, 0, 0,
+         SMTO_ABORTIFHUNG OR SMTO_BLOCK, 1000, dwResult);
+        if ValorRetorno > 0 then
+          Result := True
+        else
+          Result := False;
+      end;
+    finally
+      if AppHandle > 0 then
+        CloseHandle(AppHandle);
     end;
   except
   end;
