@@ -1391,8 +1391,8 @@ begin
     end;
   finally
     Stream.Free;
-    FreeAndNil(LHandler);
-    FreeAndNil(HTTPClient);
+    LHandler.Free;
+    HTTPClient.Free;
     FreeAndNil(ParametroSistema);
   end;
 end;
@@ -1825,24 +1825,21 @@ var
 begin
   Result := 0;
   FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  try
-    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
-    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-    while Integer(ContinueLoop) <> 0 do
-    begin
-      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
-        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
-        UpperCase(ExeFileName))) then
-        Result := Integer(TerminateProcess(
-                          OpenProcess(PROCESS_TERMINATE,
-                                      BOOL(0),
-                                      FProcessEntry32.th32ProcessID),
-                                      0));
-       ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
-    end;
-  finally
-    CloseHandle(FSnapshotHandle);
+  FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  while Integer(ContinueLoop) <> 0 do
+  begin
+    if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
+      UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
+      UpperCase(ExeFileName))) then
+      Result := Integer(TerminateProcess(
+                        OpenProcess(PROCESS_TERMINATE,
+                                    BOOL(0),
+                                    FProcessEntry32.th32ProcessID),
+                                    0));
+     ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
   end;
+  CloseHandle(FSnapshotHandle);
 end;
 
 function GetMD5FromString(const text: string): String;
