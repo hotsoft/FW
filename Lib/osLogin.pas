@@ -14,9 +14,14 @@ type
     FIDUsuario: integer;
     FStatus: string;
     FApelido: string;
+    FUserDataSenha: TDateTime;
+    FUserSenha: string;
+
     function GetSystemUserName: string;
     function isGrupo(nomeColuna: string; caption: string): boolean;
+    function SenhaExpirada: Boolean;
   public
+    constructor create;
     property IDUsuario: integer read FIDUsuario;
     property Apelido: string read FApelido;
     property Nome: string read FNome;
@@ -28,12 +33,15 @@ type
     procedure Logout;
     function isTesoureiro: boolean;
     function isCaixa: boolean;
-    constructor create;
+    property UserName: string read FNome;
+    property UserDataSenha: TDateTime read FUserDataSenha;
+    property UserSenha: String read FUserSenha;
+    procedure ValidaSenhaExpirada;
   end;
 
 implementation
 
-uses DB, osMD5, StatusUnit;
+uses DB, osMD5, StatusUnit, osSQLQuery, SQLMainData, ParametroSistemaDataUn, LogDataUn, LMLogCodes, MudarSenhaFormUn;
 
 constructor TLoginUsuario.create;
 begin
@@ -151,7 +159,7 @@ begin
         and (mrCancel <> LoginForm.ShowModal) do
     begin
       query.SQLConnection := acCustomSQLMainData.SQLConnection;
-      query.CommandText := 'SELECT idusuario, apelido, nome, senha, status FROM USUARIO' +
+      query.CommandText := 'SELECT idusuario, apelido, nome, senha, status, DataSenha FROM USUARIO' +
         ' WHERE lower(apelido) = ' + quotedStr(LowerCase(LoginForm.UsernameEdit.Text));
       query.Open;
       try
@@ -175,10 +183,14 @@ begin
         end
         else
         begin
+          self.ValidaSenhaExpirada;
+
           FIDUsuario := query.fieldByName('IDUsuario').AsInteger;
           FApelido := query.fieldByName('Apelido').AsString;
           FNome := query.fieldByName('Nome').AsString;
           FStatus := query.fieldByName('Status').AsString;
+          FUserDataSenha := query.FieldByName('DataSenha').AsDateTime;
+          FUserSenha := query.FieldByName('Senha').AsString;
           LoginCorrect := True;
         end;
       finally
@@ -203,5 +215,57 @@ begin
   FIDUsuario  := -1;
 end;
 
+procedure TLoginUsuario.ValidaSenhaExpirada;
+var
+  Oldpassword : string;
+  Newpassword : string;
+  cancelouTrocaSenha: Boolean;
+  msglog: string;
+  qryUsuario: TosSQLQuery;
+begin
+  if SenhaExpirada then
+  begin
+    cancelouTrocaSenha := False;
+    if MessageDlg('Sua senha expirou e precisa ser alterada.'+#13+
+                  'Deseja trocar a senha agora?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+    begin
+      cancelouTrocaSenha := True;
+    end
+    else
+    begin
+      Oldpassword := FUserSenha;
+      Newpassword := TMudarSenhaForm.Execute(FUserSenha);
+
+      if Newpassword = Oldpassword then
+        cancelouTrocaSenha := True
+      else
+      begin
+        qryUsuario := MainData.GetQuery;
+        try
+          qryUsuario.SQL.Text := 'update usuario set senha = :senha, datasenha = :datasenha where idusuario = :idusuario';
+          qryUsuario.ParamByName('senha').AsString := Newpassword;
+          qryUsuario.ParamByName('datasenha').AsDate := MainData.GetServerDate;
+          qryUsuario.ParamByName('idusuario').AsInteger := MainData.IDUsuario;
+          qryUsuario.ExecSQL;
+        finally
+          FreeAndNil(qryUsuario);
+        end;
+      end;
+    end;
+    if cancelouTrocaSenha then
+    begin
+      msglog := 'Usuario ' + FNome + ' cancelou a troca da senha expirada.';
+      LogData.Logar(CL_ParametrosSistema, SCL_ParametroSistemaSenha, msglog);
+    end;
+  end;
+end;
+
+function TLoginUsuario.SenhaExpirada: Boolean;
+begin
+  Result := False;
+  if ParametroSistemaData.ExpiroSenha <> 0 then
+    Result := (FUserDataSenha + ParametroSistemaData.ExpiroSenha) < MainData.GetServerDatetime;
+end;
+
 end.
- 
+
