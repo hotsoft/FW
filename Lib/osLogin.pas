@@ -183,8 +183,6 @@ begin
         end
         else
         begin
-          self.ValidaSenhaExpirada;
-
           FIDUsuario := query.fieldByName('IDUsuario').AsInteger;
           FApelido := query.fieldByName('Apelido').AsString;
           FNome := query.fieldByName('Nome').AsString;
@@ -192,6 +190,7 @@ begin
           FUserDataSenha := query.FieldByName('DataSenha').AsDateTime;
           FUserSenha := query.FieldByName('Senha').AsString;
           LoginCorrect := True;
+          self.ValidaSenhaExpirada;
         end;
       finally
         query.Close;
