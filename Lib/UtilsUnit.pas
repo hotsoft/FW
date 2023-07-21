@@ -1338,6 +1338,9 @@ begin
 
   HTTPClient := TidHTTP.Create(nil);
   LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
+  LHandler.SSLOptions.Method := sslvSSLv23;
+  LHandler.SSLOptions.Mode := sslmUnassigned;
+  LHandler.SSLOptions.SSLVersions := AllSSLVersions;
   HTTPClient.IOHandler := LHandler;
   HTTPClient.HandleRedirects := True;
   HTTPClient.AllowCookies := True;
