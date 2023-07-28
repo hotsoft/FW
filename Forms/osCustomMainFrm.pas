@@ -287,7 +287,7 @@ implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
   osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, StatusUnit,
-  ParametroSistemaDataUn, LogDataUn;
+  ParametroSistemaDataUn, LogDataUn, acSysUtils, acStrUtils;
 
 {$R *.DFM}
 
@@ -339,10 +339,12 @@ begin
         begin
           sName := Names[i];
           SQLConnection.Params.Values[sName] := Values[sName];
+          if UpperCase(sName) = 'PASSWORD' then
+            if Copy(Values[sName], Values[sName].Length - 1, 2) = '==' then
+              SQLConnection.Params.Values[sName] := simpleDecrypt(Copy(Values[sName], 1, Values[sName].Length - 1));
         end;
         if SQLConnection.Params.Values['DataBaseMeta']<>'' then
-          SQLConnection.Params.Values['Database'] :=
-            SQLConnection.Params.Values['DatabaseMeta'];
+          SQLConnection.Params.Values['Database'] := SQLConnection.Params.Values['DatabaseMeta'];
       finally
         Free;
       end;
