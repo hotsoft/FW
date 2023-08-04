@@ -41,7 +41,7 @@ type
 
 implementation
 
-uses DB, osMD5, StatusUnit, osSQLQuery, SQLMainData, ParametroSistemaDataUn, LogDataUn, LMLogCodes, MudarSenhaFormUn;
+uses DB, osMD5, StatusUnit, osSQLQuery, ParametroSistemaDataUn, SQLMainData, LogDataUn, LMLogCodes, MudarSenhaFormUn;
 
 constructor TLoginUsuario.create;
 begin
@@ -244,7 +244,7 @@ begin
           qryUsuario.SQL.Text := 'update usuario set senha = :senha, datasenha = :datasenha where idusuario = :idusuario';
           qryUsuario.ParamByName('senha').AsString := Newpassword;
           qryUsuario.ParamByName('datasenha').AsDate := MainData.GetServerDate;
-          qryUsuario.ParamByName('idusuario').AsInteger := MainData.IDUsuario;
+          qryUsuario.ParamByName('idusuario').AsInteger := FIDUsuario;
           qryUsuario.ExecSQL;
         finally
           FreeAndNil(qryUsuario);
@@ -260,11 +260,24 @@ begin
 end;
 
 function TLoginUsuario.SenhaExpirada: Boolean;
+var
+  query: TosSQLDataSet;
 begin
   Result := False;
-  if ParametroSistemaData.ExpiroSenha <> 0 then
-    Result := (FUserDataSenha + ParametroSistemaData.ExpiroSenha) < MainData.GetServerDatetime;
+  query := TosSQLDataSet.Create(nil);
+  try
+    query.SQLConnection := acCustomSQLMainData.SQLConnection;
+    query.commandText := 'SELECT expirosenha from parametrosistema';
+    query.Open;
+
+    if query.FieldByName('ExpiroSenha').AsInteger <> 0 then
+      Result := (FUserDataSenha + query.FieldByName('ExpiroSenha').AsInteger) < MainData.GetServerDatetime;
+
+  finally
+    FreeAndNil(query);
+  end;
 end;
+
 
 end.
 
