@@ -6,8 +6,8 @@ inherited osCustomEditForm: TosCustomEditForm
   ClientWidth = 457
   OldCreateOrder = True
   OnCloseQuery = FormCloseQuery
-  ExplicitWidth = 473
-  ExplicitHeight = 496
+  ExplicitWidth = 502
+  ExplicitHeight = 355
   PixelsPerInch = 96
   TextHeight = 13
   object MainControlBar: TControlBar [0]

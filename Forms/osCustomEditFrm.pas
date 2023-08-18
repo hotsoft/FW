@@ -90,6 +90,7 @@ type
     procedure ChangeColor(PReadOnly: boolean);
     procedure ReconcileError(DataSet: TCustomClientDataSet; E: EReconcileError;
                              UpdateKind: TUpdateKind; var Action: TReconcileAction);
+    procedure DeleteError(DataSet: TDataSet; E: EDatabaseError; var Action: TDataAction);
   public
     continue: boolean;
     constructor Create(AOwner: TComponent); override;
@@ -627,6 +628,22 @@ begin
   end;
 end;
 
+procedure TosCustomEditForm.DeleteError(DataSet: TDataSet; E: EDatabaseError; var Action: TDataAction);
+begin
+  if Pos( 'deadlock', LowerCase(E.message)) > 0 then
+  begin
+    ShowMessage('Esse registro esta sendo atualizado (sincronizado) pelo Híbrido ou outro usuário, salve novamente e verifique se as alterações foram aplicadas corretamente');
+    Sleep(2000);
+    Action := daRetry;
+  end
+  else
+  begin
+    ShowMessage('Erro no Delete do clientDataSet com a mensagem: ' + quotedStr(E.message));
+    Sleep(2000);
+    Action := daRetry;
+  end;
+end;
+
 procedure TosCustomEditForm.FormCreate(Sender: TObject);
 var
   i: integer;
@@ -635,7 +652,10 @@ begin
   for i := 0 to ComponentCount-1 do
   begin
     if Components[i] is TClientDataSet then
+    begin
       (Components[i] as TClientDataSet).onReconcileError := ReconcileError;
+      (Components[i] as TClientDataSet).OnDeleteError := DeleteError;
+    end;
   end;
 end;
 
