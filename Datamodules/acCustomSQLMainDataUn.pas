@@ -393,12 +393,13 @@ begin
         SQLConnectionMeta.Params.Values['Database'] := SQLConnectionMeta.Params.Values['DatabaseMeta'];
 
       //Conexão com o banco de arquivos
-      if FileExists(ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb') then
-      begin
+      try
         SQLConnectionArquivos.Params := SQLConnection.Params;
         SQLConnectionArquivos.Params.Values['database'] := ExtractFilePath(SQLConnection.Params.Values['database']) + 'Arquivos.fdb';
         SQLConnectionArquivos.Params.Values['PASSWORD'] := SQLConnection.Params.Values['PASSWORD'];
         SQLConnectionArquivos.Connected := True;
+      except
+        //
       end;
     finally
       Free;
