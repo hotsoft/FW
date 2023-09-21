@@ -325,7 +325,7 @@ implementation
 
 uses acCustomSQLMainDataUn, FilterDefEditFormUn, RecursoDataUn,
   osReportUtils, UtilsUnit, Types, TerminalConsultaFormUn, UMensagemAguarde, StatusUnit,
-  ParametroSistemaDataUn, LogDataUn, acSysUtils, acStrUtils, GDIPMenu, osWizFrm;
+  ParametroSistemaDataUn, LogDataUn, acSysUtils, acStrUtils;
 
 {$R *.DFM}
 
