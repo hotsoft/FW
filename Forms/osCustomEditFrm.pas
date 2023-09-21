@@ -9,7 +9,7 @@ uses
   ToolWin, ExtCtrls, osActionList, osClientDataset, provider, osUtils,
   Grids, Wwdbigrd, Wwdbgrid, wwdbdatetimepicker, wwrcdpnl, Mask, wwdbedit, wwriched,
   osComboSearch, osDBDualTree, wwDBSpin, wwDBNavigator, wwDBcomb, wwDBlook, DBGrids,
-  System.Actions, System.UITypes;
+  System.Actions, System.UITypes, LogsAuditoriaFormUn;
 
 type
   TFormMode      = (fmEdit, fmInsert, fmView, fmDelete);
@@ -52,6 +52,7 @@ type
     ExcluirButton: TSpeedButton;
     FecharButton: TSpeedButton;
     PararButton: TSpeedButton;
+    LogsAuditoriaButton: TButton;
     procedure FormShow(Sender: TObject);
     procedure SaveActionExecute(Sender: TObject);
     procedure SaveCloseActionExecute(Sender: TObject);
@@ -65,13 +66,17 @@ type
     procedure FormCreate(Sender: TObject);
     procedure PararButtonClick(Sender: TObject);
     procedure MasterDataSourceDataChange(Sender: TObject; Field: TField);
+    procedure LogsAuditoriaButtonClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FDatamodule: TDatamodule;
     FInitialControl: TWinControl;
     FVisibleButtons: TVisibleButtons;
+    FLogsAuditoria: TLogsAuditoriaForm;
     procedure SetExternalCDS(const Value: TosClientDataset);
     procedure SetDatamodule(const Value: TDatamodule);
     function GetKeyValues: Variant;
+    function GetPrimaryKeyField: TField;
 
   protected
     FMasterDataset: TosClientDataset;
@@ -79,6 +84,9 @@ type
     FFormMode: TFormMode;
     FExternalCDS: TosClientDataset;
     FIsModified: boolean;
+    FIdGenericoLog: Integer;
+    FIdClasseLog: Integer;
+    FNumProtocoloLog: string;
     procedure ControlButtons;
     procedure MasterDatasetAfterEdit(DataSet: TDataSet); virtual;
     procedure CheckMasterDataset;
@@ -325,6 +333,50 @@ begin
   FInitialControl := ActiveControl;
 end;
 
+procedure TosCustomEditForm.LogsAuditoriaButtonClick(Sender: TObject);
+var
+  lPoint: TPoint;
+begin
+  inherited;
+  lPoint := LogsAuditoriaButton.ClientToScreen(Point(0,0));
+
+  FLogsAuditoria := TLogsAuditoriaForm.Create(self);
+  try
+    if FIdGenericoLog = 0 then
+      FLogsAuditoria.FIdRegistro := FMasterDataset.FieldByName(self.GetPrimaryKeyField.FieldName).AsInteger
+    else
+      FLogsAuditoria.FIdRegistro := FIdGenericoLog;
+    FLogsAuditoria.FIdClasseLog := FIdClasseLog;
+    FLogsAuditoria.FNumProtocoloLog := FNumProtocoloLog;
+    FLogsAuditoria.Top := lPoint.Y + LogsAuditoriaButton.Height + 2;
+    FLogsAuditoria.ShowModal;
+  finally
+    FreeAndNil(FLogsAuditoria);
+  end;
+end;
+
+function TosCustomEditForm.GetPrimaryKeyField: TField;
+var
+  I: Integer;
+begin
+  Result := nil;
+
+  // Verifique se o ClientDataSet está vazio
+  if not FMasterDataset.Active or FMasterDataset.IsEmpty then
+    Exit;
+
+  // Percorra os campos do ClientDataSet
+  for I := 0 to FMasterDataset.FieldCount - 1 do
+  begin
+    // Verifique se o campo é uma chave primária
+    if pfInKey in FMasterDataset.Fields[I].ProviderFlags then
+    begin
+      Result := FMasterDataset.Fields[I];
+      Break; // Saia do loop quando encontrar a primeira chave primária
+    end;
+  end;
+end;
+
 procedure TosCustomEditForm.CheckMasterDataset;
 begin
   if not Assigned(FMasterDataset) then
@@ -384,6 +436,9 @@ begin
   inherited;
   if FormMode <> fmView then
     CheckChanges;
+
+  if FLogsAuditoria <> nil then
+    FreeAndNil(FLogsAuditoria);
 end;
 
 procedure TosCustomEditForm.NewActionExecute(Sender: TObject);
@@ -530,6 +585,9 @@ var
   i: integer;
 begin
   inherited;
+  FIdGenericoLog := 0;
+  FIdClasseLog := 0;
+  FNumProtocoloLog := '';
   for i := 0 to ComponentCount-1 do
   begin
     if Components[i] is TClientDataSet then
@@ -540,6 +598,13 @@ begin
   end;
 end;
 
+
+procedure TosCustomEditForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  if (Shift = [ssCtrl, ssShift]) and (Key = vkL) then
+    LogsAuditoriaButton.Click;
+end;
 
 function TosCustomEditForm.canInsert: boolean;
 begin

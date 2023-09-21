@@ -3,18 +3,20 @@ inherited osCustomEditForm: TosCustomEditForm
   Top = 351
   Caption = 'osCustomEditForm'
   ClientHeight = 297
-  ClientWidth = 486
+  ClientWidth = 538
+  KeyPreview = True
   Menu = MainMenu
   OldCreateOrder = True
   OnCloseQuery = FormCloseQuery
-  ExplicitWidth = 502
+  OnKeyDown = FormKeyDown
+  ExplicitWidth = 554
   ExplicitHeight = 356
   PixelsPerInch = 96
   TextHeight = 13
   object MainControlBar: TControlBar [0]
     Left = 0
     Top = 0
-    Width = 486
+    Width = 538
     Height = 30
     Align = alTop
     AutoDrag = False
@@ -23,7 +25,7 @@ inherited osCustomEditForm: TosCustomEditForm
     object ControlBarPanel: TPanel
       Left = 11
       Top = 2
-      Width = 358
+      Width = 362
       Height = 22
       Align = alLeft
       Alignment = taLeftJustify
@@ -81,7 +83,7 @@ inherited osCustomEditForm: TosCustomEditForm
       end
       object PararButton: TSpeedButton
         Tag = 4
-        Left = 300
+        Left = 304
         Top = 0
         Width = 58
         Height = 22
@@ -90,6 +92,19 @@ inherited osCustomEditForm: TosCustomEditForm
         Visible = False
         OnClick = PararButtonClick
       end
+    end
+    object LogsAuditoriaButton: TButton
+      AlignWithMargins = True
+      Left = 386
+      Top = 2
+      Width = 146
+      Height = 22
+      Cursor = crHelp
+      Align = alRight
+      Caption = 'Logs de Auditoria'
+      TabOrder = 1
+      Visible = False
+      OnClick = LogsAuditoriaButtonClick
     end
   end
   inherited ActionList: TosActionList
