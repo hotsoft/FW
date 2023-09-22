@@ -538,10 +538,6 @@ inherited osCustomMainForm: TosCustomMainForm
       OnChange = AbasPrincipalTSChange
       object PesquisaTS: TTabSheet
         Caption = 'Pesquisa'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Panel5: TPanel
           Left = 0
           Top = 0
@@ -2901,7 +2897,7 @@ inherited osCustomMainForm: TosCustomMainForm
     PrinterSetup.mmMarginTop = 6350
     PrinterSetup.mmPaperHeight = 279401
     PrinterSetup.mmPaperWidth = 215900
-    PrinterSetup.PaperSize = 1
+    PrinterSetup.PaperSize = 124
     Template.DatabaseSettings.DataPipeline = plItem
     Template.DatabaseSettings.NameField = 'Name'
     Template.DatabaseSettings.TemplateField = 'Template'

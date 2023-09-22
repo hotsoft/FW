@@ -1810,7 +1810,9 @@ begin
       FActionDblClick := EditAction;
       FCurrentEditForm := CreateCurrentEditForm;
       //FCurrentEditForm.Visible := False;
-      AbasPrincipalTS.ActivePageIndex := 0;
+      //AbasPrincipalTS.ActivePageIndex := 0;
+      AbasPrincipalTS.ActivePage := PesquisaTS;
+      self.HabilitaBotoesTop;
       //if Assigned(FCurrentEditForm) and Assigned(FCurrentDatamodule) then
       //  FCurrentEditForm.Datamodule := FCurrentDatamodule;
     end
