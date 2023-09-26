@@ -121,7 +121,7 @@ var
 
 implementation
 
-uses TradutorFormUn;
+uses TradutorFormUn, osLogin;
 
 {$R *.DFM}
 
@@ -336,22 +336,32 @@ end;
 procedure TosCustomEditForm.LogsAuditoriaButtonClick(Sender: TObject);
 var
   lPoint: TPoint;
+  loginForm: TLoginUsuario;
 begin
   inherited;
-  lPoint := LogsAuditoriaButton.ClientToScreen(Point(0,0));
-
-  FLogsAuditoria := TLogsAuditoriaForm.Create(self);
+  loginForm := TLoginUsuario.Create;
   try
-    if FIdGenericoLog = 0 then
-      FLogsAuditoria.FIdRegistro := FMasterDataset.FieldByName(self.GetPrimaryKeyField.FieldName).AsInteger
-    else
-      FLogsAuditoria.FIdRegistro := FIdGenericoLog;
-    FLogsAuditoria.FIdClasseLog := FIdClasseLog;
-    FLogsAuditoria.FNumProtocoloLog := FNumProtocoloLog;
-    FLogsAuditoria.Top := lPoint.Y + LogsAuditoriaButton.Height + 2;
-    FLogsAuditoria.ShowModal;
+    loginForm.getInfoUsuarioLogadoSistema;
+    if UpperCase(loginForm.Apelido) = 'SUPORTE'  then
+    begin
+      lPoint := LogsAuditoriaButton.ClientToScreen(Point(0,0));
+
+      FLogsAuditoria := TLogsAuditoriaForm.Create(self);
+      try
+        if FIdGenericoLog = 0 then
+          FLogsAuditoria.FIdRegistro := FMasterDataset.FieldByName(self.GetPrimaryKeyField.FieldName).AsInteger
+        else
+          FLogsAuditoria.FIdRegistro := FIdGenericoLog;
+        FLogsAuditoria.FIdClasseLog := FIdClasseLog;
+        FLogsAuditoria.FNumProtocoloLog := FNumProtocoloLog;
+        FLogsAuditoria.Top := lPoint.Y + LogsAuditoriaButton.Height + 2;
+        FLogsAuditoria.ShowModal;
+      finally
+        FreeAndNil(FLogsAuditoria);
+      end;
+    end;
   finally
-    FreeAndNil(FLogsAuditoria);
+    FreeAndNil(loginForm);
   end;
 end;
 
