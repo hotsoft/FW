@@ -1300,7 +1300,8 @@ begin
                               cds.FieldByName('ReportClassName').AsString,
                               cds.FieldByName('NomeDominio').AsString,
                               cds.FieldByName('IndiceImagem').AsInteger,
-                              cds.FieldByName('IDTipoRecurso').AsInteger);
+                              cds.FieldByName('IDTipoRecurso').AsInteger,
+                              cds.FieldByName('IDRecurso').AsInteger);
           cds.Next;
         end;
       finally
