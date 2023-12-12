@@ -141,6 +141,7 @@ procedure RemoveDiretorio(Dir: String);
 function ExtractBetween(const Value, A, B: string): string;
 function LocalizaElementoArray(Element: array of Integer; Valor: Integer): Boolean;
 function GetJsonValue(jsonObject: TJsonObject; campo: string): string;
+function Is64BitOS: Boolean;
 
 implementation
 
@@ -2360,6 +2361,24 @@ begin
   Result := '';
   if jsonObject.Get(campo) <> nil then
     Result := jsonObject.Get(campo).JsonValue.Value;
+end;
+
+function Is64BitOS: Boolean;
+const
+  PROCESSOR_ARCHITECTURE_INTEL = $0000;
+  PROCESSOR_ARCHITECTURE_IA64 = $0006;
+  PROCESSOR_ARCHITECTURE_AMD64 = $0009;
+  PROCESSOR_ARCHITECTURE_UNKNOWN = $FFFF;
+var
+  xSysInfo: TSystemInfo;
+begin
+  GetNativeSystemInfo(xSysInfo);
+  case xSysInfo.wProcessorArchitecture of
+    PROCESSOR_ARCHITECTURE_AMD64, PROCESSOR_ARCHITECTURE_IA64:
+      Result := True;
+  else
+    Result := False;
+  end;
 end;
 
 end.
