@@ -61,10 +61,11 @@ function ValidaTravamento(const Aplicacao: string; var FTaskName: string; var FP
 function ProcessExists(exeFileName: string; var FTaskName: string; var FPid: PDWORD_PTR; var FProcessa: Boolean; var FHWND: HWND; var iListOfProcess: Integer): Boolean;
 procedure MakeRounded(Control: TWinControl);
 function SendMessageToTCPServer(const aMessage: string; aPort: integer): boolean;
+function UnZip(ZipName: string; Destination: string): boolean;
 
 implementation
 
-uses IdIPWatch, IdTCPClient, WinSpool;
+uses IdIPWatch, IdTCPClient, WinSpool, Zip;
 
 procedure setHabilitaButton(btn: TButton; enabled: boolean);
 begin
@@ -949,6 +950,21 @@ begin
     SetWindowRgn(Handle, rgn, True);
     Invalidate;
   end;
+end;
+
+function UnZip(ZipName: string; Destination: string): boolean;
+var
+  UnZipper: TZipFile;
+begin
+  UnZipper := TZipFile.Create();
+  try
+    UnZipper.Open(ZipName, zmRead);
+    UnZipper.ExtractAll(Destination);
+    UnZipper.Close;
+  finally
+    FreeAndNil(UnZipper);
+  end;
+  Result := True;
 end;
 
 end.
