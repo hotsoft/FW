@@ -1852,6 +1852,8 @@ begin
       self.HabilitaBotoesTop;
       tabSheet.Caption := FCurrentForm.Caption;
       AbasPrincipalTS.ActivePage := tabSheet;
+      AbasPrincipalTS.ActivePage.Visible := False;
+      AbasPrincipalTS.ActivePage.Visible := True;
     finally
       Screen.Cursor := crDefault;
     end;
