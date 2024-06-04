@@ -92,6 +92,7 @@ function VersionInfoProductVersion(p_exeName : String) : String;
 function VersionInfoComments(p_exeName : String) : String;
 
 function ExecuteWait(const p_commandLine : string; const p_commandShow: Word) : integer;
+function ExecuteWaitTime(const p_commandLine : string; const p_commandShow: Word; const timeout: DWORD; var ProcessInfo: TProcessInformation) : integer;
 { Executa uma aplicação e espera até que ela termine
   Retorna: Codigo de Erro
            ou o ExitCode retornado pela aplicação executada }
@@ -500,6 +501,66 @@ TRY
 
     if hAppProcess <> 0 then
       CloseHandle(hAppProcess);
+
+  end;
+  Result := dwExitCode;
+end;
+
+function ExecuteWaitTime(const p_commandLine : string; const p_commandShow: Word; const timeout: DWORD; var ProcessInfo: TProcessInformation) : integer;
+var
+  pCommandLine  : array[0..MAX_PATH] of char;
+  StartupInfo   : TStartupInfo;
+  hAppProcess,  hAppThread   : THandle;
+  dwExitCode    : DWORD;
+  bRet          : boolean;
+begin
+  StrPCopy(pCommandLine, p_commandLine);
+  hAppThread := 0;
+  hAppProcess := 0;
+TRY
+{ Prepare StartupInfo structure }
+    FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+    StartupInfo.cb          := SizeOf(StartupInfo);
+    StartupInfo.dwFlags     := STARTF_USESHOWWINDOW or
+                               STARTF_USESTDHANDLES;
+    StartupInfo.wShowWindow := p_commandShow;
+    StartupInfo.hStdOutput  := 0;
+    StartupInfo.hStdInput   := 0;
+
+    dwExitCode := $FFFFFFFF;
+{ Create the app }
+    bRet := CreateProcess(
+          nil,                { pointer to name of executable module }
+          pCommandLine,       { pointer to command line string }
+          nil,                { pointer to process security attributes }
+          nil,                { pointer to thread security attributes }
+          True,               { handle inheritance flag }
+          HIGH_PRIORITY_CLASS,{ creation flags }
+          nil,                { pointer to new environment block }
+          nil,                { pointer to current directory name }
+          StartupInfo,        { pointer to STARTUPINFO }
+          ProcessInfo);       { pointer to PROCESS_INF }
+
+{ wait for the app to finish its job and take the handles to free them later }
+    if bRet then
+    begin
+      WaitforSingleObject(ProcessInfo.hProcess, timeout);
+      hAppProcess  := ProcessInfo.hProcess;
+      hAppThread   := ProcessInfo.hThread;
+      GetExitCodeProcess (hAppProcess, dwExitCode);
+    end
+    else
+      dwExitCode := GetLastError;
+
+  FINALLY
+{ Close the handles.
+      Kernel objects, like the process and the files
+      we created in this case, are maintained by a usage
+      count.  So, for cleaning up purposes, we have to
+      close the handles to inform the system that we don't
+      need the objects anymore }
+
+
 
   end;
   Result := dwExitCode;
