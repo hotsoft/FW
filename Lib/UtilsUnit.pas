@@ -1340,8 +1340,8 @@ begin
 
   HTTPClient := TidHTTP.Create(nil);
   LHandler := TIdSSLIOHandlerSocketOpenSSL.Create(HTTPClient);
-  LHandler.SSLOptions.Method := sslvSSLv23;
-  LHandler.SSLOptions.Mode := sslmUnassigned;
+  LHandler.SSLOptions.Method := sslvTLSv1_2;
+  LHandler.SSLOptions.Mode   := sslmUnassigned;
   LHandler.SSLOptions.SSLVersions := AllSSLVersions;
   HTTPClient.IOHandler := LHandler;
   HTTPClient.HandleRedirects := True;
@@ -1999,7 +1999,12 @@ begin
   if TestConnection(url) then
   begin
     lHTTP := TIdHTTP.Create(nil);
+
     IOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(lHTTP);
+    IOHandler.SSLOptions.Method := sslvTLSv1_2;
+    IOHandler.SSLOptions.Mode   := sslmUnassigned;
+    IOHandler.SSLOptions.SSLVersions := AllSSLVersions;
+
     lUri := TIdUri.Create;
     try
       lHTTP.IOHandler := IOHandler;
