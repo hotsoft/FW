@@ -1799,7 +1799,8 @@ begin
     FCurrentResource := NewResource;
     Manager.currentResource := FCurrentResource;
     // Libera o datamodule associado
-    FCurrentDatamodule.Free;
+    if FCurrentDatamodule<>Nil then
+      FCurrentDatamodule.Free;
     FCurrentDatamodule := CreateCurrentDatamodule;
 
     // Libera o form corrente
