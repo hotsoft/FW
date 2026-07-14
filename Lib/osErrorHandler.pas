@@ -250,7 +250,7 @@ begin
     Result := False
   else
   begin
-    DV := CalcDV_CNPJ(Trim(CNPJ));
+    DV := CalcDV_CNPJ_Alfanumerico(Trim(CNPJ));
     if DV = -1 then
       Result := False
     else
